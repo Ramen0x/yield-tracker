@@ -1,5 +1,5 @@
 {
-  "lastUpdate": 1770446304350,
+  "lastUpdate": 1770446326007,
   "tokens": {
     "syrupUSDC": {
       "symbol": "syrupUSDC",
@@ -38,6 +38,17 @@
         },
         {
           "timestamp": 1770446304350,
+          "price": 1.15052,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null
+        },
+        {
+          "timestamp": 1770446326007,
           "price": 1.15052,
           "apr_6h": null,
           "apr_12h": null,
@@ -94,6 +105,17 @@
           "apr_7d": null,
           "apr_14d": null,
           "apr_30d": null
+        },
+        {
+          "timestamp": 1770446326007,
+          "price": 1.115132,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null
         }
       ]
     },
@@ -117,6 +139,17 @@
           "apr_7d": null,
           "apr_14d": null,
           "apr_30d": null
+        },
+        {
+          "timestamp": 1770446326007,
+          "price": 1.219589292480009,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null
         }
       ]
     },
@@ -129,6 +162,17 @@
         {
           "timestamp": 1770446304350,
           "price": 1.0129847715812712
+        },
+        {
+          "timestamp": 1770446326007,
+          "price": 1.012984789660466,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null
         }
       ]
     },
@@ -141,6 +185,17 @@
         {
           "timestamp": 1770446304350,
           "price": 1.031649297694947
+        },
+        {
+          "timestamp": 1770446326007,
+          "price": 1.0316493438047252,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null
         }
       ]
     },
@@ -153,6 +208,17 @@
         {
           "timestamp": 1770446304350,
           "price": 1.0480080449375029
+        },
+        {
+          "timestamp": 1770446326007,
+          "price": 1.0480081071005054,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null
         }
       ]
     },
@@ -165,6 +231,29 @@
         {
           "timestamp": 1770446304350,
           "price": 1.0665223280841307
+        },
+        {
+          "timestamp": 1770446326007,
+          "price": 1.0665223498126029,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null
+        }
+      ]
+    },
+    "rlp": {
+      "symbol": "dLP",
+      "name": "Radiant dLP",
+      "chain": "arbitrum",
+      "protocol": "Radiant Capital",
+      "snapshots": [
+        {
+          "timestamp": 1770446326007,
+          "price": 1
         }
       ]
     }
