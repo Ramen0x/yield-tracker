@@ -2,9 +2,20 @@
 
 **Trust, but verify.** Track real APY of yield-bearing tokens via hourly on-chain price snapshots.
 
+🌐 **Live Dashboard:** https://yield-tracker.vercel.app
+
 ## Why?
 
 Advertised APYs can be misleading. This tracker calculates **realized APR** from actual share price changes, not protocol estimates.
+
+## Features
+
+✅ **Hourly on-chain snapshots** - Direct price queries via ethers.js  
+📊 **Time series charts** - Visualize share price trends over time  
+⏱️ **7 time ranges** - APR calculated for 6h, 12h, 24h, 3d, 7d, 14d, 30d  
+🎨 **Clean design** - Professional dashboard matching Syrup style  
+📥 **CSV export** - Download historical data for analysis  
+🤖 **Fully automated** - GitHub Actions + Vercel auto-deploy
 
 ## Tracked Tokens
 
