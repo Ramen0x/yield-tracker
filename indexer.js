@@ -88,20 +88,36 @@ async function getSharePrice(token) {
 async function calculateAPR(tokenId, currentPrice, snapshots) {
   const tokenData = snapshots.tokens[tokenId];
   if (!tokenData || !tokenData.snapshots || tokenData.snapshots.length === 0) {
-    return { apr24h: null, apr7d: null, apr30d: null };
+    return {};
   }
 
   const now = Date.now();
   const snaps = tokenData.snapshots;
 
+  // Time ranges in hours
+  const timeRanges = {
+    '6h': 6,
+    '12h': 12,
+    '24h': 24,
+    '3d': 72,
+    '7d': 168,
+    '14d': 336,
+    '30d': 720
+  };
+
   function findSnapshot(hoursAgo) {
     const targetTime = now - (hoursAgo * 60 * 60 * 1000);
-    return snaps.find(s => s.timestamp <= targetTime);
+    // Find the closest snapshot before or at target time
+    let closest = null;
+    for (const snap of snaps) {
+      if (snap.timestamp <= targetTime) {
+        if (!closest || Math.abs(snap.timestamp - targetTime) < Math.abs(closest.timestamp - targetTime)) {
+          closest = snap;
+        }
+      }
+    }
+    return closest;
   }
-
-  const snap24h = findSnapshot(24);
-  const snap7d = findSnapshot(24 * 7);
-  const snap30d = findSnapshot(24 * 30);
 
   function calcAPR(oldPrice, hours) {
     if (!oldPrice) return null;
@@ -110,11 +126,13 @@ async function calculateAPR(tokenId, currentPrice, snapshots) {
     return annualized * 100; // as percentage
   }
 
-  return {
-    apr24h: snap24h ? calcAPR(snap24h.price, 24) : null,
-    apr7d: snap7d ? calcAPR(snap7d.price, 24 * 7) : null,
-    apr30d: snap30d ? calcAPR(snap30d.price, 24 * 30) : null
-  };
+  const aprs = {};
+  for (const [label, hours] of Object.entries(timeRanges)) {
+    const snap = findSnapshot(hours);
+    aprs[`apr_${label}`] = snap ? calcAPR(snap.price, hours) : null;
+  }
+
+  return aprs;
 }
 
 async function snapshot() {
@@ -151,9 +169,7 @@ async function snapshot() {
     data.tokens[token.id].snapshots.push({
       timestamp,
       price,
-      apr24h: apr.apr24h,
-      apr7d: apr.apr7d,
-      apr30d: apr.apr30d
+      ...apr
     });
 
     // Keep last 90 days (2160 hourly snapshots)

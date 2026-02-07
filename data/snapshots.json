@@ -1,5 +1,5 @@
 {
-  "lastUpdate": 1770445692841,
+  "lastUpdate": 1770445927417,
   "tokens": {
     "syrupUSDC": {
       "symbol": "syrupUSDC",
@@ -13,6 +13,17 @@
           "apr24h": null,
           "apr7d": null,
           "apr30d": null
+        },
+        {
+          "timestamp": 1770445927417,
+          "price": 1.15052,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null
         }
       ]
     },
@@ -28,6 +39,17 @@
           "apr24h": null,
           "apr7d": null,
           "apr30d": null
+        },
+        {
+          "timestamp": 1770445927417,
+          "price": 1.115132,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null
         }
       ]
     }

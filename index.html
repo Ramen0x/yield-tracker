@@ -78,11 +78,29 @@
             const card = document.createElement('div');
             card.className = 'bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-gray-600 transition';
             
-            const apr24h = latest.apr24h != null ? latest.apr24h.toFixed(2) + '%' : 'Calculating...';
-            const apr7d = latest.apr7d != null ? latest.apr7d.toFixed(2) + '%' : 'Need 7d data';
-            const apr30d = latest.apr30d != null ? latest.apr30d.toFixed(2) + '%' : 'Need 30d data';
+            // Time ranges to display
+            const ranges = [
+                { key: 'apr_6h', label: '6h' },
+                { key: 'apr_12h', label: '12h' },
+                { key: 'apr_24h', label: '24h' },
+                { key: 'apr_3d', label: '3d' },
+                { key: 'apr_7d', label: '7d' },
+                { key: 'apr_14d', label: '14d' },
+                { key: 'apr_30d', label: '30d' }
+            ];
 
-            const apr24hColor = latest.apr24h != null && latest.apr24h > 0 ? 'text-green-400' : 'text-gray-400';
+            const aprRows = ranges.map(r => {
+                const value = latest[r.key];
+                const display = value != null ? value.toFixed(2) + '%' : '-';
+                const color = value != null && value > 0 ? 'text-green-400' : 
+                             value != null && value < 0 ? 'text-red-400' : 'text-gray-500';
+                return `
+                    <div>
+                        <div class="text-xs text-gray-500">${r.label}</div>
+                        <div class="text-sm font-bold font-mono ${color}">${display}</div>
+                    </div>
+                `;
+            }).join('');
 
             card.innerHTML = `
                 <div class="flex justify-between items-start mb-4">
@@ -99,18 +117,10 @@
                         <div class="text-2xl font-mono">${latest.price.toFixed(8)}</div>
                     </div>
                     
-                    <div class="grid grid-cols-3 gap-3 pt-3 border-t border-gray-700">
-                        <div>
-                            <div class="text-xs text-gray-500">24h APR</div>
-                            <div class="text-lg font-bold ${apr24hColor}">${apr24h}</div>
-                        </div>
-                        <div>
-                            <div class="text-xs text-gray-500">7d APR</div>
-                            <div class="text-lg font-bold">${apr7d}</div>
-                        </div>
-                        <div>
-                            <div class="text-xs text-gray-500">30d APR</div>
-                            <div class="text-lg font-bold">${apr30d}</div>
+                    <div class="pt-3 border-t border-gray-700">
+                        <div class="text-xs text-gray-400 mb-2">Realized APR</div>
+                        <div class="grid grid-cols-4 gap-2">
+                            ${aprRows}
                         </div>
                     </div>
 
@@ -181,9 +191,13 @@
                                 label: function(context) {
                                     const snap = tokenData.snapshots[context.dataIndex];
                                     const lines = [`Price: ${snap.price.toFixed(8)}`];
-                                    if (snap.apr24h != null) lines.push(`24h APR: ${snap.apr24h.toFixed(2)}%`);
-                                    if (snap.apr7d != null) lines.push(`7d APR: ${snap.apr7d.toFixed(2)}%`);
-                                    if (snap.apr30d != null) lines.push(`30d APR: ${snap.apr30d.toFixed(2)}%`);
+                                    const ranges = ['6h', '12h', '24h', '3d', '7d', '14d', '30d'];
+                                    ranges.forEach(r => {
+                                        const key = `apr_${r}`;
+                                        if (snap[key] != null) {
+                                            lines.push(`${r} APR: ${snap[key].toFixed(2)}%`);
+                                        }
+                                    });
                                     return lines;
                                 }
                             }
