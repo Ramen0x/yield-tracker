@@ -3,172 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yield Token Tracker - Real APY vs Advertised</title>
+    <title>Yield Token Tracker - Real vs Advertised APY</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 </head>
-<body class="bg-gray-900 text-white min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-7xl">
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-6 max-w-[1800px]">
+        <!-- Header -->
         <header class="mb-8">
-            <h1 class="text-4xl font-bold mb-2">📊 Yield Token Tracker</h1>
-            <p class="text-gray-400">Real APY calculated from on-chain price snapshots. Trust, but verify.</p>
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold mb-1">Yield Token Tracker</h1>
+                    <p class="text-gray-400 text-sm">Real APY calculated from on-chain price snapshots</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-xs text-gray-500" id="last-update">Loading...</div>
+                    <div class="text-xs text-gray-600 mt-1">Updates hourly</div>
+                </div>
+            </div>
         </header>
 
-        <div id="loading" class="text-center py-20">
-            <div class="text-xl text-gray-400">Loading data...</div>
-        </div>
-
-        <div id="tokens" class="grid gap-6 md:grid-cols-2 hidden"></div>
-
-        <div id="chart-section" class="mt-8 hidden">
-            <div class="bg-gray-800 rounded-lg p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-bold" id="chart-title">Share Price History</h2>
-                    <select id="token-select" class="bg-gray-700 border border-gray-600 rounded px-3 py-2">
-                        <option value="">Select token...</option>
-                    </select>
-                </div>
-                <canvas id="priceChart" height="100"></canvas>
+        <!-- Loading State -->
+        <div id="loading" class="flex items-center justify-center py-32">
+            <div class="text-center">
+                <div class="text-lg text-gray-400 mb-2">Loading data from Maple Finance...</div>
+                <div class="text-sm text-gray-600">Fetching on-chain prices</div>
             </div>
         </div>
 
-        <footer class="mt-12 text-center text-gray-500 text-sm">
-            <p>Data updated hourly | On-chain snapshots | <span id="last-update">-</span></p>
-        </footer>
+        <!-- Main Content -->
+        <div id="content" class="hidden space-y-6">
+            <!-- Token sections will be inserted here -->
+        </div>
     </div>
 
     <script>
         let allData = null;
-        let chart = null;
+        let charts = {};
 
         async function loadData() {
             try {
                 const response = await fetch('/data/snapshots.json');
                 allData = await response.json();
-                renderTokens();
-                setupChart();
-                document.getElementById('loading').classList.add('hidden');
-                document.getElementById('tokens').classList.remove('hidden');
-                document.getElementById('chart-section').classList.remove('hidden');
                 
                 if (allData.lastUpdate) {
-                    const date = new Date(allData.lastUpdate).toLocaleString();
-                    document.getElementById('last-update').textContent = `Last update: ${date}`;
+                    const date = new Date(allData.lastUpdate);
+                    document.getElementById('last-update').textContent = 
+                        `Last update: ${date.toLocaleString('en-US', { 
+                            month: 'short', day: 'numeric', 
+                            hour: '2-digit', minute: '2-digit', timeZone: 'UTC' 
+                        })} UTC`;
                 }
+                
+                renderTokens();
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('content').classList.remove('hidden');
             } catch (error) {
+                console.error('Failed to load data:', error);
                 document.getElementById('loading').innerHTML = 
-                    '<div class="text-red-400">Failed to load data</div>';
+                    '<div class="text-center"><div class="text-red-400">Failed to load data</div></div>';
             }
         }
 
         function renderTokens() {
-            const container = document.getElementById('tokens');
+            const container = document.getElementById('content');
             container.innerHTML = '';
 
             for (const [tokenId, tokenData] of Object.entries(allData.tokens)) {
                 if (tokenData.snapshots.length === 0) continue;
-
-                const latest = tokenData.snapshots[tokenData.snapshots.length - 1];
-                const card = createTokenCard(tokenId, tokenData, latest);
-                container.appendChild(card);
+                
+                const section = createTokenSection(tokenId, tokenData);
+                container.appendChild(section);
             }
         }
 
-        function createTokenCard(tokenId, tokenData, latest) {
-            const card = document.createElement('div');
-            card.className = 'bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-gray-600 transition';
+        function createTokenSection(tokenId, tokenData) {
+            const section = document.createElement('div');
+            section.className = 'bg-gray-800 border border-gray-700 rounded-lg overflow-hidden';
             
-            // Time ranges to display
+            const latest = tokenData.snapshots[tokenData.snapshots.length - 1];
+            
+            // APR metrics
             const ranges = [
-                { key: 'apr_6h', label: '6h' },
-                { key: 'apr_12h', label: '12h' },
-                { key: 'apr_24h', label: '24h' },
-                { key: 'apr_3d', label: '3d' },
-                { key: 'apr_7d', label: '7d' },
-                { key: 'apr_14d', label: '14d' },
-                { key: 'apr_30d', label: '30d' }
+                { key: 'apr_6h', label: '6h', desc: '6 hour' },
+                { key: 'apr_12h', label: '12h', desc: '12 hour' },
+                { key: 'apr_24h', label: '24h', desc: '24 hour' },
+                { key: 'apr_3d', label: '3d', desc: '3 day' },
+                { key: 'apr_7d', label: '7d', desc: '7 day' },
+                { key: 'apr_14d', label: '14d', desc: '14 day' },
+                { key: 'apr_30d', label: '30d', desc: '30 day' }
             ];
 
-            const aprRows = ranges.map(r => {
+            const aprMetrics = ranges.map(r => {
                 const value = latest[r.key];
-                const display = value != null ? value.toFixed(2) + '%' : '-';
-                const color = value != null && value > 0 ? 'text-green-400' : 
-                             value != null && value < 0 ? 'text-red-400' : 'text-gray-500';
+                let display, colorClass, textColor;
+                
+                if (value != null) {
+                    display = value.toFixed(2) + '%';
+                    if (value > 0) {
+                        colorClass = 'bg-green-900/30 border-green-700/50';
+                        textColor = 'text-green-400';
+                    } else if (value < 0) {
+                        colorClass = 'bg-red-900/30 border-red-700/50';
+                        textColor = 'text-red-400';
+                    } else {
+                        colorClass = 'bg-gray-700/30 border-gray-600';
+                        textColor = 'text-gray-400';
+                    }
+                } else {
+                    display = '-';
+                    colorClass = 'bg-gray-700/30 border-gray-600';
+                    textColor = 'text-gray-500';
+                }
+
                 return `
-                    <div>
-                        <div class="text-xs text-gray-500">${r.label}</div>
-                        <div class="text-sm font-bold font-mono ${color}">${display}</div>
+                    <div class="border ${colorClass} rounded p-3">
+                        <div class="text-xs text-gray-400 mb-1">${r.desc}</div>
+                        <div class="text-2xl font-bold font-mono ${textColor}">${display}</div>
+                        <div class="text-xs text-gray-500 mt-1">APR</div>
                     </div>
                 `;
             }).join('');
 
-            card.innerHTML = `
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h3 class="text-xl font-bold">${tokenData.symbol}</h3>
-                        <p class="text-sm text-gray-400">${tokenData.name}</p>
+            section.innerHTML = `
+                <div class="p-4 border-b border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div>
+                                <h2 class="text-xl font-bold">${tokenData.symbol}</h2>
+                                <p class="text-sm text-gray-400">${tokenData.name}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-gray-500">${tokenData.protocol}</div>
+                            <div class="text-xs text-gray-600">${tokenData.chain}</div>
+                        </div>
                     </div>
-                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">${tokenData.protocol}</span>
                 </div>
-                
-                <div class="space-y-3">
+
+                <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6 p-6">
+                    <!-- Chart -->
                     <div>
-                        <div class="text-sm text-gray-400">Current Share Price</div>
-                        <div class="text-2xl font-mono">${latest.price.toFixed(8)}</div>
-                    </div>
-                    
-                    <div class="pt-3 border-t border-gray-700">
-                        <div class="text-xs text-gray-400 mb-2">Realized APR</div>
-                        <div class="grid grid-cols-4 gap-2">
-                            ${aprRows}
+                        <div class="mb-4">
+                            <h3 class="text-lg font-semibold mb-1">Share Price History</h3>
+                            <div class="text-sm text-gray-400">
+                                Current: <span class="font-mono text-green-400">${latest.price.toFixed(8)}</span>
+                                <span class="text-gray-600 ml-2">(${tokenData.snapshots.length} snapshots)</span>
+                            </div>
+                        </div>
+                        <div class="bg-gray-900 rounded-lg p-4" style="height: 400px;">
+                            <canvas id="chart-${tokenId}"></canvas>
                         </div>
                     </div>
 
-                    <div class="text-xs text-gray-500 pt-2">
-                        ${tokenData.snapshots.length} snapshots | Chain: ${tokenData.chain}
+                    <!-- APR Metrics -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Realized APR</h3>
+                        <div class="space-y-3">
+                            ${aprMetrics}
+                        </div>
+                        <div class="mt-6 p-4 bg-gray-900 rounded-lg border border-gray-700">
+                            <div class="text-xs text-gray-400 mb-2">About APR Calculation</div>
+                            <div class="text-xs text-gray-500 leading-relaxed">
+                                APR is calculated from actual on-chain share price changes and annualized. 
+                                Values appear as data accumulates over time. Negative values indicate price decrease.
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
 
-            card.onclick = () => showChart(tokenId);
-            return card;
+            // Create chart after DOM insertion
+            setTimeout(() => {
+                createChart(tokenId, tokenData);
+            }, 0);
+
+            return section;
         }
 
-        function setupChart() {
-            const select = document.getElementById('token-select');
-            select.innerHTML = '<option value="">Select token...</option>';
+        function createChart(tokenId, tokenData) {
+            const canvas = document.getElementById(`chart-${tokenId}`);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
             
-            for (const [tokenId, tokenData] of Object.entries(allData.tokens)) {
-                if (tokenData.snapshots.length === 0) continue;
-                const option = document.createElement('option');
-                option.value = tokenId;
-                option.textContent = `${tokenData.symbol} - ${tokenData.name}`;
-                select.appendChild(option);
+            // Destroy existing chart if any
+            if (charts[tokenId]) {
+                charts[tokenId].destroy();
             }
 
-            select.onchange = (e) => {
-                if (e.target.value) showChart(e.target.value);
-            };
-        }
-
-        function showChart(tokenId) {
-            const tokenData = allData.tokens[tokenId];
-            if (!tokenData) return;
-
-            document.getElementById('token-select').value = tokenId;
-            document.getElementById('chart-title').textContent = 
-                `${tokenData.symbol} - Share Price History`;
-
-            const ctx = document.getElementById('priceChart').getContext('2d');
-            
-            if (chart) chart.destroy();
-
             const labels = tokenData.snapshots.map(s => 
-                new Date(s.timestamp).toLocaleString()
+                new Date(s.timestamp).toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
             );
             const prices = tokenData.snapshots.map(s => s.price);
 
-            chart = new Chart(ctx, {
+            // Calculate price range for better y-axis scaling
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+            const padding = (maxPrice - minPrice) * 0.1 || 0.0001;
+
+            charts[tokenId] = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels,
@@ -177,20 +216,45 @@
                         data: prices,
                         borderColor: 'rgb(34, 197, 94)',
                         backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                        tension: 0.4,
-                        fill: true
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: 'rgb(34, 197, 94)',
+                        pointBorderColor: '#1f2937',
+                        pointBorderWidth: 2
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
                     plugins: {
-                        legend: { display: false },
+                        legend: {
+                            display: false
+                        },
                         tooltip: {
+                            backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                            titleColor: '#9ca3af',
+                            bodyColor: '#f3f4f6',
+                            borderColor: '#374151',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
                             callbacks: {
+                                title: function(items) {
+                                    return items[0].label;
+                                },
                                 label: function(context) {
+                                    return `Price: ${context.parsed.y.toFixed(8)}`;
+                                },
+                                afterLabel: function(context) {
                                     const snap = tokenData.snapshots[context.dataIndex];
-                                    const lines = [`Price: ${snap.price.toFixed(8)}`];
+                                    const lines = [];
                                     const ranges = ['6h', '12h', '24h', '3d', '7d', '14d', '30d'];
                                     ranges.forEach(r => {
                                         const key = `apr_${r}`;
@@ -198,22 +262,37 @@
                                             lines.push(`${r} APR: ${snap[key].toFixed(2)}%`);
                                         }
                                     });
-                                    return lines;
+                                    return lines.length > 0 ? ['\n', ...lines] : [];
                                 }
                             }
                         }
                     },
                     scales: {
                         y: {
-                            grid: { color: 'rgba(255,255,255,0.1)' },
-                            ticks: { color: '#9ca3af' }
+                            min: minPrice - padding,
+                            max: maxPrice + padding,
+                            grid: {
+                                color: 'rgba(75, 85, 99, 0.3)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#9ca3af',
+                                font: { family: 'monospace' },
+                                callback: function(value) {
+                                    return value.toFixed(8);
+                                }
+                            }
                         },
                         x: {
-                            grid: { color: 'rgba(255,255,255,0.1)' },
-                            ticks: { 
-                                color: '#9ca3af',
+                            grid: {
+                                color: 'rgba(75, 85, 99, 0.2)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6b7280',
                                 maxRotation: 45,
-                                minRotation: 45
+                                minRotation: 45,
+                                font: { size: 10 }
                             }
                         }
                     }
@@ -221,7 +300,7 @@
             });
         }
 
-        // Load on page load
+        // Load data on page load
         loadData();
 
         // Auto-refresh every 5 minutes
