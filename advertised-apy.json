@@ -1,0 +1,51 @@
+{
+  "comment": "Advertised APY values for yield tokens. Update these values as protocols announce new rates.",
+  "lastUpdated": "2026-02-07",
+  "rates": {
+    "syrupUSDC": {
+      "apy": 10.5,
+      "source": "Maple Finance",
+      "url": "https://maple.finance"
+    },
+    "syrupUSDT": {
+      "apy": 9.8,
+      "source": "Maple Finance",
+      "url": "https://maple.finance"
+    },
+    "sUSDe": {
+      "apy": 12.0,
+      "source": "Ethena",
+      "url": "https://ethena.fi"
+    },
+    "RLP": {
+      "apy": 15.5,
+      "source": "Radiant Capital",
+      "url": "https://radiant.capital"
+    },
+    "wstUSDR": {
+      "apy": 8.2,
+      "source": "Tangible",
+      "url": "https://tangible.store"
+    },
+    "srusde": {
+      "apy": 13.5,
+      "source": "Restnaked",
+      "url": ""
+    },
+    "jrusde": {
+      "apy": 18.0,
+      "source": "Restnaked",
+      "url": ""
+    },
+    "stcUSD": {
+      "apy": 11.2,
+      "source": "TBD",
+      "url": ""
+    },
+    "wsrUSD": {
+      "apy": 9.5,
+      "source": "TBD",
+      "url": ""
+    }
+  }
+}

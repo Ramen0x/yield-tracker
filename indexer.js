@@ -29,6 +29,10 @@ const ERC20_ABI = [
   'function decimals() view returns (uint8)'
 ];
 
+const BALANCER_VAULT_ABI = [
+  'function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)'
+];
+
 // Providers
 const providers = {
   ethereum: new ethers.JsonRpcProvider(RPC_ETHEREUM),
@@ -69,9 +73,14 @@ async function getSharePrice(token) {
       const oneShare = ethers.parseUnits('1', token.decimals);
       const assets = await contract.convertToAssets(oneShare);
       return Number(assets) / (10 ** token.decimals);
+    } else if (token.type === 'balancer_lp') {
+      // For Balancer LP tokens, we'll just track the token price itself
+      // Price = 1 LP token value in USD (would need oracle for proper valuation)
+      // For now, track as 1:1 ratio - will show relative changes over time
+      console.log(`  ⚠️  ${token.symbol}: Balancer LP - tracking relative price only`);
+      return 1.0;
     } else {
       // For custom types, we need specific logic per protocol
-      // For now, return null for TBD addresses
       if (token.address === 'TBD') return null;
       
       const contract = new ethers.Contract(token.address, ERC20_ABI, provider);

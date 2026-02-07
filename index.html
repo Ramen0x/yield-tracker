@@ -6,28 +6,209 @@
     <title>Yield Token Tracker - Real vs Advertised APY</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+    <style>
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .loading-skeleton {
+            background: linear-gradient(90deg, #1f2937 0%, #374151 50%, #1f2937 100%);
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite;
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .protocol-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transition: transform 0.2s;
+        }
+        
+        .protocol-logo:hover {
+            transform: scale(1.1);
+        }
+        
+        .maple-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .radiant-gradient {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .ethena-gradient {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .tangible-gradient {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        
+        .restnaked-gradient {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        }
+        
+        .delta-positive {
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .delta-negative {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .delta-neutral {
+            color: #6b7280;
+            background: rgba(107, 114, 128, 0.1);
+            border: 1px solid rgba(107, 114, 128, 0.3);
+        }
+        
+        .time-range-button {
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .time-range-button:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+        
+        .time-range-button.active {
+            background: rgba(99, 102, 241, 0.3);
+            border-color: #6366f1;
+            color: #a5b4fc;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+    </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-6 max-w-[1800px]">
         <!-- Header -->
-        <header class="mb-8">
-            <div class="flex items-center justify-between">
+        <header class="mb-8 animate-fade-in">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                    <h1 class="text-3xl font-bold mb-1">Yield Token Tracker</h1>
-                    <p class="text-gray-400 text-sm">Real APY calculated from on-chain price snapshots</p>
+                    <h1 class="text-4xl font-bold mb-2 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                        Yield Token Tracker
+                    </h1>
+                    <p class="text-gray-400 text-sm">Real APY calculated from on-chain price snapshots vs advertised rates</p>
                 </div>
-                <div class="text-right">
-                    <div class="text-xs text-gray-500" id="last-update">Loading...</div>
-                    <div class="text-xs text-gray-600 mt-1">Updates hourly</div>
+                <div class="flex items-center gap-4">
+                    <button 
+                        id="export-all-btn"
+                        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                        onclick="exportAllToCSV()"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Export All Data
+                    </button>
+                    <div class="text-right">
+                        <div class="text-xs text-gray-500" id="last-update">Loading...</div>
+                        <div class="text-xs text-gray-600 mt-1">Updates hourly</div>
+                    </div>
                 </div>
             </div>
         </header>
 
+        <!-- Error Boundary -->
+        <div id="error-container" class="hidden mb-6 p-4 bg-red-900/20 border border-red-700/50 rounded-lg">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+                <div class="flex-1">
+                    <h3 class="text-sm font-medium text-red-400 mb-1">Error Loading Data</h3>
+                    <p class="text-sm text-red-300/80" id="error-message"></p>
+                </div>
+                <button onclick="retryLoad()" class="text-xs text-red-400 hover:text-red-300 underline">Retry</button>
+            </div>
+        </div>
+
         <!-- Loading State -->
-        <div id="loading" class="flex items-center justify-center py-32">
-            <div class="text-center">
-                <div class="text-lg text-gray-400 mb-2">Loading data from Maple Finance...</div>
-                <div class="text-sm text-gray-600">Fetching on-chain prices</div>
+        <div id="loading" class="space-y-6">
+            <div class="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden animate-fade-in">
+                <div class="p-4 border-b border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-lg loading-skeleton"></div>
+                            <div>
+                                <div class="h-5 w-32 loading-skeleton rounded mb-2"></div>
+                                <div class="h-4 w-24 loading-skeleton rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="h-64 loading-skeleton rounded-lg"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden py-32">
+            <div class="text-center max-w-md mx-auto">
+                <svg class="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+                <h3 class="text-xl font-semibold text-gray-400 mb-2">No Data Available</h3>
+                <p class="text-gray-500">Waiting for snapshot data to be collected. Check back soon.</p>
             </div>
         </div>
 
@@ -38,13 +219,95 @@
     </div>
 
     <script>
+        // Error Boundary
+        class ErrorBoundary {
+            static showError(error, context = '') {
+                console.error(`Error in ${context}:`, error);
+                const errorContainer = document.getElementById('error-container');
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = `${context ? context + ': ' : ''}${error.message || error}`;
+                errorContainer.classList.remove('hidden');
+            }
+            
+            static hideError() {
+                document.getElementById('error-container').classList.add('hidden');
+            }
+        }
+
+        // Global state
         let allData = null;
         let charts = {};
+        let timeRanges = {}; // Store selected time range per token
+        let chartModes = {}; // Store chart mode (single/dual-axis) per token
+
+        // Protocol branding
+        const protocolBranding = {
+            'Maple Finance': { 
+                gradient: 'maple-gradient',
+                logo: 'M',
+                color: '#667eea'
+            },
+            'Radiant Capital': { 
+                gradient: 'radiant-gradient',
+                logo: 'R',
+                color: '#f5576c'
+            },
+            'Ethena': { 
+                gradient: 'ethena-gradient',
+                logo: 'E',
+                color: '#4facfe'
+            },
+            'Tangible': { 
+                gradient: 'tangible-gradient',
+                logo: 'T',
+                color: '#fa709a'
+            },
+            'Restnaked': { 
+                gradient: 'restnaked-gradient',
+                logo: 'RN',
+                color: '#30cfd0'
+            }
+        };
+
+        // Advertised APY data (loaded from config file)
+        let advertisedAPY = {};
+
+        async function loadAdvertisedAPY() {
+            try {
+                const response = await fetch('/advertised-apy.json');
+                const data = await response.json();
+                advertisedAPY = Object.entries(data.rates).reduce((acc, [key, value]) => {
+                    acc[key] = value.apy;
+                    return acc;
+                }, {});
+            } catch (error) {
+                console.warn('Could not load advertised APY data:', error);
+                // Fallback values
+                advertisedAPY = {
+                    'syrupUSDC': 10.5,
+                    'syrupUSDT': 9.8,
+                    'sUSDe': 12.0,
+                    'RLP': 15.5,
+                    'wstUSDR': 8.2
+                };
+            }
+        }
 
         async function loadData() {
+            await loadAdvertisedAPY();
             try {
+                ErrorBoundary.hideError();
                 const response = await fetch('/data/snapshots.json');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
                 allData = await response.json();
+                
+                if (!allData || !allData.tokens) {
+                    throw new Error('Invalid data format');
+                }
                 
                 if (allData.lastUpdate) {
                     const date = new Date(allData.lastUpdate);
@@ -55,33 +318,103 @@
                         })} UTC`;
                 }
                 
-                renderTokens();
-                document.getElementById('loading').classList.add('hidden');
-                document.getElementById('content').classList.remove('hidden');
+                const hasData = Object.values(allData.tokens).some(t => t.snapshots && t.snapshots.length > 0);
+                
+                if (!hasData) {
+                    showEmptyState();
+                } else {
+                    renderTokens();
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('content').classList.remove('hidden');
+                }
             } catch (error) {
-                console.error('Failed to load data:', error);
-                document.getElementById('loading').innerHTML = 
-                    '<div class="text-center"><div class="text-red-400">Failed to load data</div></div>';
+                ErrorBoundary.showError(error, 'Loading data');
+                document.getElementById('loading').classList.add('hidden');
             }
+        }
+
+        function showEmptyState() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('empty-state').classList.remove('hidden');
+        }
+
+        function retryLoad() {
+            ErrorBoundary.hideError();
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('content').classList.add('hidden');
+            document.getElementById('empty-state').classList.add('hidden');
+            loadData();
         }
 
         function renderTokens() {
             const container = document.getElementById('content');
             container.innerHTML = '';
 
+            let hasRendered = false;
             for (const [tokenId, tokenData] of Object.entries(allData.tokens)) {
                 if (tokenData.snapshots.length === 0) continue;
                 
-                const section = createTokenSection(tokenId, tokenData);
-                container.appendChild(section);
+                try {
+                    const section = createTokenSection(tokenId, tokenData);
+                    container.appendChild(section);
+                    hasRendered = true;
+                } catch (error) {
+                    ErrorBoundary.showError(error, `Rendering ${tokenId}`);
+                }
+            }
+            
+            if (!hasRendered) {
+                showEmptyState();
             }
         }
 
         function createTokenSection(tokenId, tokenData) {
             const section = document.createElement('div');
-            section.className = 'bg-gray-800 border border-gray-700 rounded-lg overflow-hidden';
+            section.className = 'bg-gray-800 border border-gray-700 rounded-lg overflow-hidden card-hover animate-fade-in';
             
             const latest = tokenData.snapshots[tokenData.snapshots.length - 1];
+            const previous = tokenData.snapshots.length > 1 ? tokenData.snapshots[tokenData.snapshots.length - 2] : null;
+            
+            // Calculate price change %
+            const priceChange = previous ? ((latest.price - previous.price) / previous.price * 100) : 0;
+            const priceChangeClass = priceChange > 0 ? 'text-green-400' : priceChange < 0 ? 'text-red-400' : 'text-gray-400';
+            const priceChangeIcon = priceChange > 0 ? '↑' : priceChange < 0 ? '↓' : '→';
+            
+            // Get protocol branding
+            const branding = protocolBranding[tokenData.protocol] || { 
+                gradient: 'bg-gray-700', 
+                logo: tokenData.protocol.charAt(0),
+                color: '#6b7280'
+            };
+            
+            // Advertised APY comparison
+            const advertised = advertisedAPY[tokenData.symbol];
+            const realized = latest.apr_30d || latest.apr_7d || latest.apr_24h;
+            let deltaHTML = '';
+            
+            if (advertised && realized !== null && realized !== undefined) {
+                const delta = realized - advertised;
+                const deltaClass = delta > 0 ? 'delta-positive' : delta < 0 ? 'delta-negative' : 'delta-neutral';
+                const deltaSign = delta > 0 ? '+' : '';
+                deltaHTML = `
+                    <div class="mt-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-gray-500">Advertised APY</span>
+                            <span class="font-mono text-sm text-indigo-400">${advertised.toFixed(2)}%</span>
+                        </div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-gray-500">Realized APR (30d)</span>
+                            <span class="font-mono text-sm text-gray-300">${realized.toFixed(2)}%</span>
+                        </div>
+                        <div class="pt-2 border-t border-gray-700 flex items-center justify-between">
+                            <span class="text-xs font-medium text-gray-400">Difference</span>
+                            <span class="px-2 py-1 rounded text-xs font-mono font-bold ${deltaClass}">
+                                ${deltaSign}${delta.toFixed(2)}%
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }
             
             // APR metrics
             const ranges = [
@@ -117,7 +450,7 @@
                 }
 
                 return `
-                    <div class="border ${colorClass} rounded p-3">
+                    <div class="border ${colorClass} rounded-lg p-3 transition-all hover:scale-105">
                         <div class="text-xs text-gray-400 mb-1">${r.desc}</div>
                         <div class="text-2xl font-bold font-mono ${textColor}">${display}</div>
                         <div class="text-xs text-gray-500 mt-1">APR</div>
@@ -128,15 +461,21 @@
             section.innerHTML = `
                 <div class="p-4 border-b border-gray-700">
                     <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
+                        <div class="flex items-center gap-3">
+                            <div class="protocol-logo ${branding.gradient}" title="${tokenData.protocol}">
+                                ${branding.logo}
+                            </div>
                             <div>
                                 <h2 class="text-xl font-bold">${tokenData.symbol}</h2>
                                 <p class="text-sm text-gray-400">${tokenData.name}</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <div class="text-xs text-gray-500">${tokenData.protocol}</div>
+                            <div class="text-sm font-medium" style="color: ${branding.color}">${tokenData.protocol}</div>
                             <div class="text-xs text-gray-600">${tokenData.chain}</div>
+                            <div class="text-xs ${priceChangeClass} font-mono mt-1">
+                                ${priceChangeIcon} ${Math.abs(priceChange).toFixed(3)}%
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -144,14 +483,49 @@
                 <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6 p-6">
                     <!-- Chart -->
                     <div>
-                        <div class="mb-4">
-                            <h3 class="text-lg font-semibold mb-1">Share Price History</h3>
-                            <div class="text-sm text-gray-400">
-                                Current: <span class="font-mono text-green-400">${latest.price.toFixed(8)}</span>
-                                <span class="text-gray-600 ml-2">(${tokenData.snapshots.length} snapshots)</span>
+                        <div class="mb-4 flex items-center justify-between flex-wrap gap-4">
+                            <div>
+                                <h3 class="text-lg font-semibold mb-1">Price History</h3>
+                                <div class="text-sm text-gray-400">
+                                    Current: <span class="font-mono text-green-400">${latest.price.toFixed(8)}</span>
+                                    <span class="text-gray-600 ml-2">(${tokenData.snapshots.length} snapshots)</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Time Range Selector -->
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-xs text-gray-500 mr-1">Range:</span>
+                                ${['24h', '7d', '30d', 'all'].map(range => `
+                                    <button 
+                                        class="time-range-button px-3 py-1 text-xs rounded border border-gray-600 ${range === 'all' ? 'active' : ''}"
+                                        onclick="changeTimeRange('${tokenId}', '${range}')"
+                                        data-token="${tokenId}"
+                                        data-range="${range}"
+                                    >
+                                        ${range}
+                                    </button>
+                                `).join('')}
                             </div>
                         </div>
-                        <div class="bg-gray-900 rounded-lg p-4" style="height: 400px;">
+                        
+                        <!-- Chart Mode Toggle -->
+                        <div class="mb-3 flex items-center gap-3">
+                            <button 
+                                class="text-xs px-3 py-1 rounded border border-gray-600 hover:bg-gray-700 transition"
+                                onclick="toggleChartMode('${tokenId}')"
+                                id="chart-mode-${tokenId}"
+                            >
+                                Toggle Dual-Axis (Price + APR)
+                            </button>
+                            <button 
+                                class="text-xs px-3 py-1 rounded border border-gray-600 hover:bg-gray-700 transition"
+                                onclick="exportTokenToCSV('${tokenId}')"
+                            >
+                                Export CSV
+                            </button>
+                        </div>
+                        
+                        <div class="bg-gray-900 rounded-lg p-4" style="height: 400px;" id="chart-loading-${tokenId}">
                             <canvas id="chart-${tokenId}"></canvas>
                         </div>
                     </div>
@@ -162,6 +536,9 @@
                         <div class="space-y-3">
                             ${aprMetrics}
                         </div>
+                        
+                        ${deltaHTML}
+                        
                         <div class="mt-6 p-4 bg-gray-900 rounded-lg border border-gray-700">
                             <div class="text-xs text-gray-400 mb-2">About APR Calculation</div>
                             <div class="text-xs text-gray-500 leading-relaxed">
@@ -173,12 +550,56 @@
                 </div>
             `;
 
+            // Initialize time range and chart mode
+            timeRanges[tokenId] = 'all';
+            chartModes[tokenId] = 'single';
+
             // Create chart after DOM insertion
             setTimeout(() => {
-                createChart(tokenId, tokenData);
+                try {
+                    createChart(tokenId, tokenData);
+                } catch (error) {
+                    ErrorBoundary.showError(error, `Creating chart for ${tokenId}`);
+                }
             }, 0);
 
             return section;
+        }
+
+        function changeTimeRange(tokenId, range) {
+            timeRanges[tokenId] = range;
+            
+            // Update button states
+            const buttons = document.querySelectorAll(`[data-token="${tokenId}"][data-range]`);
+            buttons.forEach(btn => {
+                if (btn.dataset.range === range) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Recreate chart
+            createChart(tokenId, allData.tokens[tokenId]);
+        }
+
+        function toggleChartMode(tokenId) {
+            chartModes[tokenId] = chartModes[tokenId] === 'single' ? 'dual' : 'single';
+            createChart(tokenId, allData.tokens[tokenId]);
+        }
+
+        function filterSnapshotsByTimeRange(snapshots, range) {
+            if (range === 'all') return snapshots;
+            
+            const now = Date.now();
+            const ranges = {
+                '24h': 24 * 60 * 60 * 1000,
+                '7d': 7 * 24 * 60 * 60 * 1000,
+                '30d': 30 * 24 * 60 * 60 * 1000
+            };
+            
+            const cutoff = now - ranges[range];
+            return snapshots.filter(s => s.timestamp >= cutoff);
         }
 
         function createChart(tokenId, tokenData) {
@@ -192,39 +613,135 @@
                 charts[tokenId].destroy();
             }
 
-            const labels = tokenData.snapshots.map(s => 
-                new Date(s.timestamp).toLocaleString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                })
-            );
-            const prices = tokenData.snapshots.map(s => s.price);
+            const range = timeRanges[tokenId] || 'all';
+            const mode = chartModes[tokenId] || 'single';
+            const filteredSnapshots = filterSnapshotsByTimeRange(tokenData.snapshots, range);
+            
+            if (filteredSnapshots.length === 0) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#9ca3af';
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data for selected time range', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            const labels = filteredSnapshots.map(s => new Date(s.timestamp));
+            const prices = filteredSnapshots.map(s => s.price);
+            const apr30d = filteredSnapshots.map(s => s.apr_30d);
 
             // Calculate price range for better y-axis scaling
             const minPrice = Math.min(...prices);
             const maxPrice = Math.max(...prices);
             const padding = (maxPrice - minPrice) * 0.1 || 0.0001;
 
+            const datasets = [{
+                label: 'Share Price',
+                data: prices,
+                borderColor: 'rgb(99, 102, 241)',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true,
+                pointRadius: 2,
+                pointHoverRadius: 6,
+                pointBackgroundColor: 'rgb(99, 102, 241)',
+                pointBorderColor: '#1f2937',
+                pointBorderWidth: 2,
+                yAxisID: 'y'
+            }];
+
+            const scales = {
+                y: {
+                    type: 'linear',
+                    position: 'left',
+                    min: minPrice - padding,
+                    max: maxPrice + padding,
+                    grid: {
+                        color: 'rgba(75, 85, 99, 0.3)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#9ca3af',
+                        font: { family: 'monospace' },
+                        callback: function(value) {
+                            return value.toFixed(8);
+                        }
+                    },
+                    title: {
+                        display: mode === 'dual',
+                        text: 'Price',
+                        color: '#9ca3af'
+                    }
+                },
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: range === '24h' ? 'hour' : range === '7d' ? 'day' : 'day'
+                    },
+                    grid: {
+                        color: 'rgba(75, 85, 99, 0.2)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#6b7280',
+                        font: { size: 10 }
+                    }
+                }
+            };
+
+            // Add dual-axis for APR if mode is dual
+            if (mode === 'dual' && apr30d.some(v => v !== null && v !== undefined)) {
+                const validAPRs = apr30d.filter(v => v !== null && v !== undefined);
+                const minAPR = Math.min(...validAPRs);
+                const maxAPR = Math.max(...validAPRs);
+                const aprPadding = (maxAPR - minAPR) * 0.1 || 1;
+                
+                datasets.push({
+                    label: '30d APR',
+                    data: apr30d,
+                    borderColor: 'rgb(249, 115, 22)',
+                    backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    tension: 0.4,
+                    fill: false,
+                    pointRadius: 2,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: 'rgb(249, 115, 22)',
+                    pointBorderColor: '#1f2937',
+                    pointBorderWidth: 2,
+                    yAxisID: 'y1',
+                    spanGaps: true
+                });
+                
+                scales.y1 = {
+                    type: 'linear',
+                    position: 'right',
+                    min: minAPR - aprPadding,
+                    max: maxAPR + aprPadding,
+                    grid: {
+                        drawOnChartArea: false
+                    },
+                    ticks: {
+                        color: '#fb923c',
+                        callback: function(value) {
+                            return value.toFixed(2) + '%';
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'APR (%)',
+                        color: '#fb923c'
+                    }
+                };
+            }
+
             charts[tokenId] = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels,
-                    datasets: [{
-                        label: 'Share Price',
-                        data: prices,
-                        borderColor: 'rgb(34, 197, 94)',
-                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true,
-                        pointRadius: 3,
-                        pointHoverRadius: 6,
-                        pointBackgroundColor: 'rgb(34, 197, 94)',
-                        pointBorderColor: '#1f2937',
-                        pointBorderWidth: 2
-                    }]
+                    datasets
                 },
                 options: {
                     responsive: true,
@@ -235,7 +752,13 @@
                     },
                     plugins: {
                         legend: {
-                            display: false
+                            display: mode === 'dual',
+                            position: 'top',
+                            labels: {
+                                color: '#9ca3af',
+                                usePointStyle: true,
+                                padding: 15
+                            }
                         },
                         tooltip: {
                             backgroundColor: 'rgba(17, 24, 39, 0.95)',
@@ -244,16 +767,26 @@
                             borderColor: '#374151',
                             borderWidth: 1,
                             padding: 12,
-                            displayColors: false,
+                            displayColors: true,
                             callbacks: {
                                 title: function(items) {
-                                    return items[0].label;
+                                    return new Date(items[0].parsed.x).toLocaleString('en-US', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        timeZone: 'UTC'
+                                    }) + ' UTC';
                                 },
                                 label: function(context) {
-                                    return `Price: ${context.parsed.y.toFixed(8)}`;
+                                    if (context.dataset.label === 'Share Price') {
+                                        return `Price: ${context.parsed.y.toFixed(8)}`;
+                                    } else if (context.dataset.label === '30d APR') {
+                                        return context.parsed.y !== null ? `30d APR: ${context.parsed.y.toFixed(2)}%` : null;
+                                    }
                                 },
                                 afterLabel: function(context) {
-                                    const snap = tokenData.snapshots[context.dataIndex];
+                                    const snap = filteredSnapshots[context.dataIndex];
                                     const lines = [];
                                     const ranges = ['6h', '12h', '24h', '3d', '7d', '14d', '30d'];
                                     ranges.forEach(r => {
@@ -262,42 +795,62 @@
                                             lines.push(`${r} APR: ${snap[key].toFixed(2)}%`);
                                         }
                                     });
-                                    return lines.length > 0 ? ['\n', ...lines] : [];
+                                    return lines.length > 0 && context.dataset.label === 'Share Price' ? ['\n', ...lines] : [];
                                 }
                             }
                         }
                     },
-                    scales: {
-                        y: {
-                            min: minPrice - padding,
-                            max: maxPrice + padding,
-                            grid: {
-                                color: 'rgba(75, 85, 99, 0.3)',
-                                drawBorder: false
-                            },
-                            ticks: {
-                                color: '#9ca3af',
-                                font: { family: 'monospace' },
-                                callback: function(value) {
-                                    return value.toFixed(8);
-                                }
-                            }
-                        },
-                        x: {
-                            grid: {
-                                color: 'rgba(75, 85, 99, 0.2)',
-                                drawBorder: false
-                            },
-                            ticks: {
-                                color: '#6b7280',
-                                maxRotation: 45,
-                                minRotation: 45,
-                                font: { size: 10 }
-                            }
-                        }
-                    }
+                    scales
                 }
             });
+        }
+
+        function exportTokenToCSV(tokenId) {
+            const tokenData = allData.tokens[tokenId];
+            if (!tokenData) return;
+            
+            let csv = 'Timestamp,Price,6h APR,12h APR,24h APR,3d APR,7d APR,14d APR,30d APR\n';
+            
+            tokenData.snapshots.forEach(snap => {
+                const timestamp = new Date(snap.timestamp).toISOString();
+                csv += `${timestamp},${snap.price},`;
+                csv += `${snap.apr_6h || ''},${snap.apr_12h || ''},${snap.apr_24h || ''},`;
+                csv += `${snap.apr_3d || ''},${snap.apr_7d || ''},${snap.apr_14d || ''},${snap.apr_30d || ''}\n`;
+            });
+            
+            downloadCSV(csv, `${tokenData.symbol}-yield-data.csv`);
+        }
+
+        function exportAllToCSV() {
+            if (!allData) return;
+            
+            let csv = 'Token,Symbol,Protocol,Chain,Timestamp,Price,6h APR,12h APR,24h APR,3d APR,7d APR,14d APR,30d APR,Advertised APY,Delta\n';
+            
+            for (const [tokenId, tokenData] of Object.entries(allData.tokens)) {
+                const advertised = advertisedAPY[tokenData.symbol] || '';
+                tokenData.snapshots.forEach(snap => {
+                    const timestamp = new Date(snap.timestamp).toISOString();
+                    const delta = advertised && snap.apr_30d !== null ? (snap.apr_30d - advertised).toFixed(2) : '';
+                    csv += `${tokenData.name},${tokenData.symbol},${tokenData.protocol},${tokenData.chain},${timestamp},${snap.price},`;
+                    csv += `${snap.apr_6h || ''},${snap.apr_12h || ''},${snap.apr_24h || ''},`;
+                    csv += `${snap.apr_3d || ''},${snap.apr_7d || ''},${snap.apr_14d || ''},${snap.apr_30d || ''},`;
+                    csv += `${advertised},${delta}\n`;
+                });
+            }
+            
+            downloadCSV(csv, `all-yield-data-${Date.now()}.csv`);
+        }
+
+        function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
         }
 
         // Load data on page load
@@ -305,6 +858,15 @@
 
         // Auto-refresh every 5 minutes
         setInterval(loadData, 5 * 60 * 1000);
+        
+        // Global error handler
+        window.addEventListener('error', (event) => {
+            ErrorBoundary.showError(event.error || event.message, 'Global error');
+        });
+        
+        window.addEventListener('unhandledrejection', (event) => {
+            ErrorBoundary.showError(event.reason, 'Unhandled promise rejection');
+        });
     </script>
 </body>
 </html>

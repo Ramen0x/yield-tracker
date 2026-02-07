@@ -8,34 +8,52 @@
 
 Advertised APYs can be misleading. This tracker calculates **realized APR** from actual share price changes, not protocol estimates.
 
-## Features
+## ✨ Features
 
-✅ **Hourly on-chain snapshots** - Direct price queries via ethers.js  
-📊 **Time series charts** - Visualize share price trends over time  
-⏱️ **7 time ranges** - APR calculated for 6h, 12h, 24h, 3d, 7d, 14d, 30d  
-🎨 **Clean design** - Professional dashboard matching Syrup style  
-📥 **CSV export** - Download historical data for analysis  
-🤖 **Fully automated** - GitHub Actions + Vercel auto-deploy
+### Core Tracking
+- ⏰ **Hourly on-chain snapshots** - Direct price queries via ethers.js
+- 📊 **7 time ranges** - APR calculated for 6h, 12h, 24h, 3d, 7d, 14d, 30d
+- 📈 **Historical charts** - Visualize share price trends over time
+- 🎯 **Advertised vs Realized** - Compare protocol claims against actual performance
 
-## Tracked Tokens
+### Dashboard Enhancements
+- 🎨 **Protocol branding** - Custom logos and gradients for each protocol
+- 📉 **Dual-axis charts** - Price + APR on same chart with independent scales
+- ⏱️ **Time range selector** - Filter charts by 24h, 7d, 30d, or all data
+- 💹 **Price change indicators** - Real-time % change with directional arrows
+- 📊 **Delta metrics** - Shows over/under performance vs advertised rates
 
-- **syrupUSDC** (Maple Finance)
-- **syrupUSDT** (Maple Finance)
-- **sUSDe** (Ethena) - pending
-- **wstUSDR** (Tangible) - pending
-- **RLP** (Radiant) - pending
-- More coming...
+### Data Export
+- 📥 **Export All Data** - Single-click CSV export of all tokens
+- 📁 **Per-token export** - Individual CSV files with full history
+- 📋 **Rich data format** - Includes all APR timeframes, advertised rates, deltas
 
-## Features
+### Code Quality
+- 🛡️ **Error boundaries** - Graceful error handling throughout
+- ⚡ **Loading states** - Skeleton screens and smooth transitions
+- 📦 **Empty state handling** - Clear messaging when no data available
+- 🚀 **Performance optimized** - Efficient rendering and chart updates
 
-- ⏰ Hourly price snapshots
-- 📊 Realized APR (24h, 7d, 30d)
-- 📈 Historical charts
-- 📥 CSV export
-- 🔍 Compare advertised vs actual
+## 🎯 Tracked Tokens
 
-## Usage
+| Token | Protocol | Chain | Status |
+|-------|----------|-------|--------|
+| syrupUSDC | Maple Finance | Ethereum | ✅ Active |
+| syrupUSDT | Maple Finance | Ethereum | ✅ Active |
+| sUSDe | Ethena | Ethereum | 🔄 Pending |
+| wstUSDR | Tangible | Ethereum | 🔄 Pending |
+| RLP | Radiant Capital | Arbitrum | 🔄 Pending |
+| srusde | Restnaked | Ethereum | 🔄 Pending |
+| jrusde | Restnaked | Ethereum | 🔄 Pending |
 
+## 🚀 Quick Start
+
+### Installation
+```bash
+npm install
+```
+
+### Indexer Commands
 ```bash
 # Take a snapshot
 node indexer.js snapshot
@@ -47,10 +65,167 @@ node indexer.js query syrupUSDC 24
 node indexer.js export syrupUSDC
 ```
 
-## Automated Tracking
+### Local Development
+```bash
+# Serve locally
+npx http-server -p 3000
 
-GitHub Actions runs hourly snapshots automatically. No manual intervention needed.
+# Open browser
+open http://localhost:3000
+```
 
-## Data
+## 📊 Dashboard Features
 
-All snapshots stored in `data/snapshots.json` with full history (90 days rolling).
+### Time Range Filtering
+Click the time range buttons (24h, 7d, 30d, all) to filter chart data. Perfect for analyzing:
+- Short-term volatility (24h)
+- Weekly trends (7d)
+- Monthly performance (30d)
+- Historical overview (all)
+
+### Dual-Axis Charts
+Toggle between single-axis (price only) and dual-axis (price + APR) modes:
+- **Single**: Focus on price movements
+- **Dual**: Correlate price changes with APR trends
+
+### Advertised APY Comparison
+Each token card shows:
+- Advertised APY (from protocol)
+- Realized APR (from on-chain data)
+- Delta (difference between advertised and realized)
+
+Color-coded deltas:
+- 🟢 Green: Realized > Advertised
+- 🔴 Red: Realized < Advertised
+- ⚪ Gray: Neutral
+
+### CSV Export
+Export options:
+1. **Export All Data** - Top-right button exports all tokens
+2. **Per-token Export** - Button on each token card
+
+CSV includes:
+- Timestamps (ISO format)
+- Prices at each snapshot
+- All APR timeframes (6h, 12h, 24h, 3d, 7d, 14d, 30d)
+- Advertised APY
+- Delta (realized - advertised)
+
+## 🔧 Configuration
+
+### Advertised APY Rates
+Edit `advertised-apy.json` to update protocol-advertised rates:
+
+```json
+{
+  "rates": {
+    "syrupUSDC": {
+      "apy": 10.5,
+      "source": "Maple Finance",
+      "url": "https://maple.finance"
+    }
+  }
+}
+```
+
+### Adding New Tokens
+1. Add token to `tokens.json`
+2. Add advertised rate to `advertised-apy.json`
+3. Update indexer to support new token type if needed
+
+## 🤖 Automation
+
+### GitHub Actions
+Hourly snapshots run automatically via `.github/workflows/indexer.yml`:
+- Fetches latest prices
+- Calculates APR across all timeframes
+- Commits updated data
+- Triggers Vercel deployment
+
+### Vercel Deployment
+Dashboard auto-deploys on every push to main branch.
+
+## 📁 Project Structure
+
+```
+yield-tracker/
+├── index.html              # Dashboard UI
+├── indexer.js             # Snapshot indexer
+├── tokens.json            # Token configuration
+├── advertised-apy.json    # Advertised APY rates
+├── data/
+│   └── snapshots.json     # Historical snapshot data
+├── .github/
+│   └── workflows/
+│       └── indexer.yml    # Hourly automation
+└── README.md
+```
+
+## 🎨 Design
+
+### Color Scheme
+- Base: Dark mode (gray-900/800)
+- Accents: Indigo/purple gradients
+- Positive values: Green
+- Negative values: Red
+- Protocol-specific gradients for branding
+
+### Responsive Design
+- Mobile: Single column layout
+- Tablet: 2-column APR metrics
+- Desktop: Side-by-side chart + metrics
+- Max width: 1800px
+
+## 📊 Data Flow
+
+1. **Indexer** queries on-chain prices hourly
+2. **Snapshots** saved to `data/snapshots.json`
+3. **APR calculated** for all timeframes
+4. **GitHub commits** trigger Vercel deployment
+5. **Dashboard** auto-refreshes every 5 minutes
+
+## 🔍 Technical Details
+
+### APR Calculation
+```
+APR = ((price_now / price_then) - 1) * (365 * 24 / hours_elapsed) * 100
+```
+
+### Supported Token Types
+- **ERC-4626**: Standard vault tokens (e.g., Maple Syrup)
+- **Custom**: Protocol-specific implementations (future support)
+
+### Browser Support
+- Chrome/Edge: Full support
+- Firefox: Full support
+- Safari: Full support
+- Mobile browsers: Optimized
+
+## 📈 Roadmap
+
+- [ ] More tokens (Ethena sUSDe, Radiant RLP, etc.)
+- [ ] Historical APR trend analysis
+- [ ] Alert system for APR deviations
+- [ ] TVL tracking
+- [ ] Multiple chain support
+- [ ] API endpoint for data access
+
+## 🤝 Contributing
+
+Contributions welcome! Please:
+1. Fork the repo
+2. Create a feature branch
+3. Submit a PR with clear description
+
+## 📄 License
+
+MIT
+
+## 🙏 Credits
+
+Built for accurate, transparent DeFi yield tracking.
+
+---
+
+**Dashboard:** https://yield-tracker.vercel.app  
+**Repo:** https://github.com/Ramen0x/yield-tracker

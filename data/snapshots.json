@@ -1,5 +1,5 @@
 {
-  "lastUpdate": 1770445927417,
+  "lastUpdate": 1770446304350,
   "tokens": {
     "syrupUSDC": {
       "symbol": "syrupUSDC",
@@ -16,6 +16,28 @@
         },
         {
           "timestamp": 1770445927417,
+          "price": 1.15052,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null
+        },
+        {
+          "timestamp": 1770446107021,
+          "price": 1.15052,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null
+        },
+        {
+          "timestamp": 1770446304350,
           "price": 1.15052,
           "apr_6h": null,
           "apr_12h": null,
@@ -50,6 +72,99 @@
           "apr_7d": null,
           "apr_14d": null,
           "apr_30d": null
+        },
+        {
+          "timestamp": 1770446107021,
+          "price": 1.115132,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null
+        },
+        {
+          "timestamp": 1770446304350,
+          "price": 1.115132,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null
+        }
+      ]
+    },
+    "sUSDe": {
+      "symbol": "sUSDe",
+      "name": "Staked USDe",
+      "chain": "ethereum",
+      "protocol": "Ethena",
+      "snapshots": [
+        {
+          "timestamp": 1770446107021,
+          "price": 1.219589002412897
+        },
+        {
+          "timestamp": 1770446304350,
+          "price": 1.2195892602503298,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null
+        }
+      ]
+    },
+    "srusde": {
+      "symbol": "srUSDe",
+      "name": "Strata Senior USDe",
+      "chain": "ethereum",
+      "protocol": "Strata",
+      "snapshots": [
+        {
+          "timestamp": 1770446304350,
+          "price": 1.0129847715812712
+        }
+      ]
+    },
+    "jrusde": {
+      "symbol": "jrUSDe",
+      "name": "Strata Junior USDe",
+      "chain": "ethereum",
+      "protocol": "Strata",
+      "snapshots": [
+        {
+          "timestamp": 1770446304350,
+          "price": 1.031649297694947
+        }
+      ]
+    },
+    "stcUSD": {
+      "symbol": "stcUSD",
+      "name": "Staked Cap USD",
+      "chain": "ethereum",
+      "protocol": "Cap Finance",
+      "snapshots": [
+        {
+          "timestamp": 1770446304350,
+          "price": 1.0480080449375029
+        }
+      ]
+    },
+    "wsrUSD": {
+      "symbol": "wsrUSD",
+      "name": "Wrapped Savings rUSD",
+      "chain": "ethereum",
+      "protocol": "Reservoir",
+      "snapshots": [
+        {
+          "timestamp": 1770446304350,
+          "price": 1.0665223280841307
         }
       ]
     }
