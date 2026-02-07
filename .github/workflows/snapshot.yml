@@ -1,0 +1,46 @@
+name: Hourly Snapshot
+
+on:
+  schedule:
+    - cron: '15 * * * *'  # Every hour at :15
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Take snapshot
+        env:
+          ETH_RPC_URL: ${{ secrets.ETH_RPC_URL || 'https://eth.llamarpc.com' }}
+          ARB_RPC_URL: ${{ secrets.ARB_RPC_URL || 'https://arb1.arbitrum.io/rpc' }}
+        run: node indexer.js snapshot
+      
+      - name: Commit and push
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add data/snapshots.json
+          git diff --staged --quiet || git commit -m "Auto-snapshot [$(date -u '+%Y-%m-%d %H:%M UTC')]"
+          git pull --rebase
+          git push
+      
+      - name: Trigger Vercel deployment
+        if: env.VERCEL_DEPLOY_HOOK != ''
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          echo "Triggering Vercel deployment..."
+          curl -X POST "$VERCEL_DEPLOY_HOOK" || echo "Deploy hook failed (non-fatal)"

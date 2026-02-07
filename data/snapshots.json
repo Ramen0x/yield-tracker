@@ -1,0 +1,35 @@
+{
+  "lastUpdate": 1770445692841,
+  "tokens": {
+    "syrupUSDC": {
+      "symbol": "syrupUSDC",
+      "name": "Syrup USDC",
+      "chain": "ethereum",
+      "protocol": "Maple Finance",
+      "snapshots": [
+        {
+          "timestamp": 1770445692841,
+          "price": 1.150519,
+          "apr24h": null,
+          "apr7d": null,
+          "apr30d": null
+        }
+      ]
+    },
+    "syrupUSDT": {
+      "symbol": "syrupUSDT",
+      "name": "Syrup USDT",
+      "chain": "ethereum",
+      "protocol": "Maple Finance",
+      "snapshots": [
+        {
+          "timestamp": 1770445692841,
+          "price": 1.115132,
+          "apr24h": null,
+          "apr7d": null,
+          "apr30d": null
+        }
+      ]
+    }
+  }
+}
