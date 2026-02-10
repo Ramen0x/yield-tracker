@@ -118,7 +118,7 @@ async function calculateAPR(tokenId, currentPrice, snapshots) {
   const oldestSnap = snaps[0];
   const oldestHoursAgo = (now - oldestSnap.timestamp) / (60 * 60 * 1000);
 
-  function findSnapshot(hoursAgo) {
+  function findSnapshotWithAge(hoursAgo) {
     const targetTime = now - (hoursAgo * 60 * 60 * 1000);
     // Find the closest snapshot before or at target time
     let closest = null;
@@ -129,11 +129,15 @@ async function calculateAPR(tokenId, currentPrice, snapshots) {
         }
       }
     }
-    return closest;
+    if (closest) {
+      const actualHours = (now - closest.timestamp) / (60 * 60 * 1000);
+      return { snap: closest, actualHours };
+    }
+    return null;
   }
 
   function calcAPR(oldPrice, hours) {
-    if (!oldPrice) return null;
+    if (!oldPrice || hours < 0.1) return null;
     const change = (currentPrice - oldPrice) / oldPrice;
     const annualized = change * (365 * 24 / hours);
     return annualized * 100; // as percentage
@@ -141,9 +145,10 @@ async function calculateAPR(tokenId, currentPrice, snapshots) {
 
   const aprs = {};
   for (const [label, hours] of Object.entries(timeRanges)) {
-    const snap = findSnapshot(hours);
-    if (snap) {
-      aprs[`apr_${label}`] = calcAPR(snap.price, hours);
+    const result = findSnapshotWithAge(hours);
+    if (result) {
+      // Use ACTUAL time difference, not target hours
+      aprs[`apr_${label}`] = calcAPR(result.snap.price, result.actualHours);
     } else if (oldestHoursAgo >= 0.5) {
       // Extrapolate from oldest available data (need at least 30 min of data)
       aprs[`apr_${label}`] = calcAPR(oldestSnap.price, oldestHoursAgo);
