@@ -416,7 +416,7 @@
                 `;
             }
             
-            // APR metrics - compact layout
+            // APR metrics - panel layout
             const ranges = [
                 { key: 'apr_1h', label: '1h' },
                 { key: 'apr_6h', label: '6h' },
@@ -431,26 +431,30 @@
             const aprMetrics = ranges.map(r => {
                 const value = latest[r.key];
                 const isExtrapolated = latest[r.key + '_extrapolated'];
-                let display, textColor;
+                let display, bgColor, textColor;
                 
                 if (value != null) {
                     display = value.toFixed(1) + '%';
                     if (value > 0) {
+                        bgColor = 'bg-green-900/40 border-green-700/50';
                         textColor = 'text-green-400';
                     } else if (value < 0) {
+                        bgColor = 'bg-red-900/40 border-red-700/50';
                         textColor = 'text-red-400';
                     } else {
+                        bgColor = 'bg-gray-800 border-gray-600';
                         textColor = 'text-gray-400';
                     }
                 } else {
                     display = '-';
+                    bgColor = 'bg-gray-800 border-gray-600';
                     textColor = 'text-gray-500';
                 }
 
                 return `
-                    <div class="text-center px-2 py-1">
-                        <div class="text-xs text-gray-500">${r.label}</div>
-                        <div class="text-sm font-bold font-mono ${textColor}${isExtrapolated ? ' opacity-70' : ''}">${display}</div>
+                    <div class="flex-1 min-w-[60px] border ${bgColor} rounded-lg p-2 text-center${isExtrapolated ? ' opacity-70' : ''}">
+                        <div class="text-[10px] text-gray-500 uppercase">${r.label}</div>
+                        <div class="text-lg font-bold font-mono ${textColor}">${display}</div>
                     </div>
                 `;
             }).join('');
@@ -494,7 +498,7 @@
                                 <span class="text-xs text-gray-500 mr-1">Range:</span>
                                 ${['24h', '7d', '30d', 'all'].map(range => `
                                     <button 
-                                        class="time-range-button px-3 py-1 text-xs rounded border border-gray-600 ${range === 'all' ? 'active' : ''}"
+                                        class="time-range-button px-3 py-1 text-xs rounded border border-gray-600 ${range === '24h' ? 'active' : ''}"
                                         onclick="changeTimeRange('${tokenId}', '${range}')"
                                         data-token="${tokenId}"
                                         data-range="${range}"
@@ -527,22 +531,21 @@
                         </div>
                     </div>
 
-                    <!-- APR Metrics - Compact -->
-                    <div>
+                    <!-- APR Metrics - Panels -->
+                    <div class="flex flex-col h-full">
                         <div class="flex items-center justify-between mb-2">
                             <h3 class="text-sm font-semibold text-gray-400">Realized APR</h3>
-                            ${latest.data_hours ? `<span class="text-xs text-gray-500">${latest.data_hours.toFixed(0)}h data</span>` : ''}
+                            ${latest.data_hours ? `<span class="text-xs text-gray-500">${latest.data_hours.toFixed(0)}h of data</span>` : ''}
                         </div>
-                        <div class="flex flex-wrap bg-gray-800/50 rounded-lg py-1">
+                        <div class="flex flex-wrap gap-1.5 flex-1">
                             ${aprMetrics}
                         </div>
-                        ${deltaHTML}
                     </div>
                 </div>
             `;
 
             // Initialize time range and chart mode
-            timeRanges[tokenId] = 'all';
+            timeRanges[tokenId] = '24h';
             chartModes[tokenId] = 'single';
 
             // Create chart after DOM insertion
