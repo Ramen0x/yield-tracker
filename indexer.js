@@ -114,6 +114,10 @@ async function calculateAPR(tokenId, currentPrice, snapshots) {
     '30d': 720
   };
 
+  // Get oldest snapshot for extrapolation
+  const oldestSnap = snaps[0];
+  const oldestHoursAgo = (now - oldestSnap.timestamp) / (60 * 60 * 1000);
+
   function findSnapshot(hoursAgo) {
     const targetTime = now - (hoursAgo * 60 * 60 * 1000);
     // Find the closest snapshot before or at target time
@@ -138,8 +142,19 @@ async function calculateAPR(tokenId, currentPrice, snapshots) {
   const aprs = {};
   for (const [label, hours] of Object.entries(timeRanges)) {
     const snap = findSnapshot(hours);
-    aprs[`apr_${label}`] = snap ? calcAPR(snap.price, hours) : null;
+    if (snap) {
+      aprs[`apr_${label}`] = calcAPR(snap.price, hours);
+    } else if (oldestHoursAgo >= 0.5) {
+      // Extrapolate from oldest available data (need at least 30 min of data)
+      aprs[`apr_${label}`] = calcAPR(oldestSnap.price, oldestHoursAgo);
+      aprs[`apr_${label}_extrapolated`] = true;
+    } else {
+      aprs[`apr_${label}`] = null;
+    }
   }
+
+  // Add actual data age for transparency
+  aprs['data_hours'] = Math.round(oldestHoursAgo * 10) / 10;
 
   return aprs;
 }
