@@ -46,43 +46,9 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
-        .protocol-logo {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            transition: transform 0.2s;
-        }
 
-        .protocol-logo:hover {
-            transform: scale(1.1);
-        }
 
-        .maple-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
 
-        .radiant-gradient {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        }
-
-        .ethena-gradient {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-
-        .tangible-gradient {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-        }
-
-        .restnaked-gradient {
-            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
-        }
 
         .delta-positive {
             color: #10b981;
@@ -242,31 +208,15 @@
 
         // Protocol branding
         const protocolBranding = {
-            'Maple Finance': {
-                gradient: 'maple-gradient',
-                logo: 'M',
-                color: '#667eea'
-            },
-            'Radiant Capital': {
-                gradient: 'radiant-gradient',
-                logo: 'R',
-                color: '#f5576c'
-            },
-            'Ethena': {
-                gradient: 'ethena-gradient',
-                logo: 'E',
-                color: '#4facfe'
-            },
-            'Tangible': {
-                gradient: 'tangible-gradient',
-                logo: 'T',
-                color: '#fa709a'
-            },
-            'Restnaked': {
-                gradient: 'restnaked-gradient',
-                logo: 'RN',
-                color: '#30cfd0'
-            }
+            'Maple Finance': { color: '#667eea' },
+            'Radiant Capital': { color: '#f5576c' },
+            'Ethena': { color: '#4facfe' },
+            'Tangible': { color: '#fa709a' },
+            'Strata': { color: '#30cfd0' },
+            'Cap Finance': { color: '#22c55e' },
+            'Reservoir': { color: '#3b82f6' },
+            'Resolv': { color: '#8b5cf6' },
+            'Avant': { color: '#f59e0b' }
         };
 
         // Advertised APY data (loaded from config file)
@@ -382,11 +332,7 @@
             const priceChangeIcon = priceChange > 0 ? '↑' : priceChange < 0 ? '↓' : '→';
 
             // Get protocol branding
-            const branding = protocolBranding[tokenData.protocol] || {
-                gradient: 'bg-gray-700',
-                logo: tokenData.protocol.charAt(0),
-                color: '#6b7280'
-            };
+            const branding = protocolBranding[tokenData.protocol] || { color: '#6b7280' };
 
             // Advertised APY comparison
             const advertised = advertisedAPY[tokenData.symbol];
@@ -439,14 +385,9 @@
             section.innerHTML = `
                 <div class="p-4 border-b border-gray-700">
                     <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="protocol-logo ${branding.gradient}" title="${tokenData.protocol}">
-                                ${branding.logo}
-                            </div>
-                            <div>
-                                <h2 class="text-xl font-bold">${tokenData.symbol}</h2>
-                                <p class="text-sm text-gray-400">${tokenData.name}</p>
-                            </div>
+                        <div>
+                            <h2 class="text-xl font-bold">${tokenData.symbol}</h2>
+                            <p class="text-sm text-gray-400">${tokenData.name}</p>
                         </div>
                         <div class="text-right">
                             <div class="text-sm font-medium" style="color: ${branding.color}">${tokenData.protocol}</div>
