@@ -1,5 +1,5 @@
 {
-  "lastUpdate": 1770744001915,
+  "lastUpdate": 1770744018714,
   "tokens": {
     "syrupUSDC": {
       "symbol": "syrupUSDC",
@@ -13,6 +13,19 @@
         },
         {
           "timestamp": 1770744001915,
+          "price": 1.151016,
+          "apr_1h": null,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 0.1
+        },
+        {
+          "timestamp": 1770744018714,
           "price": 1.151016,
           "apr_1h": null,
           "apr_6h": null,
@@ -48,6 +61,19 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 0.1
+        },
+        {
+          "timestamp": 1770744018714,
+          "price": 1.115547,
+          "apr_1h": null,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 0.1
         }
       ]
     },
@@ -64,6 +90,19 @@
         {
           "timestamp": 1770744001915,
           "price": 1.2199902441942896,
+          "apr_1h": null,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 0.1
+        },
+        {
+          "timestamp": 1770744018714,
+          "price": 1.2199902765031667,
           "apr_1h": null,
           "apr_6h": null,
           "apr_12h": null,
@@ -98,6 +137,19 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 0.1
+        },
+        {
+          "timestamp": 1770744018714,
+          "price": 1.0132353710825608,
+          "apr_1h": null,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 0.1
         }
       ]
     },
@@ -114,6 +166,19 @@
         {
           "timestamp": 1770744001915,
           "price": 1.0324246658522966,
+          "apr_1h": null,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 0.1
+        },
+        {
+          "timestamp": 1770744018714,
+          "price": 1.0324247241286146,
           "apr_1h": null,
           "apr_6h": null,
           "apr_12h": null,
@@ -148,6 +213,19 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 0.1
+        },
+        {
+          "timestamp": 1770744018714,
+          "price": 1.0483394695098407,
+          "apr_1h": null,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 0.1
         }
       ]
     },
@@ -164,6 +242,19 @@
         {
           "timestamp": 1770744001915,
           "price": 1.0670614825150029,
+          "apr_1h": null,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 0.1
+        },
+        {
+          "timestamp": 1770744018714,
+          "price": 1.0670615259939158,
           "apr_1h": null,
           "apr_6h": null,
           "apr_12h": null,
@@ -198,6 +289,31 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 0.1
+        },
+        {
+          "timestamp": 1770744018714,
+          "price": 1.1304634752208207,
+          "apr_1h": null,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 0.1
+        }
+      ]
+    },
+    "savUSD": {
+      "symbol": "savUSD",
+      "name": "Staked avUSD",
+      "chain": "avalanche",
+      "protocol": "Avant",
+      "snapshots": [
+        {
+          "timestamp": 1770744018714,
+          "price": 1.146815554178326
         }
       ]
     }

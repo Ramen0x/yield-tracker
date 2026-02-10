@@ -11,6 +11,7 @@ const path = require('path');
 // Config
 const RPC_ETHEREUM = process.env.ETH_RPC_URL || 'https://eth.llamarpc.com';
 const RPC_ARBITRUM = process.env.ARB_RPC_URL || 'https://arb1.arbitrum.io/rpc';
+const RPC_AVALANCHE = process.env.AVAX_RPC_URL || 'https://api.avax.network/ext/bc/C/rpc';
 const DATA_DIR = path.join(__dirname, 'data');
 const SNAPSHOTS_FILE = path.join(DATA_DIR, 'snapshots.json');
 const TOKENS_FILE = path.join(__dirname, 'tokens.json');
@@ -36,7 +37,8 @@ const BALANCER_VAULT_ABI = [
 // Providers
 const providers = {
   ethereum: new ethers.JsonRpcProvider(RPC_ETHEREUM),
-  arbitrum: new ethers.JsonRpcProvider(RPC_ARBITRUM)
+  arbitrum: new ethers.JsonRpcProvider(RPC_ARBITRUM),
+  avalanche: new ethers.JsonRpcProvider(RPC_AVALANCHE)
 };
 
 function ensureDataDir() {
