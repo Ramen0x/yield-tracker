@@ -647,7 +647,12 @@
                 x: {
                     type: 'time',
                     time: {
-                        unit: range === '24h' ? 'hour' : range === '7d' ? 'day' : 'day'
+                        tooltipFormat: 'MMM d, h:mm a',
+                        displayFormats: {
+                            minute: 'h:mm a',
+                            hour: 'h:mm a',
+                            day: 'MMM d'
+                        }
                     },
                     grid: {
                         color: 'rgba(75, 85, 99, 0.2)',
@@ -655,7 +660,8 @@
                     },
                     ticks: {
                         color: '#6b7280',
-                        font: { size: 10 }
+                        font: { size: 10 },
+                        maxTicksLimit: 6
                     }
                 }
             };
