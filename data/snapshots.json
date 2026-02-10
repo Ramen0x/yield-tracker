@@ -1,5 +1,5 @@
 {
-  "lastUpdate": 1770743490977,
+  "lastUpdate": 1770743671080,
   "tokens": {
     "syrupUSDC": {
       "symbol": "syrupUSDC",
@@ -8,37 +8,8 @@
       "protocol": "Maple Finance",
       "snapshots": [
         {
-          "timestamp": 1770741875632,
-          "price": 1.151013
-        },
-        {
-          "timestamp": 1770742201458,
-          "price": 1.151013
-        },
-        {
-          "timestamp": 1770742802400,
-          "price": 1.151014
-        },
-        {
-          "timestamp": 1770743401627,
-          "price": 1.151015
-        },
-        {
-          "timestamp": 1770743407383,
-          "price": 1.151015
-        },
-        {
-          "timestamp": 1770743490977,
-          "price": 1.151016,
-          "apr_1h": null,
-          "apr_6h": null,
-          "apr_12h": null,
-          "apr_24h": null,
-          "apr_3d": null,
-          "apr_7d": null,
-          "apr_14d": null,
-          "apr_30d": null,
-          "data_hours": 0.4
+          "timestamp": 1770743671080,
+          "price": 1.151016
         }
       ]
     },
@@ -49,37 +20,8 @@
       "protocol": "Maple Finance",
       "snapshots": [
         {
-          "timestamp": 1770741875632,
-          "price": 1.115544
-        },
-        {
-          "timestamp": 1770742201458,
-          "price": 1.115545
-        },
-        {
-          "timestamp": 1770742802400,
-          "price": 1.115546
-        },
-        {
-          "timestamp": 1770743401627,
-          "price": 1.115546
-        },
-        {
-          "timestamp": 1770743407383,
-          "price": 1.115546
-        },
-        {
-          "timestamp": 1770743490977,
-          "price": 1.115547,
-          "apr_1h": null,
-          "apr_6h": null,
-          "apr_12h": null,
-          "apr_24h": null,
-          "apr_3d": null,
-          "apr_7d": null,
-          "apr_14d": null,
-          "apr_30d": null,
-          "data_hours": 0.4
+          "timestamp": 1770743671080,
+          "price": 1.115547
         }
       ]
     },
@@ -90,37 +32,8 @@
       "protocol": "Ethena",
       "snapshots": [
         {
-          "timestamp": 1770741875632,
-          "price": 1.2199874171675722
-        },
-        {
-          "timestamp": 1770742201458,
-          "price": 1.2199878533373796
-        },
-        {
-          "timestamp": 1770742802400,
-          "price": 1.2199886772137463
-        },
-        {
-          "timestamp": 1770743401627,
-          "price": 1.2199894687812372
-        },
-        {
-          "timestamp": 1770743407383,
-          "price": 1.2199894849356756
-        },
-        {
-          "timestamp": 1770743490977,
-          "price": 1.219989598016746,
-          "apr_1h": null,
-          "apr_6h": null,
-          "apr_12h": null,
-          "apr_24h": null,
-          "apr_3d": null,
-          "apr_7d": null,
-          "apr_14d": null,
-          "apr_30d": null,
-          "data_hours": 0.4
+          "timestamp": 1770743671080,
+          "price": 1.2199898403333247
         }
       ]
     },
@@ -131,37 +44,8 @@
       "protocol": "Strata",
       "snapshots": [
         {
-          "timestamp": 1770741875632,
-          "price": 1.0132338898786617
-        },
-        {
-          "timestamp": 1770742201458,
-          "price": 1.0132341133007816
-        },
-        {
-          "timestamp": 1770742802400,
-          "price": 1.013234535319668
-        },
-        {
-          "timestamp": 1770743401627,
-          "price": 1.0132349407887942
-        },
-        {
-          "timestamp": 1770743407383,
-          "price": 1.0132349490636743
-        },
-        {
-          "timestamp": 1770743490977,
-          "price": 1.0132350069878353,
-          "apr_1h": null,
-          "apr_6h": null,
-          "apr_12h": null,
-          "apr_24h": null,
-          "apr_3d": null,
-          "apr_7d": null,
-          "apr_14d": null,
-          "apr_30d": null,
-          "data_hours": 0.4
+          "timestamp": 1770743671080,
+          "price": 1.013235131111037
         }
       ]
     },
@@ -172,37 +56,8 @@
       "protocol": "Strata",
       "snapshots": [
         {
-          "timestamp": 1770741875632,
-          "price": 1.0324196047872107
-        },
-        {
-          "timestamp": 1770742201458,
-          "price": 1.0324204031888786
-        },
-        {
-          "timestamp": 1770742802400,
-          "price": 1.0324218892349806
-        },
-        {
-          "timestamp": 1770743401627,
-          "price": 1.0324233170047699
-        },
-        {
-          "timestamp": 1770743407383,
-          "price": 1.0324233461429289
-        },
-        {
-          "timestamp": 1770743490977,
-          "price": 1.0324235501100416,
-          "apr_1h": null,
-          "apr_6h": null,
-          "apr_12h": null,
-          "apr_24h": null,
-          "apr_3d": null,
-          "apr_7d": null,
-          "apr_14d": null,
-          "apr_30d": null,
-          "data_hours": 0.4
+          "timestamp": 1770743671080,
+          "price": 1.0324239871824261
         }
       ]
     },
@@ -213,37 +68,8 @@
       "protocol": "Cap Finance",
       "snapshots": [
         {
-          "timestamp": 1770741875632,
-          "price": 1.0483380040901937
-        },
-        {
-          "timestamp": 1770742201458,
-          "price": 1.0483382082505943
-        },
-        {
-          "timestamp": 1770742802400,
-          "price": 1.0483386066494218
-        },
-        {
-          "timestamp": 1770743401627,
-          "price": 1.0483390252649922
-        },
-        {
-          "timestamp": 1770743407383,
-          "price": 1.0483390338081624
-        },
-        {
-          "timestamp": 1770743490977,
-          "price": 1.0483390936103534,
-          "apr_1h": null,
-          "apr_6h": null,
-          "apr_12h": null,
-          "apr_24h": null,
-          "apr_3d": null,
-          "apr_7d": null,
-          "apr_14d": null,
-          "apr_30d": null,
-          "data_hours": 0.4
+          "timestamp": 1770743671080,
+          "price": 1.048339221757906
         }
       ]
     },
@@ -254,53 +80,20 @@
       "protocol": "Reservoir",
       "snapshots": [
         {
-          "timestamp": 1770741875632,
-          "price": 1.067057634638221
-        },
-        {
-          "timestamp": 1770742201458,
-          "price": 1.067058221601579
-        },
-        {
-          "timestamp": 1770742802400,
-          "price": 1.067059330311025
-        },
-        {
-          "timestamp": 1770743401627,
-          "price": 1.0670603955427542
-        },
-        {
-          "timestamp": 1770743407383,
-          "price": 1.0670604172821885
-        },
-        {
-          "timestamp": 1770743490977,
-          "price": 1.0670605694582398,
-          "apr_1h": null,
-          "apr_6h": null,
-          "apr_12h": null,
-          "apr_24h": null,
-          "apr_3d": null,
-          "apr_7d": null,
-          "apr_14d": null,
-          "apr_30d": null,
-          "data_hours": 0.4
+          "timestamp": 1770743671080,
+          "price": 1.067060895549851
         }
       ]
     },
-    "rlp": {
-      "symbol": "dLP",
-      "name": "Radiant dLP",
-      "chain": "arbitrum",
-      "protocol": "Radiant Capital",
+    "wstUSR": {
+      "symbol": "wstUSR",
+      "name": "Wrapped stUSR",
+      "chain": "ethereum",
+      "protocol": "Resolv",
       "snapshots": [
         {
-          "timestamp": 1770446326007,
-          "price": 1
-        },
-        {
-          "timestamp": 1770446402594,
-          "price": 1
+          "timestamp": 1770743671080,
+          "price": 1.1304634752208207
         }
       ]
     }
