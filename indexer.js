@@ -147,14 +147,11 @@ async function calculateAPR(tokenId, currentPrice, snapshots) {
   const aprs = {};
   for (const [label, hours] of Object.entries(timeRanges)) {
     const result = findSnapshotWithAge(hours);
-    if (result) {
-      // Use ACTUAL time difference, not target hours
+    if (result && result.actualHours >= hours * 0.8) {
+      // Only show if we have at least 80% of the required time range
       aprs[`apr_${label}`] = calcAPR(result.snap.price, result.actualHours);
-    } else if (oldestHoursAgo >= 0.5) {
-      // Extrapolate from oldest available data (need at least 30 min of data)
-      aprs[`apr_${label}`] = calcAPR(oldestSnap.price, oldestHoursAgo);
-      aprs[`apr_${label}_extrapolated`] = true;
     } else {
+      // No extrapolation - just null if insufficient data
       aprs[`apr_${label}`] = null;
     }
   }
