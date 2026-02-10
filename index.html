@@ -12,40 +12,40 @@
             0% { background-position: -1000px 0; }
             100% { background-position: 1000px 0; }
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
-        
+
         .animate-fade-in {
             animation: fadeIn 0.5s ease-out;
         }
-        
+
         .animate-pulse-slow {
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
-        
+
         .loading-skeleton {
             background: linear-gradient(90deg, #1f2937 0%, #374151 50%, #1f2937 100%);
             background-size: 1000px 100%;
             animation: shimmer 2s infinite;
         }
-        
+
         .card-hover {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .card-hover:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
-        
+
         .protocol-logo {
             width: 48px;
             height: 48px;
@@ -59,79 +59,79 @@
             color: white;
             transition: transform 0.2s;
         }
-        
+
         .protocol-logo:hover {
             transform: scale(1.1);
         }
-        
+
         .maple-gradient {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        
+
         .radiant-gradient {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
-        
+
         .ethena-gradient {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         }
-        
+
         .tangible-gradient {
             background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
         }
-        
+
         .restnaked-gradient {
             background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
         }
-        
+
         .delta-positive {
             color: #10b981;
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid rgba(16, 185, 129, 0.3);
         }
-        
+
         .delta-negative {
             color: #ef4444;
             background: rgba(239, 68, 68, 0.1);
             border: 1px solid rgba(239, 68, 68, 0.3);
         }
-        
+
         .delta-neutral {
             color: #6b7280;
             background: rgba(107, 114, 128, 0.1);
             border: 1px solid rgba(107, 114, 128, 0.3);
         }
-        
+
         .time-range-button {
             transition: all 0.2s;
             cursor: pointer;
         }
-        
+
         .time-range-button:hover {
             background: rgba(99, 102, 241, 0.2);
         }
-        
+
         .time-range-button.active {
             background: rgba(99, 102, 241, 0.3);
             border-color: #6366f1;
             color: #a5b4fc;
         }
-        
+
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
-        
+
         ::-webkit-scrollbar-track {
             background: #1f2937;
         }
-        
+
         ::-webkit-scrollbar-thumb {
             background: #4b5563;
             border-radius: 4px;
         }
-        
+
         ::-webkit-scrollbar-thumb:hover {
             background: #6b7280;
         }
@@ -149,7 +149,7 @@
                     <p class="text-gray-400 text-sm">Real APY calculated from on-chain price snapshots vs advertised rates</p>
                 </div>
                 <div class="flex items-center gap-4">
-                    <button 
+                    <button
                         id="export-all-btn"
                         class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
                         onclick="exportAllToCSV()"
@@ -228,7 +228,7 @@
                 errorMessage.textContent = `${context ? context + ': ' : ''}${error.message || error}`;
                 errorContainer.classList.remove('hidden');
             }
-            
+
             static hideError() {
                 document.getElementById('error-container').classList.add('hidden');
             }
@@ -242,27 +242,27 @@
 
         // Protocol branding
         const protocolBranding = {
-            'Maple Finance': { 
+            'Maple Finance': {
                 gradient: 'maple-gradient',
                 logo: 'M',
                 color: '#667eea'
             },
-            'Radiant Capital': { 
+            'Radiant Capital': {
                 gradient: 'radiant-gradient',
                 logo: 'R',
                 color: '#f5576c'
             },
-            'Ethena': { 
+            'Ethena': {
                 gradient: 'ethena-gradient',
                 logo: 'E',
                 color: '#4facfe'
             },
-            'Tangible': { 
+            'Tangible': {
                 gradient: 'tangible-gradient',
                 logo: 'T',
                 color: '#fa709a'
             },
-            'Restnaked': { 
+            'Restnaked': {
                 gradient: 'restnaked-gradient',
                 logo: 'RN',
                 color: '#30cfd0'
@@ -298,28 +298,28 @@
             try {
                 ErrorBoundary.hideError();
                 const response = await fetch('/data/snapshots.json');
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-                
+
                 allData = await response.json();
-                
+
                 if (!allData || !allData.tokens) {
                     throw new Error('Invalid data format');
                 }
-                
+
                 if (allData.lastUpdate) {
                     const date = new Date(allData.lastUpdate);
-                    document.getElementById('last-update').textContent = 
-                        `Last update: ${date.toLocaleString('en-US', { 
-                            month: 'short', day: 'numeric', 
-                            hour: '2-digit', minute: '2-digit', timeZone: 'UTC' 
+                    document.getElementById('last-update').textContent =
+                        `Last update: ${date.toLocaleString('en-US', {
+                            month: 'short', day: 'numeric',
+                            hour: '2-digit', minute: '2-digit', timeZone: 'UTC'
                         })} UTC`;
                 }
-                
+
                 const hasData = Object.values(allData.tokens).some(t => t.snapshots && t.snapshots.length > 0);
-                
+
                 if (!hasData) {
                     showEmptyState();
                 } else {
@@ -354,7 +354,7 @@
             let hasRendered = false;
             for (const [tokenId, tokenData] of Object.entries(allData.tokens)) {
                 if (tokenData.snapshots.length === 0) continue;
-                
+
                 try {
                     const section = createTokenSection(tokenId, tokenData);
                     container.appendChild(section);
@@ -363,7 +363,7 @@
                     ErrorBoundary.showError(error, `Rendering ${tokenId}`);
                 }
             }
-            
+
             if (!hasRendered) {
                 showEmptyState();
             }
@@ -372,27 +372,27 @@
         function createTokenSection(tokenId, tokenData) {
             const section = document.createElement('div');
             section.className = 'bg-gray-800 border border-gray-700 rounded-lg overflow-hidden card-hover animate-fade-in';
-            
+
             const latest = tokenData.snapshots[tokenData.snapshots.length - 1];
             const previous = tokenData.snapshots.length > 1 ? tokenData.snapshots[tokenData.snapshots.length - 2] : null;
-            
+
             // Calculate price change %
             const priceChange = previous ? ((latest.price - previous.price) / previous.price * 100) : 0;
             const priceChangeClass = priceChange > 0 ? 'text-green-400' : priceChange < 0 ? 'text-red-400' : 'text-gray-400';
             const priceChangeIcon = priceChange > 0 ? '↑' : priceChange < 0 ? '↓' : '→';
-            
+
             // Get protocol branding
-            const branding = protocolBranding[tokenData.protocol] || { 
-                gradient: 'bg-gray-700', 
+            const branding = protocolBranding[tokenData.protocol] || {
+                gradient: 'bg-gray-700',
                 logo: tokenData.protocol.charAt(0),
                 color: '#6b7280'
             };
-            
+
             // Advertised APY comparison
             const advertised = advertisedAPY[tokenData.symbol];
             const realized = latest.apr_30d || latest.apr_7d || latest.apr_24h;
             let deltaHTML = '';
-            
+
             if (advertised && realized !== null && realized !== undefined) {
                 const delta = realized - advertised;
                 const deltaClass = delta > 0 ? 'delta-positive' : delta < 0 ? 'delta-negative' : 'delta-neutral';
@@ -416,7 +416,7 @@
                     </div>
                 `;
             }
-            
+
             // APR metrics - all as panels in single column
             const timeframes = [
                 { key: 'apr_1h', label: '1H' },
@@ -430,9 +430,9 @@
                 const val = latest[t.key];
                 const display = val != null ? val.toFixed(2) + '%' : '—';
                 const extrapolated = latest[t.key + '_extrapolated'];
-                return `<div class="bg-gray-900/60 rounded-lg p-2 border border-gray-700/40 flex justify-between items-center${extrapolated ? ' opacity-50' : ''}">
+                return `<div class="bg-gray-900/60 rounded-lg px-3 py-2.5 border border-gray-700/40 flex justify-between items-center${extrapolated ? ' opacity-50' : ''}">
                     <span class="text-[10px] text-gray-500 uppercase">${t.label}</span>
-                    <span class="text-sm font-mono text-emerald-400">${display}</span>
+                    <span class="text-base font-mono text-emerald-400">${display}</span>
                 </div>`;
             }).join('');
 
@@ -469,12 +469,12 @@
                                     <span class="text-gray-600 ml-2">(${tokenData.snapshots.length} snapshots)</span>
                                 </div>
                             </div>
-                            
+
                             <!-- Time Range Selector -->
                             <div class="flex items-center gap-2 flex-wrap">
                                 <span class="text-xs text-gray-500 mr-1">Range:</span>
                                 ${['24h', '7d', '30d', 'all'].map(range => `
-                                    <button 
+                                    <button
                                         class="time-range-button px-3 py-1 text-xs rounded border border-gray-600 ${range === '24h' ? 'active' : ''}"
                                         onclick="changeTimeRange('${tokenId}', '${range}')"
                                         data-token="${tokenId}"
@@ -485,36 +485,38 @@
                                 `).join('')}
                             </div>
                         </div>
-                        
+
                         <!-- Chart Mode Toggle -->
-                        <div class="mb-3 flex items-center gap-3">
-                            <button 
-                                class="text-xs px-3 py-1 rounded border border-gray-600 hover:bg-gray-700 transition"
+                        <div class="mb-2 flex items-center gap-2">
+                            <button
+                                class="p-1.5 rounded border border-gray-600 hover:bg-gray-700 transition text-gray-400 hover:text-white"
                                 onclick="toggleChartMode('${tokenId}')"
                                 id="chart-mode-${tokenId}"
+                                title="Toggle Price + APR"
                             >
-                                Toggle Dual-Axis (Price + APR)
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                             </button>
-                            <button 
-                                class="text-xs px-3 py-1 rounded border border-gray-600 hover:bg-gray-700 transition"
+                            <button
+                                class="p-1.5 rounded border border-gray-600 hover:bg-gray-700 transition text-gray-400 hover:text-white"
                                 onclick="exportTokenToCSV('${tokenId}')"
+                                title="Export CSV"
                             >
-                                Export CSV
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                             </button>
                         </div>
-                        
+
                         <div class="bg-gray-900 rounded-lg p-4" style="height: 400px;" id="chart-loading-${tokenId}">
                             <canvas id="chart-${tokenId}"></canvas>
                         </div>
                     </div>
 
                     <!-- APR Metrics - Single Column Panels -->
-                    <div>
+                    <div class="pt-8">
                         <div class="flex items-center justify-between mb-2">
                             <h3 class="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Realized APR</h3>
-                            ${latest.data_hours ? `<span class="text-[9px] text-gray-600">${latest.data_hours.toFixed(0)}h data</span>` : ''}
+                            ${latest.data_hours ? `<span class="text-[9px] text-gray-600">${latest.data_hours.toFixed(0)}h</span>` : ''}
                         </div>
-                        <div class="flex flex-col gap-1.5">
+                        <div class="flex flex-col gap-2">
                             ${aprPanels}
                         </div>
                     </div>
@@ -523,7 +525,7 @@
 
             // Initialize time range and chart mode
             timeRanges[tokenId] = '24h';
-            chartModes[tokenId] = 'single';
+            chartModes[tokenId] = 'dual';
 
             // Create chart after DOM insertion
             setTimeout(() => {
@@ -539,7 +541,7 @@
 
         function changeTimeRange(tokenId, range) {
             timeRanges[tokenId] = range;
-            
+
             // Update button states
             const buttons = document.querySelectorAll(`[data-token="${tokenId}"][data-range]`);
             buttons.forEach(btn => {
@@ -549,7 +551,7 @@
                     btn.classList.remove('active');
                 }
             });
-            
+
             // Recreate chart
             createChart(tokenId, allData.tokens[tokenId]);
         }
@@ -561,14 +563,14 @@
 
         function filterSnapshotsByTimeRange(snapshots, range) {
             if (range === 'all') return snapshots;
-            
+
             const now = Date.now();
             const ranges = {
                 '24h': 24 * 60 * 60 * 1000,
                 '7d': 7 * 24 * 60 * 60 * 1000,
                 '30d': 30 * 24 * 60 * 60 * 1000
             };
-            
+
             const cutoff = now - ranges[range];
             return snapshots.filter(s => s.timestamp >= cutoff);
         }
@@ -578,7 +580,7 @@
             if (!canvas) return;
 
             const ctx = canvas.getContext('2d');
-            
+
             // Destroy existing chart if any
             if (charts[tokenId]) {
                 charts[tokenId].destroy();
@@ -587,7 +589,7 @@
             const range = timeRanges[tokenId] || 'all';
             const mode = chartModes[tokenId] || 'single';
             const filteredSnapshots = filterSnapshotsByTimeRange(tokenData.snapshots, range);
-            
+
             if (filteredSnapshots.length === 0) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = '#9ca3af';
@@ -599,7 +601,7 @@
 
             const labels = filteredSnapshots.map(s => new Date(s.timestamp));
             const prices = filteredSnapshots.map(s => s.price);
-            const apr30d = filteredSnapshots.map(s => s.apr_30d);
+            const apr1h = filteredSnapshots.map(s => s.apr_1h);
 
             // Calculate price range for better y-axis scaling
             const minPrice = Math.min(...prices);
@@ -662,15 +664,15 @@
             };
 
             // Add dual-axis for APR if mode is dual
-            if (mode === 'dual' && apr30d.some(v => v !== null && v !== undefined)) {
-                const validAPRs = apr30d.filter(v => v !== null && v !== undefined);
+            if (mode === 'dual' && apr1h.some(v => v !== null && v !== undefined)) {
+                const validAPRs = apr1h.filter(v => v !== null && v !== undefined);
                 const minAPR = Math.min(...validAPRs);
                 const maxAPR = Math.max(...validAPRs);
                 const aprPadding = (maxAPR - minAPR) * 0.1 || 1;
-                
+
                 datasets.push({
-                    label: '30d APR',
-                    data: apr30d,
+                    label: '1h APR',
+                    data: apr1h,
                     borderColor: 'rgb(249, 115, 22)',
                     backgroundColor: 'rgba(249, 115, 22, 0.1)',
                     borderWidth: 2,
@@ -685,7 +687,7 @@
                     yAxisID: 'y1',
                     spanGaps: true
                 });
-                
+
                 scales.y1 = {
                     type: 'linear',
                     position: 'right',
@@ -752,8 +754,8 @@
                                 label: function(context) {
                                     if (context.dataset.label === 'Share Price') {
                                         return `Price: ${context.parsed.y.toFixed(8)}`;
-                                    } else if (context.dataset.label === '30d APR') {
-                                        return context.parsed.y !== null ? `30d APR: ${context.parsed.y.toFixed(2)}%` : null;
+                                    } else if (context.dataset.label === '1h APR') {
+                                        return context.parsed.y !== null ? `1h APR: ${context.parsed.y.toFixed(2)}%` : null;
                                     }
                                 },
                                 afterLabel: function(context) {
@@ -779,24 +781,24 @@
         function exportTokenToCSV(tokenId) {
             const tokenData = allData.tokens[tokenId];
             if (!tokenData) return;
-            
+
             let csv = 'Timestamp,Price,6h APR,12h APR,24h APR,3d APR,7d APR,14d APR,30d APR\n';
-            
+
             tokenData.snapshots.forEach(snap => {
                 const timestamp = new Date(snap.timestamp).toISOString();
                 csv += `${timestamp},${snap.price},`;
                 csv += `${snap.apr_6h || ''},${snap.apr_12h || ''},${snap.apr_24h || ''},`;
                 csv += `${snap.apr_3d || ''},${snap.apr_7d || ''},${snap.apr_14d || ''},${snap.apr_30d || ''}\n`;
             });
-            
+
             downloadCSV(csv, `${tokenData.symbol}-yield-data.csv`);
         }
 
         function exportAllToCSV() {
             if (!allData) return;
-            
+
             let csv = 'Token,Symbol,Protocol,Chain,Timestamp,Price,6h APR,12h APR,24h APR,3d APR,7d APR,14d APR,30d APR,Advertised APY,Delta\n';
-            
+
             for (const [tokenId, tokenData] of Object.entries(allData.tokens)) {
                 const advertised = advertisedAPY[tokenData.symbol] || '';
                 tokenData.snapshots.forEach(snap => {
@@ -808,7 +810,7 @@
                     csv += `${advertised},${delta}\n`;
                 });
             }
-            
+
             downloadCSV(csv, `all-yield-data-${Date.now()}.csv`);
         }
 
@@ -829,12 +831,12 @@
 
         // Auto-refresh every 5 minutes
         setInterval(loadData, 5 * 60 * 1000);
-        
+
         // Global error handler
         window.addEventListener('error', (event) => {
             ErrorBoundary.showError(event.error || event.message, 'Global error');
         });
-        
+
         window.addEventListener('unhandledrejection', (event) => {
             ErrorBoundary.showError(event.reason, 'Unhandled promise rejection');
         });
