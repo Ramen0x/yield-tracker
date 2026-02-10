@@ -1198,13 +1198,6 @@
           "price": 1.146815554178326
         }
       ]
-    },
-    "rlp": {
-      "symbol": "dLP",
-      "name": "Radiant dLP",
-      "chain": "arbitrum",
-      "protocol": "Radiant Capital",
-      "snapshots": []
     }
   }
 }
