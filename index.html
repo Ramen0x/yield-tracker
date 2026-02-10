@@ -416,47 +416,33 @@
                 `;
             }
             
-            // APR metrics - panel layout
-            const ranges = [
-                { key: 'apr_1h', label: '1h' },
-                { key: 'apr_6h', label: '6h' },
-                { key: 'apr_12h', label: '12h' },
-                { key: 'apr_24h', label: '24h' },
-                { key: 'apr_3d', label: '3d' },
-                { key: 'apr_7d', label: '7d' },
-                { key: 'apr_14d', label: '14d' },
-                { key: 'apr_30d', label: '30d' }
+            // APR metrics - professional layout
+            const getAprDisplay = (key) => {
+                const value = latest[key];
+                const isExtrapolated = latest[key + '_extrapolated'];
+                if (value == null) return { display: '—', color: 'text-gray-500', extrapolated: false };
+                const color = value > 0 ? 'text-emerald-400' : value < 0 ? 'text-red-400' : 'text-gray-400';
+                return { display: value.toFixed(2) + '%', color, extrapolated: isExtrapolated };
+            };
+
+            const apr24h = getAprDisplay('apr_24h');
+            const apr7d = getAprDisplay('apr_7d');
+            
+            const secondaryRanges = [
+                { key: 'apr_1h', label: '1H' },
+                { key: 'apr_6h', label: '6H' },
+                { key: 'apr_12h', label: '12H' },
+                { key: 'apr_3d', label: '3D' },
+                { key: 'apr_14d', label: '14D' },
+                { key: 'apr_30d', label: '30D' }
             ];
 
-            const aprMetrics = ranges.map(r => {
-                const value = latest[r.key];
-                const isExtrapolated = latest[r.key + '_extrapolated'];
-                let display, bgColor, textColor;
-                
-                if (value != null) {
-                    display = value.toFixed(1) + '%';
-                    if (value > 0) {
-                        bgColor = 'bg-green-900/40 border-green-700/50';
-                        textColor = 'text-green-400';
-                    } else if (value < 0) {
-                        bgColor = 'bg-red-900/40 border-red-700/50';
-                        textColor = 'text-red-400';
-                    } else {
-                        bgColor = 'bg-gray-800 border-gray-600';
-                        textColor = 'text-gray-400';
-                    }
-                } else {
-                    display = '-';
-                    bgColor = 'bg-gray-800 border-gray-600';
-                    textColor = 'text-gray-500';
-                }
-
-                return `
-                    <div class="border ${bgColor} rounded-lg p-2.5 text-center${isExtrapolated ? ' opacity-60' : ''}">
-                        <div class="text-[10px] text-gray-500 uppercase tracking-wide">${r.label}</div>
-                        <div class="text-lg font-bold font-mono ${textColor}">${display}</div>
-                    </div>
-                `;
+            const secondaryMetrics = secondaryRanges.map(r => {
+                const apr = getAprDisplay(r.key);
+                return `<div class="flex justify-between items-center py-1.5 border-b border-gray-800 last:border-0">
+                    <span class="text-xs text-gray-500">${r.label}</span>
+                    <span class="text-sm font-mono ${apr.color}${apr.extrapolated ? ' opacity-50' : ''}">${apr.display}</span>
+                </div>`;
             }).join('');
 
             section.innerHTML = `
@@ -531,14 +517,28 @@
                         </div>
                     </div>
 
-                    <!-- APR Metrics - 2 col grid -->
+                    <!-- APR Metrics - Professional -->
                     <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-sm font-semibold text-gray-400">Realized APR</h3>
-                            ${latest.data_hours ? `<span class="text-xs text-gray-500">${latest.data_hours.toFixed(0)}h data</span>` : ''}
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider">Realized APR</h3>
+                            ${latest.data_hours ? `<span class="text-[10px] text-gray-600">${latest.data_hours.toFixed(0)}h data</span>` : ''}
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                            ${aprMetrics}
+                        
+                        <!-- Featured: 24h and 7d -->
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div class="bg-gray-800/50 rounded-lg p-3 border border-gray-700/50">
+                                <div class="text-[10px] text-gray-500 uppercase tracking-wide mb-1">24 Hour</div>
+                                <div class="text-2xl font-semibold font-mono ${apr24h.color}">${apr24h.display}</div>
+                            </div>
+                            <div class="bg-gray-800/50 rounded-lg p-3 border border-gray-700/50">
+                                <div class="text-[10px] text-gray-500 uppercase tracking-wide mb-1">7 Day</div>
+                                <div class="text-2xl font-semibold font-mono ${apr7d.color}${apr7d.extrapolated ? ' opacity-50' : ''}">${apr7d.display}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Secondary metrics -->
+                        <div class="bg-gray-800/30 rounded-lg px-3 py-1 border border-gray-700/30">
+                            ${secondaryMetrics}
                         </div>
                     </div>
                 </div>
