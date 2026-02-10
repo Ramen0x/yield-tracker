@@ -416,44 +416,41 @@
                 `;
             }
             
-            // APR metrics
+            // APR metrics - compact layout
             const ranges = [
-                { key: 'apr_6h', label: '6h', desc: '6 hour' },
-                { key: 'apr_12h', label: '12h', desc: '12 hour' },
-                { key: 'apr_24h', label: '24h', desc: '24 hour' },
-                { key: 'apr_3d', label: '3d', desc: '3 day' },
-                { key: 'apr_7d', label: '7d', desc: '7 day' },
-                { key: 'apr_14d', label: '14d', desc: '14 day' },
-                { key: 'apr_30d', label: '30d', desc: '30 day' }
+                { key: 'apr_1h', label: '1h' },
+                { key: 'apr_6h', label: '6h' },
+                { key: 'apr_12h', label: '12h' },
+                { key: 'apr_24h', label: '24h' },
+                { key: 'apr_3d', label: '3d' },
+                { key: 'apr_7d', label: '7d' },
+                { key: 'apr_14d', label: '14d' },
+                { key: 'apr_30d', label: '30d' }
             ];
 
             const aprMetrics = ranges.map(r => {
                 const value = latest[r.key];
-                let display, colorClass, textColor;
+                const isExtrapolated = latest[r.key + '_extrapolated'];
+                let display, textColor;
                 
                 if (value != null) {
-                    display = value.toFixed(2) + '%';
+                    display = value.toFixed(1) + '%';
                     if (value > 0) {
-                        colorClass = 'bg-green-900/30 border-green-700/50';
                         textColor = 'text-green-400';
                     } else if (value < 0) {
-                        colorClass = 'bg-red-900/30 border-red-700/50';
                         textColor = 'text-red-400';
                     } else {
-                        colorClass = 'bg-gray-700/30 border-gray-600';
                         textColor = 'text-gray-400';
                     }
                 } else {
                     display = '-';
-                    colorClass = 'bg-gray-700/30 border-gray-600';
                     textColor = 'text-gray-500';
                 }
 
                 return `
-                    <div class="border ${colorClass} rounded-lg p-3 transition-all hover:scale-105">
-                        <div class="text-xs text-gray-400 mb-1">${r.desc}</div>
-                        <div class="text-2xl font-bold font-mono ${textColor}">${display}</div>
-                        <div class="text-xs text-gray-500 mt-1">APR</div>
+                    <div class="text-center px-2 py-1">
+                        <div class="text-xs text-gray-500">${r.label}</div>
+                        <div class="text-sm font-bold font-mono ${textColor}${isExtrapolated ? ' opacity-70' : ''}">${display}</div>
                     </div>
                 `;
             }).join('');
@@ -530,22 +527,16 @@
                         </div>
                     </div>
 
-                    <!-- APR Metrics -->
+                    <!-- APR Metrics - Compact -->
                     <div>
-                        <h3 class="text-lg font-semibold mb-4">Realized APR</h3>
-                        <div class="space-y-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-semibold text-gray-400">Realized APR</h3>
+                            ${latest.data_hours ? `<span class="text-xs text-gray-500">${latest.data_hours.toFixed(0)}h data</span>` : ''}
+                        </div>
+                        <div class="flex flex-wrap bg-gray-800/50 rounded-lg py-1">
                             ${aprMetrics}
                         </div>
-                        
                         ${deltaHTML}
-                        
-                        <div class="mt-6 p-4 bg-gray-900 rounded-lg border border-gray-700">
-                            <div class="text-xs text-gray-400 mb-2">About APR Calculation</div>
-                            <div class="text-xs text-gray-500 leading-relaxed">
-                                APR is calculated from actual on-chain share price changes and annualized. 
-                                Values appear as data accumulates over time. Negative values indicate price decrease.
-                            </div>
-                        </div>
                     </div>
                 </div>
             `;
