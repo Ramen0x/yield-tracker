@@ -417,27 +417,12 @@
                 `;
             }
             
-            // APR metrics - 4x2 grid, neutral colors
-            const aprRanges = [
-                { key: 'apr_1h', label: '1H' },
-                { key: 'apr_6h', label: '6H' },
-                { key: 'apr_12h', label: '12H' },
-                { key: 'apr_24h', label: '24H' },
-                { key: 'apr_3d', label: '3D' },
-                { key: 'apr_7d', label: '7D' },
-                { key: 'apr_14d', label: '14D' },
-                { key: 'apr_30d', label: '30D' }
-            ];
-
-            const aprMetrics = aprRanges.map(r => {
-                const value = latest[r.key];
-                const isExtrapolated = latest[r.key + '_extrapolated'];
-                const display = value != null ? value.toFixed(2) + '%' : '—';
-                return `<div class="bg-gray-900/50 rounded px-2 py-1.5 text-center border border-gray-700/50${isExtrapolated ? ' opacity-50' : ''}">
-                    <div class="text-[9px] text-gray-500 uppercase">${r.label}</div>
-                    <div class="text-sm font-mono text-gray-200">${display}</div>
-                </div>`;
-            }).join('');
+            // APR metrics - featured 24H and 7D
+            const apr24h = latest.apr_24h;
+            const apr7d = latest.apr_7d;
+            const apr24hDisplay = apr24h != null ? apr24h.toFixed(2) + '%' : '—';
+            const apr7dDisplay = apr7d != null ? apr7d.toFixed(2) + '%' : '—';
+            const apr7dExtrapolated = latest.apr_7d_extrapolated;
 
             section.innerHTML = `
                 <div class="p-4 border-b border-gray-700">
@@ -511,14 +496,21 @@
                         </div>
                     </div>
 
-                    <!-- APR Metrics - 4x2 Grid -->
+                    <!-- APR Metrics - 24H / 7D -->
                     <div>
-                        <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center justify-between mb-3">
                             <h3 class="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Realized APR</h3>
-                            ${latest.data_hours ? `<span class="text-[9px] text-gray-600">${latest.data_hours.toFixed(0)}h</span>` : ''}
+                            ${latest.data_hours ? `<span class="text-[9px] text-gray-600">${latest.data_hours.toFixed(0)}h data</span>` : ''}
                         </div>
-                        <div class="grid grid-cols-2 gap-1.5">
-                            ${aprMetrics}
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="bg-gray-900/60 rounded-lg p-3 border border-gray-700/40">
+                                <div class="text-[9px] text-gray-500 uppercase tracking-wide mb-1">24 Hour</div>
+                                <div class="text-xl font-mono text-emerald-400">${apr24hDisplay}</div>
+                            </div>
+                            <div class="bg-gray-900/60 rounded-lg p-3 border border-gray-700/40">
+                                <div class="text-[9px] text-gray-500 uppercase tracking-wide mb-1">7 Day</div>
+                                <div class="text-xl font-mono text-emerald-400${apr7dExtrapolated ? ' opacity-50' : ''}">${apr7dDisplay}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
