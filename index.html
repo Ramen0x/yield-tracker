@@ -461,20 +461,34 @@
                 <div class="grid grid-cols-1 lg:grid-cols-[1fr_160px] gap-4 p-4">
                     <!-- Chart -->
                     <div>
-                        <div class="mb-3 flex items-start justify-between gap-4">
-                            <div>
-                                <h3 class="text-base font-semibold mb-0.5">Price History</h3>
-                                <div class="text-xs text-gray-400">
-                                    Current: <span class="font-mono text-green-400">${latest.price.toFixed(6)}</span>
-                                    <span class="text-gray-600 ml-1">(${tokenData.snapshots.length})</span>
+                        <div class="mb-3 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div>
+                                    <span class="text-xs text-gray-500">Price</span>
+                                    <div class="text-lg font-mono text-green-400">${latest.price.toFixed(6)}</div>
+                                </div>
+                                <div class="flex items-center gap-1 ml-2">
+                                    <button
+                                        class="p-1 rounded border border-gray-700 hover:bg-gray-700 transition text-gray-500 hover:text-white"
+                                        onclick="toggleChartMode('${tokenId}')"
+                                        id="chart-mode-${tokenId}"
+                                        title="Toggle APR overlay"
+                                    >
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                    </button>
+                                    <button
+                                        class="p-1 rounded border border-gray-700 hover:bg-gray-700 transition text-gray-500 hover:text-white"
+                                        onclick="exportTokenToCSV('${tokenId}')"
+                                        title="Export CSV"
+                                    >
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                    </button>
                                 </div>
                             </div>
-
-                            <!-- Time Range Selector -->
-                            <div class="flex items-center gap-1.5">
+                            <div class="flex items-center gap-1">
                                 ${['24h', '7d', '30d', 'all'].map(range => `
                                     <button
-                                        class="time-range-button px-2 py-0.5 text-[10px] rounded border border-gray-600 ${range === '24h' ? 'active' : ''}"
+                                        class="time-range-button px-2 py-0.5 text-[10px] rounded border border-gray-700 ${range === '24h' ? 'active' : ''}"
                                         onclick="changeTimeRange('${tokenId}', '${range}')"
                                         data-token="${tokenId}"
                                         data-range="${range}"
@@ -483,25 +497,6 @@
                                     </button>
                                 `).join('')}
                             </div>
-                        </div>
-
-                        <!-- Chart Mode Toggle -->
-                        <div class="mb-2 flex items-center gap-2">
-                            <button
-                                class="p-1.5 rounded border border-gray-600 hover:bg-gray-700 transition text-gray-400 hover:text-white"
-                                onclick="toggleChartMode('${tokenId}')"
-                                id="chart-mode-${tokenId}"
-                                title="Toggle Price + APR"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                            </button>
-                            <button
-                                class="p-1.5 rounded border border-gray-600 hover:bg-gray-700 transition text-gray-400 hover:text-white"
-                                onclick="exportTokenToCSV('${tokenId}')"
-                                title="Export CSV"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                            </button>
                         </div>
 
                         <div class="bg-gray-900 rounded-lg p-4" style="height: 400px;" id="chart-loading-${tokenId}">
