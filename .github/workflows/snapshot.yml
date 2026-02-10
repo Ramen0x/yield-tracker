@@ -1,9 +1,9 @@
-name: Hourly Snapshot
+name: Manual Snapshot (VPS cron handles regular updates)
 
 on:
-  schedule:
-    - cron: '15 * * * *'  # Every hour at :15
-  workflow_dispatch:
+  # schedule disabled - VPS cron runs every 10 min
+  # - cron: '15 * * * *'
+  workflow_dispatch:  # Manual trigger only
 
 permissions:
   contents: write
