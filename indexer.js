@@ -12,6 +12,7 @@ const path = require('path');
 const RPC_ETHEREUM = process.env.ETH_RPC_URL || 'https://eth.llamarpc.com';
 const RPC_ARBITRUM = process.env.ARB_RPC_URL || 'https://arb1.arbitrum.io/rpc';
 const RPC_AVALANCHE = process.env.AVAX_RPC_URL || 'https://api.avax.network/ext/bc/C/rpc';
+const RPC_PLASMA = process.env.PLASMA_RPC_URL || 'https://rpc.plasma.to';
 const DATA_DIR = path.join(__dirname, 'data');
 const SNAPSHOTS_FILE = path.join(DATA_DIR, 'snapshots.json');
 const TOKENS_FILE = path.join(__dirname, 'tokens.json');
@@ -38,7 +39,8 @@ const BALANCER_VAULT_ABI = [
 const providers = {
   ethereum: new ethers.JsonRpcProvider(RPC_ETHEREUM),
   arbitrum: new ethers.JsonRpcProvider(RPC_ARBITRUM),
-  avalanche: new ethers.JsonRpcProvider(RPC_AVALANCHE)
+  avalanche: new ethers.JsonRpcProvider(RPC_AVALANCHE),
+  plasma: new ethers.JsonRpcProvider(RPC_PLASMA)
 };
 
 function ensureDataDir() {
@@ -74,7 +76,9 @@ async function getSharePrice(token) {
       const contract = new ethers.Contract(token.address, ERC4626_ABI, provider);
       const oneShare = ethers.parseUnits('1', token.decimals);
       const assets = await contract.convertToAssets(oneShare);
-      return Number(assets) / (10 ** token.decimals);
+      // Use underlyingDecimals if vault decimals differ from underlying
+      const assetDecimals = token.underlyingDecimals || token.decimals;
+      return Number(assets) / (10 ** assetDecimals);
     } else if (token.type === 'balancer_lp') {
       // For Balancer LP tokens, we'll just track the token price itself
       // Price = 1 LP token value in USD (would need oracle for proper valuation)
