@@ -81,6 +81,16 @@ async function getSharePrice(token) {
       // For now, track as 1:1 ratio - will show relative changes over time
       console.log(`  ⚠️  ${token.symbol}: Balancer LP - tracking relative price only`);
       return 1.0;
+    } else if (token.type === 'chainlink_nav') {
+      // Chainlink NAV oracle - returns NAV per share
+      const CHAINLINK_ABI = [
+        'function latestRoundData() view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)',
+        'function decimals() view returns (uint8)'
+      ];
+      const oracle = new ethers.Contract(token.oracleAddress, CHAINLINK_ABI, provider);
+      const [, answer, , ,] = await oracle.latestRoundData();
+      const oracleDecimals = Number(await oracle.decimals());
+      return Number(answer) / (10 ** oracleDecimals);
     } else {
       // For custom types, we need specific logic per protocol
       if (token.address === 'TBD') return null;
