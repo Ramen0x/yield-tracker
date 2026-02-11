@@ -206,6 +206,17 @@
         let timeRanges = {}; // Store selected time range per token
         let chartModes = {}; // Store chart mode (single/dual-axis) per token
         let aprTimeframes = {}; // Store selected APR timeframe per token
+        let showAsAPY = {}; // Store APR/APY toggle per token
+        
+        // Convert APR to APY: APY = (1 + APR/100)^1 - 1 for simple annual rate
+        // For sub-annual periods, we compound: APY = (1 + r)^(periods_per_year) - 1
+        function aprToApy(apr, periodHours = 24) {
+            if (apr === null || apr === undefined) return null;
+            const periodsPerYear = (365 * 24) / periodHours;
+            const ratePerPeriod = apr / 100 / periodsPerYear;
+            const apy = (Math.pow(1 + ratePerPeriod, periodsPerYear) - 1) * 100;
+            return apy;
+        }
 
         // Protocol branding
         const protocolBranding = {
@@ -367,6 +378,7 @@
             // APR metrics - all as panels in single column
             const timeframes = [
                 { key: 'apr_1h', label: '1H' },
+                { key: 'apr_3h', label: '3H' },
                 { key: 'apr_6h', label: '6H' },
                 { key: 'apr_12h', label: '12H' },
                 { key: 'apr_24h', label: '1D' },
@@ -444,7 +456,7 @@
                                 </div>
                                 <div class="flex items-center gap-1">
                                     <span class="text-[9px] text-gray-600 mr-1">APR:</span>
-                                    ${['1h', '6h', '24h', '7d'].map(tf => `
+                                    ${['1h', '3h', '6h', '24h', '7d'].map(tf => `
                                         <button
                                             class="time-range-button px-2 py-0.5 text-[10px] rounded border border-gray-700 ${tf === '1h' ? 'active' : ''}"
                                             onclick="changeAprTimeframe('${tokenId}', '${tf}')"
@@ -454,6 +466,15 @@
                                             ${tf}
                                         </button>
                                     `).join('')}
+                                    <span class="text-gray-700 mx-1">|</span>
+                                    <button
+                                        class="time-range-button px-2 py-0.5 text-[10px] rounded border border-gray-700 active"
+                                        onclick="toggleApyMode('${tokenId}')"
+                                        data-token="${tokenId}"
+                                        data-apy-toggle="true"
+                                    >
+                                        APR
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -527,6 +548,19 @@
             createChart(tokenId, allData.tokens[tokenId]);
         }
 
+        function toggleApyMode(tokenId) {
+            showAsAPY[tokenId] = !showAsAPY[tokenId];
+            
+            // Update button text
+            const btn = document.querySelector(`[data-token="${tokenId}"][data-apy-toggle]`);
+            if (btn) {
+                btn.textContent = showAsAPY[tokenId] ? 'APY' : 'APR';
+            }
+            
+            // Recreate chart
+            createChart(tokenId, allData.tokens[tokenId]);
+        }
+
         function toggleChartMode(tokenId) {
             chartModes[tokenId] = chartModes[tokenId] === 'single' ? 'dual' : 'single';
             createChart(tokenId, allData.tokens[tokenId]);
@@ -591,9 +625,15 @@
             const prices = filteredSnapshots.map(s => s.price);
             const selectedAprTf = aprTimeframes[tokenId] || '1h';
             const aprKey = `apr_${selectedAprTf}`;
-            const aprDataRaw = filteredSnapshots.map(s => s[aprKey]);
+            const useAPY = showAsAPY[tokenId] || false;
+            const tfHours = { '1h': 1, '3h': 3, '6h': 6, '12h': 12, '24h': 24, '3d': 72, '7d': 168 };
+            const aprDataRaw = filteredSnapshots.map(s => {
+                const apr = s[aprKey];
+                return useAPY ? aprToApy(apr, tfHours[selectedAprTf] || 24) : apr;
+            });
             // Apply 5-point moving average to smooth out APR noise (especially for 1h)
             const aprData = selectedAprTf === '1h' ? smoothData(aprDataRaw, 5) : smoothData(aprDataRaw, 3);
+            const rateLabel = useAPY ? 'APY' : 'APR';
 
             // Calculate price range for better y-axis scaling
             const minPrice = Math.min(...prices);
@@ -672,7 +712,7 @@
                 const aprPadding = range < minRange ? (minRange - range) / 2 + 0.05 : range * 0.1;
 
                 datasets.push({
-                    label: `${selectedAprTf} APR`,
+                    label: `${selectedAprTf} ${rateLabel}`,
                     data: aprData,
                     borderColor: 'rgb(20, 184, 166)',
                     backgroundColor: 'rgba(20, 184, 166, 0.1)',

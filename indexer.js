@@ -108,6 +108,7 @@ async function calculateAPR(tokenId, currentPrice, snapshots) {
   // Time ranges in hours
   const timeRanges = {
     '1h': 1,
+    '3h': 3,
     '6h': 6,
     '12h': 12,
     '24h': 24,
