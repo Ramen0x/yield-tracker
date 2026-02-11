@@ -727,6 +727,23 @@
                     spanGaps: true
                 });
 
+                // Add average APR line
+                const avgAPR = validAPRs.reduce((a, b) => a + b, 0) / validAPRs.length;
+                const avgLineData = aprData.map(() => avgAPR);
+                datasets.push({
+                    label: `Avg ${rateLabel}: ${avgAPR.toFixed(2)}%`,
+                    data: avgLineData,
+                    borderColor: 'rgba(251, 146, 60, 0.8)',
+                    borderWidth: 2,
+                    borderDash: [10, 5],
+                    tension: 0,
+                    fill: false,
+                    pointRadius: 0,
+                    pointHoverRadius: 0,
+                    yAxisID: 'y1',
+                    spanGaps: true
+                });
+
                 scales.y1 = {
                     type: 'linear',
                     position: 'right',
