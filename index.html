@@ -207,6 +207,7 @@
         let chartModes = {}; // Store chart mode (single/dual-axis) per token
         let aprTimeframes = {}; // Store selected APR timeframe per token
         let showAsAPY = {}; // Store APR/APY toggle per token
+        let hiddenDatasets = {}; // Track which datasets are hidden per token
         
         // Convert APR to APY: APY = (1 + APR/100)^1 - 1 for simple annual rate
         // For sub-annual periods, we compound: APY = (1 + r)^(periods_per_year) - 1
@@ -500,6 +501,8 @@
             // Initialize time range, chart mode, and APR timeframe
             timeRanges[tokenId] = '24h';
             chartModes[tokenId] = 'dual';
+            // APR hidden by default (index 1 and 2 are APR and Avg)
+            hiddenDatasets[tokenId] = { 1: true, 2: true };
             aprTimeframes[tokenId] = '1h';
 
             // Create chart after DOM insertion
@@ -763,6 +766,12 @@
                 };
             }
 
+            // Apply hidden state to datasets
+            const tokenHidden = hiddenDatasets[tokenId] || {};
+            datasets.forEach((ds, i) => {
+                if (tokenHidden[i]) ds.hidden = true;
+            });
+
             charts[tokenId] = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -806,7 +815,11 @@
                             onClick: function(e, legendItem, legend) {
                                 const index = legendItem.index;
                                 const ci = legend.chart;
-                                ci.setDatasetVisibility(index, !ci.isDatasetVisible(index));
+                                const isVisible = ci.isDatasetVisible(index);
+                                ci.setDatasetVisibility(index, !isVisible);
+                                // Track hidden state
+                                if (!hiddenDatasets[tokenId]) hiddenDatasets[tokenId] = {};
+                                hiddenDatasets[tokenId][index] = isVisible;
                                 ci.update();
                             }
                         },
