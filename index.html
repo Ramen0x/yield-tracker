@@ -546,6 +546,23 @@
             return snapshots.filter(s => s.timestamp >= cutoff);
         }
 
+        // Smooth data using simple moving average to reduce noise
+        function smoothData(data, windowSize = 3) {
+            if (!data || data.length < windowSize) return data;
+            const result = [];
+            for (let i = 0; i < data.length; i++) {
+                const start = Math.max(0, i - Math.floor(windowSize / 2));
+                const end = Math.min(data.length, i + Math.floor(windowSize / 2) + 1);
+                const window = data.slice(start, end).filter(v => v !== null && v !== undefined);
+                if (window.length > 0) {
+                    result.push(window.reduce((a, b) => a + b, 0) / window.length);
+                } else {
+                    result.push(null);
+                }
+            }
+            return result;
+        }
+
         function createChart(tokenId, tokenData) {
             const canvas = document.getElementById(`chart-${tokenId}`);
             if (!canvas) return;
@@ -574,7 +591,9 @@
             const prices = filteredSnapshots.map(s => s.price);
             const selectedAprTf = aprTimeframes[tokenId] || '1h';
             const aprKey = `apr_${selectedAprTf}`;
-            const aprData = filteredSnapshots.map(s => s[aprKey]);
+            const aprDataRaw = filteredSnapshots.map(s => s[aprKey]);
+            // Apply 5-point moving average to smooth out APR noise (especially for 1h)
+            const aprData = selectedAprTf === '1h' ? smoothData(aprDataRaw, 5) : smoothData(aprDataRaw, 3);
 
             // Calculate price range for better y-axis scaling
             const minPrice = Math.min(...prices);
