@@ -788,7 +788,26 @@
                                 padding: 20,
                                 font: { size: 12, weight: '500' },
                                 boxWidth: 10,
-                                boxHeight: 10
+                                boxHeight: 10,
+                                generateLabels: function(chart) {
+                                    const datasets = chart.data.datasets;
+                                    return datasets.map((dataset, i) => ({
+                                        text: dataset.label,
+                                        fillStyle: dataset.borderColor,
+                                        strokeStyle: dataset.borderColor,
+                                        lineWidth: 2,
+                                        hidden: !chart.isDatasetVisible(i),
+                                        index: i,
+                                        fontColor: chart.isDatasetVisible(i) ? '#f3f4f6' : 'rgba(243, 244, 246, 0.3)',
+                                        pointStyle: 'circle'
+                                    }));
+                                }
+                            },
+                            onClick: function(e, legendItem, legend) {
+                                const index = legendItem.index;
+                                const ci = legend.chart;
+                                ci.setDatasetVisibility(index, !ci.isDatasetVisible(index));
+                                ci.update();
                             }
                         },
                         tooltip: {
