@@ -501,8 +501,8 @@
             // Initialize time range, chart mode, and APR timeframe
             timeRanges[tokenId] = '24h';
             chartModes[tokenId] = 'dual';
-            // APR hidden by default (index 1 and 2 are APR and Avg)
-            hiddenDatasets[tokenId] = { 1: true, 2: true };
+            // APR hidden by default, Avg shown by default
+            hiddenDatasets[tokenId] = { 1: true };
             aprTimeframes[tokenId] = '1h';
 
             // Create chart after DOM insertion
