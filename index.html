@@ -717,10 +717,11 @@
                     pointRadius: 0,
                     pointHoverRadius: 4,
                     yAxisID: 'y1',
-                    spanGaps: true
+                    spanGaps: true,
+                    order: 2
                 });
 
-                // Add average APR line
+                // Add average APR line (in front)
                 const avgAPR = validAPRs.reduce((a, b) => a + b, 0) / validAPRs.length;
                 const avgLineData = aprData.map(() => avgAPR);
                 datasets.push({
@@ -734,7 +735,8 @@
                     pointRadius: 0,
                     pointHoverRadius: 0,
                     yAxisID: 'y1',
-                    spanGaps: true
+                    spanGaps: true,
+                    order: 1
                 });
 
                 scales.y1 = {
