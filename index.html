@@ -731,11 +731,11 @@
                 const avgAPR = validAPRs.reduce((a, b) => a + b, 0) / validAPRs.length;
                 const avgLineData = aprData.map(() => avgAPR);
                 datasets.push({
-                    label: `Avg ${rateLabel}: ${avgAPR.toFixed(2)}%`,
+                    label: `Avg: ${avgAPR.toFixed(2)}%`,
                     data: avgLineData,
-                    borderColor: 'rgba(251, 146, 60, 0.8)',
-                    borderWidth: 2,
-                    borderDash: [10, 5],
+                    borderColor: 'rgba(148, 163, 184, 0.6)',
+                    borderWidth: 1.5,
+                    borderDash: [8, 4],
                     tension: 0,
                     fill: false,
                     pointRadius: 0,
@@ -753,15 +753,17 @@
                         drawOnChartArea: false
                     },
                     ticks: {
-                        color: '#fb923c',
+                        color: 'rgb(20, 184, 166)',
+                        font: { size: 11 },
                         callback: function(value) {
                             return value.toFixed(2) + '%';
                         }
                     },
                     title: {
                         display: true,
-                        text: 'APR (%)',
-                        color: '#fb923c'
+                        text: rateLabel + ' (%)',
+                        color: 'rgb(20, 184, 166)',
+                        font: { size: 11, weight: '500' }
                     }
                 };
             }
@@ -783,10 +785,15 @@
                         legend: {
                             display: mode === 'dual',
                             position: 'top',
+                            align: 'end',
                             labels: {
-                                color: '#9ca3af',
+                                color: '#d1d5db',
                                 usePointStyle: true,
-                                padding: 15
+                                pointStyle: 'line',
+                                padding: 20,
+                                font: { size: 11 },
+                                boxWidth: 30,
+                                boxHeight: 1
                             }
                         },
                         tooltip: {
