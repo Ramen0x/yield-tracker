@@ -205,6 +205,7 @@
         let charts = {};
         let timeRanges = {}; // Store selected time range per token
         let chartModes = {}; // Store chart mode (single/dual-axis) per token
+        let aprTimeframes = {}; // Store selected APR timeframe per token
 
         // Protocol branding
         const protocolBranding = {
@@ -429,6 +430,7 @@
                                     </button>
                                 </div>
                                 <div class="flex items-center gap-1">
+                                    <span class="text-[9px] text-gray-600 mr-1">Range:</span>
                                     ${['24h', '7d', '30d', 'all'].map(range => `
                                         <button
                                             class="time-range-button px-2 py-0.5 text-[10px] rounded border border-gray-700 ${range === '24h' ? 'active' : ''}"
@@ -437,6 +439,19 @@
                                             data-range="${range}"
                                         >
                                             ${range}
+                                        </button>
+                                    `).join('')}
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <span class="text-[9px] text-gray-600 mr-1">APR:</span>
+                                    ${['1h', '6h', '24h', '7d'].map(tf => `
+                                        <button
+                                            class="time-range-button px-2 py-0.5 text-[10px] rounded border border-gray-700 ${tf === '1h' ? 'active' : ''}"
+                                            onclick="changeAprTimeframe('${tokenId}', '${tf}')"
+                                            data-token="${tokenId}"
+                                            data-apr="${tf}"
+                                        >
+                                            ${tf}
                                         </button>
                                     `).join('')}
                                 </div>
@@ -461,9 +476,10 @@
                 </div>
             `;
 
-            // Initialize time range and chart mode
+            // Initialize time range, chart mode, and APR timeframe
             timeRanges[tokenId] = '24h';
             chartModes[tokenId] = 'dual';
+            aprTimeframes[tokenId] = '1h';
 
             // Create chart after DOM insertion
             setTimeout(() => {
@@ -484,6 +500,23 @@
             const buttons = document.querySelectorAll(`[data-token="${tokenId}"][data-range]`);
             buttons.forEach(btn => {
                 if (btn.dataset.range === range) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Recreate chart
+            createChart(tokenId, allData.tokens[tokenId]);
+        }
+
+        function changeAprTimeframe(tokenId, timeframe) {
+            aprTimeframes[tokenId] = timeframe;
+
+            // Update button states
+            const buttons = document.querySelectorAll(`[data-token="${tokenId}"][data-apr]`);
+            buttons.forEach(btn => {
+                if (btn.dataset.apr === timeframe) {
                     btn.classList.add('active');
                 } else {
                     btn.classList.remove('active');
@@ -539,7 +572,9 @@
 
             const labels = filteredSnapshots.map(s => new Date(s.timestamp));
             const prices = filteredSnapshots.map(s => s.price);
-            const apr1h = filteredSnapshots.map(s => s.apr_1h);
+            const selectedAprTf = aprTimeframes[tokenId] || '1h';
+            const aprKey = `apr_${selectedAprTf}`;
+            const aprData = filteredSnapshots.map(s => s[aprKey]);
 
             // Calculate price range for better y-axis scaling
             const minPrice = Math.min(...prices);
@@ -608,8 +643,8 @@
             };
 
             // Add dual-axis for APR if mode is dual
-            if (mode === 'dual' && apr1h.some(v => v !== null && v !== undefined)) {
-                const validAPRs = apr1h.filter(v => v !== null && v !== undefined);
+            if (mode === 'dual' && aprData.some(v => v !== null && v !== undefined)) {
+                const validAPRs = aprData.filter(v => v !== null && v !== undefined);
                 const minAPR = Math.min(...validAPRs);
                 const maxAPR = Math.max(...validAPRs);
                 // Ensure minimum 0.5% range so flat lines don't look jagged
@@ -618,8 +653,8 @@
                 const aprPadding = range < minRange ? (minRange - range) / 2 + 0.05 : range * 0.1;
 
                 datasets.push({
-                    label: '1h APR',
-                    data: apr1h,
+                    label: `${selectedAprTf} APR`,
+                    data: aprData,
                     borderColor: 'rgb(20, 184, 166)',
                     backgroundColor: 'rgba(20, 184, 166, 0.1)',
                     borderWidth: 2,
@@ -700,8 +735,8 @@
                                 label: function(context) {
                                     if (context.dataset.label === 'Share Price') {
                                         return `Price: ${context.parsed.y.toFixed(8)}`;
-                                    } else if (context.dataset.label === '1h APR') {
-                                        return context.parsed.y !== null ? `1h APR: ${context.parsed.y.toFixed(2)}%` : null;
+                                    } else if (context.dataset.label.includes('APR')) {
+                                        return context.parsed.y !== null ? `${context.dataset.label}: ${context.parsed.y.toFixed(2)}%` : null;
                                     }
                                 },
                                 afterLabel: function(context) {
