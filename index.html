@@ -232,7 +232,15 @@
             'Avant': { color: '#f59e0b' },
             'Superstate': { color: '#ec4899' },
             'Yuzu': { color: '#fbbf24' },
-            'Midas': { color: '#06b6d4' }
+            'Midas': { color: '#06b6d4' },
+            'Basis Trading': { color: '#8b5cf6' }
+        };
+        
+        // Map protocols to display categories
+        const protocolCategories = {
+            'Ethena': 'Basis Trading',
+            'Strata': 'Basis Trading',
+            'Resolv': 'Basis Trading'
         };
         
         // Track which protocol sections are expanded
@@ -320,15 +328,17 @@
             container.innerHTML = '';
             container.className = 'space-y-4';
 
-            // Group tokens by protocol
+            // Group tokens by category (using protocolCategories mapping)
             const tokensByProtocol = {};
             for (const [tokenId, tokenData] of Object.entries(allData.tokens)) {
                 if (tokenData.snapshots.length === 0) continue;
                 const protocol = tokenData.protocol || 'Other';
-                if (!tokensByProtocol[protocol]) {
-                    tokensByProtocol[protocol] = [];
+                // Use category mapping if available, otherwise use protocol name
+                const category = protocolCategories[protocol] || protocol;
+                if (!tokensByProtocol[category]) {
+                    tokensByProtocol[category] = [];
                 }
-                tokensByProtocol[protocol].push({ tokenId, tokenData });
+                tokensByProtocol[category].push({ tokenId, tokenData });
             }
 
             let hasRendered = false;
@@ -514,7 +524,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-[1fr_160px] gap-4 p-4">
                     <!-- Chart -->
                     <div>
-                        <div class="mb-3 flex items-start justify-between">
+                        <div class="mb-3 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
                             <div>
                                 <h3 class="text-sm font-semibold text-white mb-0.5">Price History</h3>
                                 <div class="text-xs text-gray-400">
@@ -522,29 +532,29 @@
                                     <span class="text-gray-500">(${tokenData.snapshots.length})</span>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-2">
+                            <div class="flex flex-wrap items-center gap-2">
                                 <div class="flex items-center gap-1">
                                     <button
-                                        class="p-1 rounded border border-gray-700 hover:bg-gray-700 transition text-gray-500 hover:text-white"
+                                        class="p-1.5 rounded border border-gray-700 hover:bg-gray-700 transition text-gray-500 hover:text-white"
                                         onclick="toggleChartMode('${tokenId}')"
                                         id="chart-mode-${tokenId}"
                                         title="Toggle APR overlay"
                                     >
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                                     </button>
                                     <button
-                                        class="p-1 rounded border border-gray-700 hover:bg-gray-700 transition text-gray-500 hover:text-white"
+                                        class="p-1.5 rounded border border-gray-700 hover:bg-gray-700 transition text-gray-500 hover:text-white"
                                         onclick="exportTokenToCSV('${tokenId}')"
                                         title="Export CSV"
                                     >
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                                     </button>
                                 </div>
                                 <div class="flex items-center gap-1">
-                                    <span class="text-[9px] text-gray-600 mr-1">Range:</span>
+                                    <span class="text-[10px] text-gray-600 mr-1">Range:</span>
                                     ${['24h', '7d', '30d', 'all'].map(range => `
                                         <button
-                                            class="time-range-button px-2 py-0.5 text-[10px] rounded border border-gray-700 ${range === '24h' ? 'active' : ''}"
+                                            class="time-range-button px-2 py-1 text-[11px] rounded border border-gray-700 ${range === '24h' ? 'active' : ''}"
                                             onclick="changeTimeRange('${tokenId}', '${range}')"
                                             data-token="${tokenId}"
                                             data-range="${range}"
@@ -554,10 +564,10 @@
                                     `).join('')}
                                 </div>
                                 <div class="flex items-center gap-1">
-                                    <span class="text-[9px] text-gray-600 mr-1">APR:</span>
+                                    <span class="text-[10px] text-gray-600 mr-1">APR:</span>
                                     ${['1h', '3h', '6h', '24h', '7d'].map(tf => `
                                         <button
-                                            class="time-range-button px-2 py-0.5 text-[10px] rounded border border-gray-700 ${tf === '1h' ? 'active' : ''}"
+                                            class="time-range-button px-2 py-1 text-[11px] rounded border border-gray-700 ${tf === '1h' ? 'active' : ''}"
                                             onclick="changeAprTimeframe('${tokenId}', '${tf}')"
                                             data-token="${tokenId}"
                                             data-apr="${tf}"
@@ -567,7 +577,7 @@
                                     `).join('')}
                                     <span class="text-gray-700 mx-1">|</span>
                                     <button
-                                        class="time-range-button px-2 py-0.5 text-[10px] rounded border border-gray-700 active"
+                                        class="time-range-button px-2 py-1 text-[11px] rounded border border-gray-700 active"
                                         onclick="toggleApyMode('${tokenId}')"
                                         data-token="${tokenId}"
                                         data-apy-toggle="true"
