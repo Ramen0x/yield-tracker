@@ -1,5 +1,5 @@
 {
-  "lastUpdate": 1770888002073,
+  "lastUpdate": 1770888602117,
   "tokens": {
     "syrupUSDC": {
       "symbol": "syrupUSDC",
@@ -3370,6 +3370,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 40.1
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.151252,
+          "apr_1h": 4.564683016017372,
+          "apr_3h": 4.3116176746298605,
+          "apr_6h": 4.438733608471212,
+          "apr_12h": 4.43884236043419,
+          "apr_24h": 4.471537324397098,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 40.3
         }
       ]
     },
@@ -6742,6 +6756,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 40.1
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.115739,
+          "apr_1h": 3.924940756404717,
+          "apr_3h": 3.9254418131192037,
+          "apr_6h": 3.79484708373425,
+          "apr_12h": 3.794926046390898,
+          "apr_24h": 3.76899635847939,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 40.3
         }
       ]
     },
@@ -10114,6 +10142,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 40.1
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.2201852846340764,
+          "apr_1h": 3.4945822835827776,
+          "apr_3h": 3.4949436558200255,
+          "apr_6h": 3.4946972282190973,
+          "apr_12h": 3.4915831742432255,
+          "apr_24h": 3.488249637092774,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 40.3
         }
       ]
     },
@@ -13486,6 +13528,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 40.1
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.0133579240404718,
+          "apr_1h": 2.1554934960155854,
+          "apr_3h": 2.15860315799399,
+          "apr_6h": 2.15554258907548,
+          "apr_12h": 2.1541435044890007,
+          "apr_24h": 2.1604329705396723,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 40.3
         }
       ]
     },
@@ -16858,6 +16914,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 40.1
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.0327825222735099,
+          "apr_1h": 7.411437937754151,
+          "apr_3h": 7.428272509509927,
+          "apr_6h": 7.436175733061684,
+          "apr_12h": 7.527026580937958,
+          "apr_24h": 7.609451511753098,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 40.3
         }
       ]
     },
@@ -20230,6 +20300,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 40.1
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.0485161471582352,
+          "apr_1h": 4.395180248487714,
+          "apr_3h": 4.396921140855725,
+          "apr_6h": 4.3554323689942755,
+          "apr_12h": 4.33464199973823,
+          "apr_24h": 4.037923538669565,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 40.3
         }
       ]
     },
@@ -23602,6 +23686,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 40.1
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.0673110658297142,
+          "apr_1h": 4.877824176718782,
+          "apr_3h": 4.884053384238644,
+          "apr_6h": 4.88169906316048,
+          "apr_12h": 4.913258063054822,
+          "apr_24h": 5.0153486811133785,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 40.3
         }
       ]
     },
@@ -26974,6 +27072,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 40.1
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.1305258198992774,
+          "apr_1h": 0,
+          "apr_3h": 0,
+          "apr_6h": 0,
+          "apr_12h": 0,
+          "apr_24h": 2.012957114655195,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 40.3
         }
       ]
     },
@@ -30333,6 +30445,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 40
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.1473251717111446,
+          "apr_1h": 0,
+          "apr_3h": 11.628441182365957,
+          "apr_6h": 17.929767223489023,
+          "apr_12h": 16.189724678979356,
+          "apr_24h": 8.095043817224688,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 40.2
         }
       ]
     },
@@ -32627,6 +32753,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 26.7
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 10.98695,
+          "apr_1h": 0,
+          "apr_3h": 0,
+          "apr_6h": 0,
+          "apr_12h": 0,
+          "apr_24h": 3.3356976919135763,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 26.8
         }
       ]
     },
@@ -34921,6 +35061,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 26.7
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 11.471825,
+          "apr_1h": 0,
+          "apr_3h": 0,
+          "apr_6h": 0,
+          "apr_12h": 0,
+          "apr_24h": 13.552656171455112,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 26.8
         }
       ]
     },
@@ -36305,6 +36459,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 15.9
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.0363847768457304,
+          "apr_1h": 8.196919469803904,
+          "apr_3h": 8.201047872840789,
+          "apr_6h": 8.202473562927173,
+          "apr_12h": 8.206160551048,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 16.1
         }
       ]
     },
@@ -37689,6 +37857,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 15.9
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.076607,
+          "apr_1h": 31.722598748936694,
+          "apr_3h": 32.00371660496564,
+          "apr_6h": 32.00992040635075,
+          "apr_12h": 32.4922980380866,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 16.1
         }
       ]
     },
@@ -38107,6 +38289,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 4.7
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.05177953,
+          "apr_1h": 0,
+          "apr_3h": 0,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 4.9
         }
       ]
     },
@@ -38525,6 +38721,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 4.7
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.1776648,
+          "apr_1h": 0,
+          "apr_3h": 0,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 4.9
         }
       ]
     },
@@ -38943,6 +39153,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 4.7
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.0556226,
+          "apr_1h": 0,
+          "apr_3h": 0,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 4.9
         }
       ]
     },
@@ -39361,6 +39585,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 4.7
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.09609933,
+          "apr_1h": 0,
+          "apr_3h": 0,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 4.9
         }
       ]
     },
@@ -39779,6 +40017,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 4.7
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.07002439,
+          "apr_1h": 0,
+          "apr_3h": 0,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 4.9
         }
       ]
     },
@@ -40197,6 +40449,20 @@
           "apr_14d": null,
           "apr_30d": null,
           "data_hours": 4.7
+        },
+        {
+          "timestamp": 1770888602117,
+          "price": 1.07756681,
+          "apr_1h": 0,
+          "apr_3h": 0,
+          "apr_6h": null,
+          "apr_12h": null,
+          "apr_24h": null,
+          "apr_3d": null,
+          "apr_7d": null,
+          "apr_14d": null,
+          "apr_30d": null,
+          "data_hours": 4.9
         }
       ]
     }
