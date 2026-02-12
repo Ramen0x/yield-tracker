@@ -95,6 +95,17 @@ async function getSharePrice(token) {
       const [, answer, , ,] = await oracle.latestRoundData();
       const oracleDecimals = Number(await oracle.decimals());
       return Number(answer) / (10 ** oracleDecimals);
+    } else if (token.type === 'pyth_nav') {
+      // Pyth NAV oracle - fetch from Hermes API
+      const response = await fetch(`https://hermes.pyth.network/v2/updates/price/latest?ids[]=${token.pythPriceId}`);
+      const data = await response.json();
+      if (data.parsed && data.parsed[0]) {
+        const priceData = data.parsed[0].price;
+        const price = Number(priceData.price);
+        const expo = priceData.expo;
+        return price * Math.pow(10, expo);
+      }
+      throw new Error('No Pyth price data');
     } else {
       // For custom types, we need specific logic per protocol
       if (token.address === 'TBD') return null;
