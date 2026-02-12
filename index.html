@@ -69,18 +69,21 @@
         }
 
         .time-range-button {
-            transition: all 0.2s;
+            transition: all 0.15s;
             cursor: pointer;
+            background: transparent;
+            color: #9ca3af;
         }
 
         .time-range-button:hover {
             background: rgba(99, 102, 241, 0.2);
+            color: #e5e7eb;
         }
 
         .time-range-button.active {
-            background: rgba(99, 102, 241, 0.3);
-            border-color: #6366f1;
-            color: #a5b4fc;
+            background: rgba(99, 102, 241, 0.4);
+            color: #c7d2fe;
+            font-weight: 500;
         }
 
         /* Custom scrollbar */
@@ -544,68 +547,73 @@
                 <div class="grid grid-cols-1 lg:grid-cols-[1fr_160px] gap-4 p-4">
                     <!-- Chart -->
                     <div>
-                        <div class="mb-3 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                        <!-- Header row -->
+                        <div class="flex items-center justify-between mb-2">
                             <div>
-                                <h3 class="text-sm font-semibold text-white mb-0.5">Price History</h3>
+                                <h3 class="text-sm font-semibold text-white">Price History</h3>
                                 <div class="text-xs text-gray-400">
-                                    Current: <span class="font-mono text-emerald-400">${latest.price.toFixed(6)}</span>
-                                    <span class="text-gray-500">(${tokenData.snapshots.length})</span>
+                                    <span class="font-mono text-emerald-400">${latest.price.toFixed(6)}</span>
+                                    <span class="text-gray-600 ml-1">(${tokenData.snapshots.length} pts)</span>
                                 </div>
                             </div>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <div class="flex items-center gap-1">
-                                    <button
-                                        class="p-1.5 rounded border border-gray-700 hover:bg-gray-700 transition text-gray-500 hover:text-white"
-                                        onclick="toggleChartMode('${tokenId}')"
-                                        id="chart-mode-${tokenId}"
-                                        title="Toggle APR overlay"
-                                    >
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                                    </button>
-                                    <button
-                                        class="p-1.5 rounded border border-gray-700 hover:bg-gray-700 transition text-gray-500 hover:text-white"
-                                        onclick="exportTokenToCSV('${tokenId}')"
-                                        title="Export CSV"
-                                    >
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                                    </button>
-                                </div>
-                                <div class="flex items-center gap-1">
-                                    <span class="text-[10px] text-gray-600 mr-1">Range:</span>
+                            <div class="flex items-center gap-1">
+                                <button
+                                    class="p-2 rounded border border-gray-700 hover:bg-gray-700 transition text-gray-500 hover:text-white"
+                                    onclick="toggleChartMode('${tokenId}')"
+                                    id="chart-mode-${tokenId}"
+                                    title="Toggle APR overlay"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                </button>
+                                <button
+                                    class="p-2 rounded border border-gray-700 hover:bg-gray-700 transition text-gray-500 hover:text-white"
+                                    onclick="exportTokenToCSV('${tokenId}')"
+                                    title="Export CSV"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Controls row -->
+                        <div class="flex flex-wrap items-center gap-3 mb-3 p-2 bg-gray-900/50 rounded-lg">
+                            <!-- Range selector -->
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] text-gray-500 uppercase tracking-wide">Range</span>
+                                <div class="flex rounded-md overflow-hidden border border-gray-700">
                                     ${['24h', '7d', '30d', 'all'].map(range => `
                                         <button
-                                            class="time-range-button px-2 py-1 text-[11px] rounded border border-gray-700 ${range === '24h' ? 'active' : ''}"
+                                            class="time-range-button px-2.5 py-1.5 text-[11px] border-r border-gray-700 last:border-r-0 ${range === '24h' ? 'active' : ''}"
                                             onclick="changeTimeRange('${tokenId}', '${range}')"
                                             data-token="${tokenId}"
                                             data-range="${range}"
-                                        >
-                                            ${range}
-                                        </button>
+                                        >${range}</button>
                                     `).join('')}
                                 </div>
-                                <div class="flex items-center gap-1">
-                                    <span class="text-[10px] text-gray-600 mr-1">APR:</span>
+                            </div>
+                            
+                            <!-- APR timeframe selector -->
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] text-gray-500 uppercase tracking-wide">APR</span>
+                                <div class="flex rounded-md overflow-hidden border border-gray-700">
                                     ${['1h', '3h', '6h', '24h', '7d'].map(tf => `
                                         <button
-                                            class="time-range-button px-2 py-1 text-[11px] rounded border border-gray-700 ${tf === '1h' ? 'active' : ''}"
+                                            class="time-range-button px-2.5 py-1.5 text-[11px] border-r border-gray-700 last:border-r-0 ${tf === '1h' ? 'active' : ''}"
                                             onclick="changeAprTimeframe('${tokenId}', '${tf}')"
                                             data-token="${tokenId}"
                                             data-apr="${tf}"
-                                        >
-                                            ${tf}
-                                        </button>
+                                        >${tf}</button>
                                     `).join('')}
-                                    <span class="text-gray-700 mx-1">|</span>
-                                    <button
-                                        class="time-range-button px-2 py-1 text-[11px] rounded border border-gray-700 active"
-                                        onclick="toggleApyMode('${tokenId}')"
-                                        data-token="${tokenId}"
-                                        data-apy-toggle="true"
-                                    >
-                                        APR
-                                    </button>
                                 </div>
                             </div>
+                            
+                            <!-- APR/APY toggle -->
+                            <button
+                                class="time-range-button px-3 py-1.5 text-[11px] rounded-md border border-gray-700 active"
+                                onclick="toggleApyMode('${tokenId}')"
+                                data-token="${tokenId}"
+                                data-apy-toggle="true"
+                            >APR</button>
                         </div>
 
                         <div class="bg-gray-900 rounded-lg p-4" style="height: 400px;" id="chart-loading-${tokenId}">
