@@ -343,8 +343,28 @@
 
             let hasRendered = false;
             
-            // Sort protocols alphabetically
-            const sortedProtocols = Object.keys(tokensByProtocol).sort();
+            // Custom sort order
+            const protocolOrder = [
+                'Basis Trading',
+                'Maple Finance', 
+                'Cap Finance',
+                'Yuzu',
+                'Midas',
+                'Avant',
+                'Reservoir',
+                'Superstate'
+            ];
+            const sortedProtocols = Object.keys(tokensByProtocol).sort((a, b) => {
+                const aIdx = protocolOrder.indexOf(a);
+                const bIdx = protocolOrder.indexOf(b);
+                // If both in order list, sort by order
+                if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+                // If only one in list, it comes first
+                if (aIdx !== -1) return -1;
+                if (bIdx !== -1) return 1;
+                // Otherwise alphabetical
+                return a.localeCompare(b);
+            });
             
             for (const protocol of sortedProtocols) {
                 const tokens = tokensByProtocol[protocol];
