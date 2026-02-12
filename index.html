@@ -229,8 +229,14 @@
             'Cap Finance': { color: '#22c55e' },
             'Reservoir': { color: '#3b82f6' },
             'Resolv': { color: '#8b5cf6' },
-            'Avant': { color: '#f59e0b' }
+            'Avant': { color: '#f59e0b' },
+            'Superstate': { color: '#ec4899' },
+            'Yuzu': { color: '#fbbf24' },
+            'Midas': { color: '#06b6d4' }
         };
+        
+        // Track which protocol sections are expanded
+        let expandedSections = {};
 
         // Advertised APY data (loaded from config file)
         let advertisedAPY = {};
@@ -312,23 +318,115 @@
         function renderTokens() {
             const container = document.getElementById('content');
             container.innerHTML = '';
-            container.className = 'grid grid-cols-1 xl:grid-cols-2 gap-4';
+            container.className = 'space-y-4';
 
-            let hasRendered = false;
+            // Group tokens by protocol
+            const tokensByProtocol = {};
             for (const [tokenId, tokenData] of Object.entries(allData.tokens)) {
                 if (tokenData.snapshots.length === 0) continue;
+                const protocol = tokenData.protocol || 'Other';
+                if (!tokensByProtocol[protocol]) {
+                    tokensByProtocol[protocol] = [];
+                }
+                tokensByProtocol[protocol].push({ tokenId, tokenData });
+            }
 
-                try {
-                    const section = createTokenSection(tokenId, tokenData);
-                    container.appendChild(section);
-                    hasRendered = true;
-                } catch (error) {
-                    ErrorBoundary.showError(error, `Rendering ${tokenId}`);
+            let hasRendered = false;
+            
+            // Sort protocols alphabetically
+            const sortedProtocols = Object.keys(tokensByProtocol).sort();
+            
+            for (const protocol of sortedProtocols) {
+                const tokens = tokensByProtocol[protocol];
+                const branding = protocolBranding[protocol] || { color: '#6b7280' };
+                
+                // Default: expand if 3 or fewer tokens in protocol, collapse if more
+                if (expandedSections[protocol] === undefined) {
+                    expandedSections[protocol] = tokens.length <= 3;
+                }
+                const isExpanded = expandedSections[protocol];
+                
+                // Create protocol section
+                const section = document.createElement('div');
+                section.className = 'bg-gray-800/50 border border-gray-700 rounded-lg overflow-hidden';
+                
+                // Calculate protocol-level stats
+                const latestPrices = tokens.map(t => {
+                    const latest = t.tokenData.snapshots[t.tokenData.snapshots.length - 1];
+                    return { symbol: t.tokenData.symbol, price: latest.price, apr7d: latest.apr_7d };
+                });
+                
+                section.innerHTML = `
+                    <div 
+                        class="p-4 cursor-pointer hover:bg-gray-700/30 transition-colors flex items-center justify-between"
+                        onclick="toggleProtocolSection('${protocol}')"
+                    >
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-8 rounded-full" style="background: ${branding.color}"></div>
+                            <div>
+                                <h2 class="text-lg font-bold" style="color: ${branding.color}">${protocol}</h2>
+                                <p class="text-xs text-gray-500">${tokens.length} token${tokens.length > 1 ? 's' : ''}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="text-right hidden sm:block">
+                                <div class="text-xs text-gray-500">Tokens</div>
+                                <div class="text-sm font-mono text-gray-300">${latestPrices.map(p => p.symbol).join(', ')}</div>
+                            </div>
+                            <svg 
+                                class="w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}" 
+                                id="chevron-${protocol.replace(/\s+/g, '-')}"
+                                fill="none" 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div 
+                        class="border-t border-gray-700 ${isExpanded ? '' : 'hidden'}" 
+                        id="section-${protocol.replace(/\s+/g, '-')}"
+                    >
+                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 p-4" id="tokens-${protocol.replace(/\s+/g, '-')}">
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(section);
+                
+                // Add tokens to the grid
+                const tokensGrid = document.getElementById(`tokens-${protocol.replace(/\s+/g, '-')}`);
+                for (const { tokenId, tokenData } of tokens) {
+                    try {
+                        const tokenSection = createTokenSection(tokenId, tokenData);
+                        tokensGrid.appendChild(tokenSection);
+                        hasRendered = true;
+                    } catch (error) {
+                        ErrorBoundary.showError(error, `Rendering ${tokenId}`);
+                    }
                 }
             }
 
             if (!hasRendered) {
                 showEmptyState();
+            }
+        }
+        
+        function toggleProtocolSection(protocol) {
+            const sectionId = `section-${protocol.replace(/\s+/g, '-')}`;
+            const chevronId = `chevron-${protocol.replace(/\s+/g, '-')}`;
+            const section = document.getElementById(sectionId);
+            const chevron = document.getElementById(chevronId);
+            
+            if (section.classList.contains('hidden')) {
+                section.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+                expandedSections[protocol] = true;
+            } else {
+                section.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+                expandedSections[protocol] = false;
             }
         }
 
