@@ -794,9 +794,11 @@
                     },
                     ticks: {
                         color: '#9ca3af',
-                        font: { family: 'monospace' },
+                        font: { family: 'monospace', size: 10 },
+                        maxTicksLimit: 6,
                         callback: function(value) {
-                            return value.toFixed(8);
+                            // Shorter format for mobile - 4 decimals
+                            return value.toFixed(4);
                         }
                     },
                     title: {
@@ -909,6 +911,12 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            left: 5,
+                            right: 5
+                        }
+                    },
                     interaction: {
                         intersect: false,
                         mode: 'index'
