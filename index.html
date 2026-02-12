@@ -370,9 +370,9 @@
                 const tokens = tokensByProtocol[protocol];
                 const branding = protocolBranding[protocol] || { color: '#6b7280' };
                 
-                // Default: expand if 3 or fewer tokens in protocol, collapse if more
+                // Default: all collapsed
                 if (expandedSections[protocol] === undefined) {
-                    expandedSections[protocol] = tokens.length <= 3;
+                    expandedSections[protocol] = false;
                 }
                 const isExpanded = expandedSections[protocol];
                 
