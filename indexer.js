@@ -7,6 +7,7 @@
 const { ethers } = require('ethers');
 const fs = require('fs');
 const path = require('path');
+const { put } = require('@vercel/blob');
 
 // Config
 const RPC_ETHEREUM = process.env.ETH_RPC_URL || 'https://eth.llamarpc.com';
@@ -65,6 +66,20 @@ function loadSnapshots() {
 
 function saveSnapshots(data) {
   fs.writeFileSync(SNAPSHOTS_FILE, JSON.stringify(data, null, 2));
+}
+
+async function uploadToBlob(data) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    console.log('  ⚠️  No BLOB_READ_WRITE_TOKEN, skipping blob upload');
+    return null;
+  }
+  
+  const blob = await put('snapshots.json', JSON.stringify(data), {
+    access: 'public',
+    addRandomSuffix: false,
+    allowOverwrite: true,
+  });
+  return blob.url;
 }
 
 async function getSharePrice(token) {
@@ -236,6 +251,12 @@ async function snapshot() {
   data.lastUpdate = timestamp;
   saveSnapshots(data);
   console.log(`\n💾 Saved to ${SNAPSHOTS_FILE}`);
+  
+  // Upload to Vercel Blob for live site
+  const blobUrl = await uploadToBlob(data);
+  if (blobUrl) {
+    console.log(`☁️  Uploaded to ${blobUrl}`);
+  }
 }
 
 async function query(tokenId, hours = 24) {

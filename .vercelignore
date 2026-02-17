@@ -1,0 +1,4 @@
+# Ignore data directory - data served from Vercel Blob
+data/
+*.log
+.env.local

@@ -277,7 +277,8 @@
             await loadAdvertisedAPY();
             try {
                 ErrorBoundary.hideError();
-                const response = await fetch('/data/snapshots.json');
+                // Fetch from Vercel Blob (live data, no redeploy needed)
+                const response = await fetch('https://axjvwtztf5syd3si.public.blob.vercel-storage.com/snapshots.json');
 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
