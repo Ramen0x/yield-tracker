@@ -7,7 +7,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .font-mono, .tabular-nums {
+            font-family: 'Space Mono', monospace;
+            font-variant-numeric: tabular-nums;
+        }
+
         @keyframes shimmer {
             0% { background-position: -1000px 0; }
             100% { background-position: 1000px 0; }
@@ -18,109 +32,115 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
         .animate-fade-in {
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .animate-pulse-slow {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            animation: fadeIn 0.4s ease-out;
         }
 
         .loading-skeleton {
-            background: linear-gradient(90deg, #1f2937 0%, #374151 50%, #1f2937 100%);
+            background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
             background-size: 1000px 100%;
             animation: shimmer 2s infinite;
         }
 
-        .card-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            transition: all 0.2s ease;
         }
 
-        .card-hover:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        .card:hover {
+            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
         }
-
-
-
-
 
         .delta-positive {
-            color: #10b981;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #059669;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
         }
 
         .delta-negative {
-            color: #ef4444;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #dc2626;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
         }
 
         .delta-neutral {
             color: #6b7280;
-            background: rgba(107, 114, 128, 0.1);
-            border: 1px solid rgba(107, 114, 128, 0.3);
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
         }
 
         .time-range-button {
             transition: all 0.15s;
             cursor: pointer;
             background: transparent;
-            color: #9ca3af;
-        }
-
-        .time-range-button:hover {
-            background: rgba(99, 102, 241, 0.2);
-            color: #e5e7eb;
-        }
-
-        .time-range-button.active {
-            background: rgba(99, 102, 241, 0.4);
-            color: #c7d2fe;
+            color: #6b7280;
             font-weight: 500;
         }
 
-        /* Custom scrollbar */
+        .time-range-button:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .time-range-button.active {
+            background: #64748b;
+            color: white;
+        }
+
+        /* Clean scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #1f2937;
+            background: transparent;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #4b5563;
-            border-radius: 4px;
+            background: #d1d5db;
+            border-radius: 3px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #6b7280;
+            background: #9ca3af;
+        }
+
+        /* Number inputs */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        /* Protocol accent bar */
+        .protocol-accent {
+            width: 3px;
+            border-radius: 2px;
         }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen">
-    <div class="container mx-auto px-4 py-6 max-w-[1800px]">
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-[1800px]">
         <!-- Header -->
         <header class="mb-8 animate-fade-in">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                    <h1 class="text-4xl font-bold mb-2 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    <h1 class="text-3xl font-semibold text-gray-900 mb-1">
                         Yield Token Tracker
                     </h1>
-                    <p class="text-gray-400 text-sm">Real APY calculated from on-chain price snapshots vs advertised rates</p>
+                    <p class="text-gray-500 text-sm">Real APY calculated from on-chain price snapshots vs advertised rates</p>
                 </div>
                 <div class="flex items-center gap-4">
                     <button
                         id="export-all-btn"
-                        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                        class="px-4 py-2 bg-slate-600 hover:bg-slate-700 rounded-lg text-sm font-medium text-white transition-colors flex items-center gap-2 shadow-sm"
                         onclick="exportAllToCSV()"
                     >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,30 +150,30 @@
                     </button>
                     <div class="text-right">
                         <div class="text-xs text-gray-500" id="last-update">Loading...</div>
-                        <div class="text-xs text-gray-600 mt-1">Updates every 10 min</div>
+                        <div class="text-xs text-gray-400 mt-1">Updates every 10 min</div>
                     </div>
                 </div>
             </div>
         </header>
 
         <!-- Error Boundary -->
-        <div id="error-container" class="hidden mb-6 p-4 bg-red-900/20 border border-red-700/50 rounded-lg">
+        <div id="error-container" class="hidden mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
             <div class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                 </svg>
                 <div class="flex-1">
-                    <h3 class="text-sm font-medium text-red-400 mb-1">Error Loading Data</h3>
-                    <p class="text-sm text-red-300/80" id="error-message"></p>
+                    <h3 class="text-sm font-medium text-red-800 mb-1">Error Loading Data</h3>
+                    <p class="text-sm text-red-600" id="error-message"></p>
                 </div>
-                <button onclick="retryLoad()" class="text-xs text-red-400 hover:text-red-300 underline">Retry</button>
+                <button onclick="retryLoad()" class="text-xs text-red-600 hover:text-red-800 underline font-medium">Retry</button>
             </div>
         </div>
 
         <!-- Loading State -->
         <div id="loading" class="space-y-6">
-            <div class="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden animate-fade-in">
-                <div class="p-4 border-b border-gray-700">
+            <div class="card overflow-hidden animate-fade-in">
+                <div class="p-4 border-b border-gray-100">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-12 rounded-lg loading-skeleton"></div>
@@ -173,16 +193,16 @@
         <!-- Empty State -->
         <div id="empty-state" class="hidden py-32">
             <div class="text-center max-w-md mx-auto">
-                <svg class="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                 </svg>
-                <h3 class="text-xl font-semibold text-gray-400 mb-2">No Data Available</h3>
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">No Data Available</h3>
                 <p class="text-gray-500">Waiting for snapshot data to be collected. Check back soon.</p>
             </div>
         </div>
 
         <!-- Main Content -->
-        <div id="content" class="hidden space-y-6">
+        <div id="content" class="hidden space-y-4">
             <!-- Token sections will be inserted here -->
         </div>
     </div>
@@ -206,14 +226,12 @@
         // Global state
         let allData = null;
         let charts = {};
-        let timeRanges = {}; // Store selected time range per token
-        let chartModes = {}; // Store chart mode (single/dual-axis) per token
-        let aprTimeframes = {}; // Store selected APR timeframe per token
-        let showAsAPY = {}; // Store APR/APY toggle per token
-        let hiddenDatasets = {}; // Track which datasets are hidden per token
+        let timeRanges = {};
+        let chartModes = {};
+        let aprTimeframes = {};
+        let showAsAPY = {};
+        let hiddenDatasets = {};
         
-        // Convert APR to APY: APY = (1 + APR/100)^1 - 1 for simple annual rate
-        // For sub-annual periods, we compound: APY = (1 + r)^(periods_per_year) - 1
         function aprToApy(apr, periodHours = 24) {
             if (apr === null || apr === undefined) return null;
             const periodsPerYear = (365 * 24) / periodHours;
@@ -222,34 +240,37 @@
             return apy;
         }
 
-        // Protocol branding
+        // Protocol branding - muted pastel colors
         const protocolBranding = {
-            'Maple Finance': { color: '#667eea' },
-            'Radiant Capital': { color: '#f5576c' },
-            'Ethena': { color: '#4facfe' },
-            'Tangible': { color: '#fa709a' },
-            'Strata': { color: '#30cfd0' },
-            'Cap Finance': { color: '#22c55e' },
-            'Reservoir': { color: '#3b82f6' },
-            'Resolv': { color: '#8b5cf6' },
-            'Avant': { color: '#f59e0b' },
-            'Superstate': { color: '#ec4899' },
-            'Yuzu': { color: '#fbbf24' },
-            'Midas': { color: '#06b6d4' },
-            'Basis Trading': { color: '#8b5cf6' }
+            'Maple Finance': { color: '#64748b' },
+            'Radiant Capital': { color: '#f9a8d4' },
+            'Ethena': { color: '#7dd3fc' },
+            'Tangible': { color: '#fbcfe8' },
+            'Strata': { color: '#0d9488' },
+            'Cap Finance': { color: '#86efac' },
+            'Reservoir': { color: '#93c5fd' },
+            'Resolv': { color: '#a5b4fc' },
+            'Avant': { color: '#fcd34d' },
+            'Superstate': { color: '#f9a8d4' },
+            'Yuzu': { color: '#fde047' },
+            'Midas': { color: '#67e8f9' },
+            'Basis Trading': { color: '#64748b' }
+        };
+
+        // Protocol-specific default time ranges
+        const protocolDefaults = {
+            'Midas': '7d',
+            'Avant': '3d',
+            'Superstate': '7d'
         };
         
-        // Map protocols to display categories
         const protocolCategories = {
             'Ethena': 'Basis Trading',
             'Strata': 'Basis Trading',
             'Resolv': 'Basis Trading'
         };
         
-        // Track which protocol sections are expanded
         let expandedSections = {};
-
-        // Advertised APY data (loaded from config file)
         let advertisedAPY = {};
 
         async function loadAdvertisedAPY() {
@@ -262,7 +283,6 @@
                 }, {});
             } catch (error) {
                 console.warn('Could not load advertised APY data:', error);
-                // Fallback values
                 advertisedAPY = {
                     'syrupUSDC': 10.5,
                     'syrupUSDT': 9.8,
@@ -277,8 +297,6 @@
             await loadAdvertisedAPY();
             try {
                 ErrorBoundary.hideError();
-                // Fetch from Vercel Blob (live data, no redeploy needed)
-                // Add cache-busting to avoid stale cached responses
                 const cacheBuster = `?t=${Date.now()}`;
                 const response = await fetch('https://axjvwtztf5syd3si.public.blob.vercel-storage.com/snapshots.json' + cacheBuster);
 
@@ -334,12 +352,10 @@
             container.innerHTML = '';
             container.className = 'space-y-4';
 
-            // Group tokens by category (using protocolCategories mapping)
             const tokensByProtocol = {};
             for (const [tokenId, tokenData] of Object.entries(allData.tokens)) {
                 if (tokenData.snapshots.length === 0) continue;
                 const protocol = tokenData.protocol || 'Other';
-                // Use category mapping if available, otherwise use protocol name
                 const category = protocolCategories[protocol] || protocol;
                 if (!tokensByProtocol[category]) {
                     tokensByProtocol[category] = [];
@@ -349,10 +365,9 @@
 
             let hasRendered = false;
             
-            // Custom sort order
             const protocolOrder = [
-                'Basis Trading',
-                'Maple Finance', 
+                'Maple Finance',
+                'Basis Trading', 
                 'Cap Finance',
                 'Yuzu',
                 'Midas',
@@ -363,12 +378,9 @@
             const sortedProtocols = Object.keys(tokensByProtocol).sort((a, b) => {
                 const aIdx = protocolOrder.indexOf(a);
                 const bIdx = protocolOrder.indexOf(b);
-                // If both in order list, sort by order
                 if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
-                // If only one in list, it comes first
                 if (aIdx !== -1) return -1;
                 if (bIdx !== -1) return 1;
-                // Otherwise alphabetical
                 return a.localeCompare(b);
             });
             
@@ -376,17 +388,14 @@
                 const tokens = tokensByProtocol[protocol];
                 const branding = protocolBranding[protocol] || { color: '#6b7280' };
                 
-                // Default: all collapsed
                 if (expandedSections[protocol] === undefined) {
                     expandedSections[protocol] = false;
                 }
                 const isExpanded = expandedSections[protocol];
                 
-                // Create protocol section
                 const section = document.createElement('div');
-                section.className = 'bg-gray-800/50 border border-gray-700 rounded-lg overflow-hidden';
+                section.className = 'card overflow-hidden';
                 
-                // Calculate protocol-level stats
                 const latestPrices = tokens.map(t => {
                     const latest = t.tokenData.snapshots[t.tokenData.snapshots.length - 1];
                     return { symbol: t.tokenData.symbol, price: latest.price, apr7d: latest.apr_7d };
@@ -394,20 +403,20 @@
                 
                 section.innerHTML = `
                     <div 
-                        class="p-4 cursor-pointer hover:bg-gray-700/30 transition-colors flex items-center justify-between"
+                        class="p-4 cursor-pointer hover:bg-gray-50 transition-colors flex items-center justify-between"
                         onclick="toggleProtocolSection('${protocol}')"
                     >
                         <div class="flex items-center gap-3">
-                            <div class="w-2 h-8 rounded-full" style="background: ${branding.color}"></div>
+                            <div class="protocol-accent h-10" style="background: ${branding.color}"></div>
                             <div>
-                                <h2 class="text-lg font-bold" style="color: ${branding.color}">${protocol}</h2>
-                                <p class="text-xs text-gray-500">${tokens.length} token${tokens.length > 1 ? 's' : ''}</p>
+                                <h2 class="text-lg font-semibold text-gray-900">${protocol}</h2>
+                                <p class="text-xs text-gray-400">${tokens.length} token${tokens.length > 1 ? 's' : ''}</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-4">
                             <div class="text-right hidden sm:block">
-                                <div class="text-xs text-gray-500">Tokens</div>
-                                <div class="text-sm font-mono text-gray-300">${latestPrices.map(p => p.symbol).join(', ')}</div>
+                                <div class="text-xs text-gray-400">Tokens</div>
+                                <div class="text-sm font-mono text-gray-600">${latestPrices.map(p => p.symbol).join(', ')}</div>
                             </div>
                             <svg 
                                 class="w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}" 
@@ -421,17 +430,16 @@
                         </div>
                     </div>
                     <div 
-                        class="border-t border-gray-700 ${isExpanded ? '' : 'hidden'}" 
+                        class="border-t border-gray-100 ${isExpanded ? '' : 'hidden'}" 
                         id="section-${protocol.replace(/\s+/g, '-')}"
                     >
-                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 p-4" id="tokens-${protocol.replace(/\s+/g, '-')}">
+                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 p-4 bg-gray-50/50" id="tokens-${protocol.replace(/\s+/g, '-')}">
                         </div>
                     </div>
                 `;
                 
                 container.appendChild(section);
                 
-                // Add tokens to the grid
                 const tokensGrid = document.getElementById(`tokens-${protocol.replace(/\s+/g, '-')}`);
                 for (const { tokenId, tokenData } of tokens) {
                     try {
@@ -468,20 +476,17 @@
 
         function createTokenSection(tokenId, tokenData) {
             const section = document.createElement('div');
-            section.className = 'bg-gray-800 border border-gray-700 rounded-lg overflow-hidden card-hover animate-fade-in';
+            section.className = 'bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm animate-fade-in';
 
             const latest = tokenData.snapshots[tokenData.snapshots.length - 1];
             const previous = tokenData.snapshots.length > 1 ? tokenData.snapshots[tokenData.snapshots.length - 2] : null;
 
-            // Calculate price change %
             const priceChange = previous ? ((latest.price - previous.price) / previous.price * 100) : 0;
-            const priceChangeClass = priceChange > 0 ? 'text-green-400' : priceChange < 0 ? 'text-red-400' : 'text-gray-400';
+            const priceChangeClass = priceChange > 0 ? 'text-emerald-600' : priceChange < 0 ? 'text-red-500' : 'text-gray-400';
             const priceChangeIcon = priceChange > 0 ? '↑' : priceChange < 0 ? '↓' : '→';
 
-            // Get protocol branding
             const branding = protocolBranding[tokenData.protocol] || { color: '#6b7280' };
 
-            // Advertised APY comparison
             const advertised = advertisedAPY[tokenData.symbol];
             const realized = latest.apr_30d || latest.apr_7d || latest.apr_24h;
             let deltaHTML = '';
@@ -491,18 +496,18 @@
                 const deltaClass = delta > 0 ? 'delta-positive' : delta < 0 ? 'delta-negative' : 'delta-neutral';
                 const deltaSign = delta > 0 ? '+' : '';
                 deltaHTML = `
-                    <div class="mt-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
+                    <div class="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs text-gray-500">Advertised APY</span>
-                            <span class="font-mono text-sm text-indigo-400">${advertised.toFixed(2)}%</span>
+                            <span class="font-mono text-sm text-slate-600">${advertised.toFixed(2)}%</span>
                         </div>
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs text-gray-500">Realized APR (30d)</span>
-                            <span class="font-mono text-sm text-gray-300">${realized.toFixed(2)}%</span>
+                            <span class="font-mono text-sm text-gray-700">${realized.toFixed(2)}%</span>
                         </div>
-                        <div class="pt-2 border-t border-gray-700 flex items-center justify-between">
-                            <span class="text-xs font-medium text-gray-400">Difference</span>
-                            <span class="px-2 py-1 rounded text-xs font-mono font-bold ${deltaClass}">
+                        <div class="pt-2 border-t border-gray-200 flex items-center justify-between">
+                            <span class="text-xs font-medium text-gray-500">Difference</span>
+                            <span class="px-2 py-1 rounded text-xs font-mono font-semibold ${deltaClass}">
                                 ${deltaSign}${delta.toFixed(2)}%
                             </span>
                         </div>
@@ -510,7 +515,6 @@
                 `;
             }
 
-            // APR metrics - all as panels in single column
             const timeframes = [
                 { key: 'apr_1h', label: '1H' },
                 { key: 'apr_3h', label: '3H' },
@@ -518,29 +522,32 @@
                 { key: 'apr_12h', label: '12H' },
                 { key: 'apr_24h', label: '1D' },
                 { key: 'apr_3d', label: '3D' },
-                { key: 'apr_7d', label: '7D' }
+                { key: 'apr_7d', label: '7D' },
+                { key: 'apr_14d', label: '14D' },
+                { key: 'apr_21d', label: '21D' },
+                { key: 'apr_30d', label: '30D' }
             ];
             const aprPanels = timeframes.map(t => {
                 const val = latest[t.key];
                 const display = val != null ? val.toFixed(2) + '%' : '—';
                 const extrapolated = latest[t.key + '_extrapolated'];
-                return `<div class="bg-gray-900/60 rounded-lg px-3 py-3 border border-gray-700/40 flex justify-between items-center flex-1${extrapolated ? ' opacity-50' : ''}">
-                    <span class="text-[10px] text-gray-500 uppercase">${t.label}</span>
-                    <span class="text-base font-mono text-emerald-400">${display}</span>
+                return `<div class="bg-white rounded-lg px-3 py-2.5 border border-gray-200 shadow-sm flex justify-between items-center${extrapolated ? ' opacity-50' : ''}">
+                    <span class="text-[10px] text-gray-500 font-semibold tracking-wide">${t.label}</span>
+                    <span class="text-sm font-mono text-gray-800 font-semibold">${display}</span>
                 </div>`;
             }).join('');
 
             section.innerHTML = `
-                <div class="p-4 border-b border-gray-700">
+                <div class="p-4 border-b border-gray-100">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h2 class="text-xl font-bold">${tokenData.symbol}</h2>
-                            <p class="text-sm text-gray-400">${tokenData.name}</p>
+                            <h2 class="text-xl font-semibold text-gray-900">${tokenData.symbol}</h2>
+                            <p class="text-sm text-gray-500">${tokenData.name}</p>
                         </div>
                         <div class="text-right">
                             <div class="text-sm font-medium" style="color: ${branding.color}">${tokenData.protocol}</div>
-                            <div class="text-xs text-gray-600">${tokenData.chain}</div>
-                            <div class="text-xs ${priceChangeClass} font-mono mt-1">
+                            <div class="text-xs text-gray-400">${tokenData.chain}</div>
+                            <div class="text-xs ${priceChangeClass} font-mono mt-1 font-medium">
                                 ${priceChangeIcon} ${Math.abs(priceChange).toFixed(3)}%
                             </div>
                         </div>
@@ -553,15 +560,15 @@
                         <!-- Header row -->
                         <div class="flex items-center justify-between mb-2">
                             <div>
-                                <h3 class="text-sm font-semibold text-white">Price History</h3>
-                                <div class="text-xs text-gray-400">
-                                    <span class="font-mono text-emerald-400">${latest.price.toFixed(6)}</span>
-                                    <span class="text-gray-600 ml-1">(${tokenData.snapshots.length} pts)</span>
+                                <h3 class="text-sm font-semibold text-gray-900">Price History</h3>
+                                <div class="text-xs text-gray-500">
+                                    <span class="font-mono text-emerald-600 font-medium">${latest.price.toFixed(6)}</span>
+                                    <span class="text-gray-400 ml-1">(${tokenData.snapshots.length} pts)</span>
                                 </div>
                             </div>
                             <div class="flex items-center gap-1">
                                 <button
-                                    class="p-2 rounded border border-gray-700 hover:bg-gray-700 transition text-gray-500 hover:text-white"
+                                    class="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition text-gray-400 hover:text-gray-700"
                                     onclick="toggleChartMode('${tokenId}')"
                                     id="chart-mode-${tokenId}"
                                     title="Toggle APR overlay"
@@ -569,7 +576,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                                 </button>
                                 <button
-                                    class="p-2 rounded border border-gray-700 hover:bg-gray-700 transition text-gray-500 hover:text-white"
+                                    class="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition text-gray-400 hover:text-gray-700"
                                     onclick="exportTokenToCSV('${tokenId}')"
                                     title="Export CSV"
                                 >
@@ -579,29 +586,30 @@
                         </div>
                         
                         <!-- Controls row -->
-                        <div class="flex flex-wrap items-center gap-3 mb-3 p-2 bg-gray-900/50 rounded-lg">
+                        <div class="flex flex-wrap items-center gap-3 mb-3 p-2 bg-gray-50 rounded-lg border border-gray-100">
                             <!-- Range selector -->
-                            <div class="flex items-center gap-1">
-                                <span class="text-[10px] text-gray-500 uppercase tracking-wide">Range</span>
-                                <div class="flex rounded-md overflow-hidden border border-gray-700">
-                                    ${['3h', '6h', '12h', '24h', '7d', '30d', 'all'].map(range => `
-                                        <button
-                                            class="time-range-button px-2.5 py-1.5 text-[11px] border-r border-gray-700 last:border-r-0 ${range === '24h' ? 'active' : ''}"
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] text-gray-400 uppercase tracking-wide font-medium">Range</span>
+                                <div class="flex rounded-lg overflow-hidden border border-gray-200 bg-white">
+                                    ${['3h', '6h', '12h', '24h', '7d', '30d', 'all'].map(range => {
+                                        const defaultRange = protocolDefaults[tokenData.protocol] || '24h';
+                                        return `<button
+                                            class="time-range-button px-2.5 py-1.5 text-[11px] border-r border-gray-200 last:border-r-0 ${range === defaultRange ? 'active' : ''}"
                                             onclick="changeTimeRange('${tokenId}', '${range}')"
                                             data-token="${tokenId}"
                                             data-range="${range}"
-                                        >${range}</button>
-                                    `).join('')}
+                                        >${range}</button>`;
+                                    }).join('')}
                                 </div>
                             </div>
                             
                             <!-- APR timeframe selector -->
-                            <div class="flex items-center gap-1">
-                                <span class="text-[10px] text-gray-500 uppercase tracking-wide">APR</span>
-                                <div class="flex rounded-md overflow-hidden border border-gray-700">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] text-gray-400 uppercase tracking-wide font-medium">APR</span>
+                                <div class="flex rounded-lg overflow-hidden border border-gray-200 bg-white">
                                     ${['1h', '3h', '6h', '24h', '7d'].map(tf => `
                                         <button
-                                            class="time-range-button px-2.5 py-1.5 text-[11px] border-r border-gray-700 last:border-r-0 ${tf === '1h' ? 'active' : ''}"
+                                            class="time-range-button px-2.5 py-1.5 text-[11px] border-r border-gray-200 last:border-r-0 ${tf === '1h' ? 'active' : ''}"
                                             onclick="changeAprTimeframe('${tokenId}', '${tf}')"
                                             data-token="${tokenId}"
                                             data-apr="${tf}"
@@ -612,39 +620,36 @@
                             
                             <!-- APR/APY toggle -->
                             <button
-                                class="time-range-button px-3 py-1.5 text-[11px] rounded-md border border-gray-700 active"
+                                class="time-range-button px-3 py-1.5 text-[11px] rounded-lg border border-gray-200 bg-white active"
                                 onclick="toggleApyMode('${tokenId}')"
                                 data-token="${tokenId}"
                                 data-apy-toggle="true"
                             >APR</button>
                         </div>
 
-                        <div class="bg-gray-900 rounded-lg p-4" style="height: 400px;" id="chart-loading-${tokenId}">
+                        <div class="bg-white rounded-xl p-4 border border-gray-100" style="height: 400px;" id="chart-loading-${tokenId}">
                             <canvas id="chart-${tokenId}"></canvas>
                         </div>
                     </div>
 
                     <!-- APR Metrics - Single Column Panels -->
-                    <div class="pt-6 flex flex-col h-full">
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Realized APR</h3>
-                            ${latest.data_hours ? `<span class="text-[9px] text-gray-600">${latest.data_hours.toFixed(0)}h</span>` : ''}
+                    <div class="flex flex-col h-full">
+                        <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-100">
+                            <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Realized APR</h3>
+                            ${latest.data_hours ? `<span class="text-[10px] text-gray-400 font-mono">${latest.data_hours.toFixed(0)}h data</span>` : ''}
                         </div>
-                        <div class="flex flex-col justify-between flex-1 gap-1">
+                        <div class="flex flex-col gap-1.5 flex-1">
                             ${aprPanels}
                         </div>
                     </div>
                 </div>
             `;
 
-            // Initialize time range, chart mode, and APR timeframe
-            timeRanges[tokenId] = '24h';
+            timeRanges[tokenId] = protocolDefaults[tokenData.protocol] || '24h';
             chartModes[tokenId] = 'dual';
-            // APR hidden by default, Avg shown by default
             hiddenDatasets[tokenId] = { 1: true };
             aprTimeframes[tokenId] = '1h';
 
-            // Create chart after DOM insertion
             setTimeout(() => {
                 try {
                     createChart(tokenId, tokenData);
@@ -659,7 +664,6 @@
         function changeTimeRange(tokenId, range) {
             timeRanges[tokenId] = range;
 
-            // Update button states
             const buttons = document.querySelectorAll(`[data-token="${tokenId}"][data-range]`);
             buttons.forEach(btn => {
                 if (btn.dataset.range === range) {
@@ -669,14 +673,12 @@
                 }
             });
 
-            // Recreate chart
             createChart(tokenId, allData.tokens[tokenId]);
         }
 
         function changeAprTimeframe(tokenId, timeframe) {
             aprTimeframes[tokenId] = timeframe;
 
-            // Update button states
             const buttons = document.querySelectorAll(`[data-token="${tokenId}"][data-apr]`);
             buttons.forEach(btn => {
                 if (btn.dataset.apr === timeframe) {
@@ -686,20 +688,17 @@
                 }
             });
 
-            // Recreate chart
             createChart(tokenId, allData.tokens[tokenId]);
         }
 
         function toggleApyMode(tokenId) {
             showAsAPY[tokenId] = !showAsAPY[tokenId];
             
-            // Update button text
             const btn = document.querySelector(`[data-token="${tokenId}"][data-apy-toggle]`);
             if (btn) {
                 btn.textContent = showAsAPY[tokenId] ? 'APY' : 'APR';
             }
             
-            // Recreate chart
             createChart(tokenId, allData.tokens[tokenId]);
         }
 
@@ -725,30 +724,12 @@
             return snapshots.filter(s => s.timestamp >= cutoff);
         }
 
-        // Smooth data using simple moving average to reduce noise
-        function smoothData(data, windowSize = 3) {
-            if (!data || data.length < windowSize) return data;
-            const result = [];
-            for (let i = 0; i < data.length; i++) {
-                const start = Math.max(0, i - Math.floor(windowSize / 2));
-                const end = Math.min(data.length, i + Math.floor(windowSize / 2) + 1);
-                const window = data.slice(start, end).filter(v => v !== null && v !== undefined);
-                if (window.length > 0) {
-                    result.push(window.reduce((a, b) => a + b, 0) / window.length);
-                } else {
-                    result.push(null);
-                }
-            }
-            return result;
-        }
-
         function createChart(tokenId, tokenData) {
             const canvas = document.getElementById(`chart-${tokenId}`);
             if (!canvas) return;
 
             const ctx = canvas.getContext('2d');
 
-            // Destroy existing chart if any
             if (charts[tokenId]) {
                 charts[tokenId].destroy();
             }
@@ -760,7 +741,7 @@
             if (filteredSnapshots.length === 0) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = '#9ca3af';
-                ctx.font = '14px sans-serif';
+                ctx.font = '14px Inter, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.fillText('No data for selected time range', canvas.width / 2, canvas.height / 2);
                 return;
@@ -778,16 +759,20 @@
             });
             const rateLabel = useAPY ? 'APY' : 'APR';
 
-            // Calculate price range for better y-axis scaling
-            const minPrice = Math.min(...prices);
-            const maxPrice = Math.max(...prices);
-            const padding = (maxPrice - minPrice) * 0.1 || 0.0001;
+            // Use percentile-based scaling to exclude outliers
+            const sortedPrices = [...prices].sort((a, b) => a - b);
+            const p5Index = Math.floor(sortedPrices.length * 0.02);
+            const p95Index = Math.ceil(sortedPrices.length * 0.98) - 1;
+            const minPrice = sortedPrices[Math.max(0, p5Index)];
+            const maxPrice = sortedPrices[Math.min(sortedPrices.length - 1, p95Index)];
+            const range = maxPrice - minPrice;
+            const padding = range * 0.15 || 0.0001;
 
             const datasets = [{
                 label: 'Share Price',
                 data: prices,
-                borderColor: 'rgb(59, 130, 246)',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderColor: '#64748b',
+                backgroundColor: 'rgba(99, 102, 241, 0.08)',
                 borderWidth: 2,
                 tension: 0.4,
                 fill: true,
@@ -803,22 +788,22 @@
                     min: minPrice - padding,
                     max: maxPrice + padding,
                     grid: {
-                        color: 'rgba(75, 85, 99, 0.3)',
+                        color: 'rgba(229, 231, 235, 0.8)',
                         drawBorder: false
                     },
                     ticks: {
-                        color: '#9ca3af',
-                        font: { family: 'monospace', size: 10 },
+                        color: '#6b7280',
+                        font: { family: 'Space Mono', size: 10 },
                         maxTicksLimit: 6,
                         callback: function(value) {
-                            // Shorter format for mobile - 4 decimals
                             return value.toFixed(4);
                         }
                     },
                     title: {
                         display: mode === 'dual',
                         text: 'Price',
-                        color: '#9ca3af'
+                        color: '#6b7280',
+                        font: { family: 'Inter', size: 11 }
                     }
                 },
                 x: {
@@ -832,32 +817,34 @@
                         }
                     },
                     grid: {
-                        color: 'rgba(75, 85, 99, 0.2)',
+                        color: 'rgba(229, 231, 235, 0.5)',
                         drawBorder: false
                     },
                     ticks: {
-                        color: '#6b7280',
-                        font: { size: 10 },
+                        color: '#9ca3af',
+                        font: { family: 'Inter', size: 10 },
                         maxTicksLimit: 6
                     }
                 }
             };
 
-            // Add dual-axis for APR if mode is dual
             if (mode === 'dual' && aprData.some(v => v !== null && v !== undefined)) {
                 const validAPRs = aprData.filter(v => v !== null && v !== undefined);
-                const minAPR = Math.min(...validAPRs);
-                const maxAPR = Math.max(...validAPRs);
-                // Ensure minimum 0.5% range so flat lines don't look jagged
-                const range = maxAPR - minAPR;
+                // Use percentile-based scaling for APR too
+                const sortedAPRs = [...validAPRs].sort((a, b) => a - b);
+                const aprP5 = Math.floor(sortedAPRs.length * 0.02);
+                const aprP95 = Math.ceil(sortedAPRs.length * 0.98) - 1;
+                const minAPR = sortedAPRs[Math.max(0, aprP5)];
+                const maxAPR = sortedAPRs[Math.min(sortedAPRs.length - 1, aprP95)];
+                const aprRange = maxAPR - minAPR;
                 const minRange = 0.5;
-                const aprPadding = range < minRange ? (minRange - range) / 2 + 0.05 : range * 0.1;
+                const aprPadding = aprRange < minRange ? (minRange - aprRange) / 2 + 0.05 : aprRange * 0.15;
 
                 datasets.push({
                     label: `${selectedAprTf} ${rateLabel}`,
                     data: aprData,
-                    borderColor: 'rgb(20, 184, 166)',
-                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                    borderColor: '#0d9488',
+                    backgroundColor: 'rgba(20, 184, 166, 0.08)',
                     borderWidth: 2,
                     tension: 0.4,
                     fill: false,
@@ -868,13 +855,12 @@
                     order: 2
                 });
 
-                // Add average APR line (in front)
                 const avgAPR = validAPRs.reduce((a, b) => a + b, 0) / validAPRs.length;
                 const avgLineData = aprData.map(() => avgAPR);
                 datasets.push({
                     label: `Avg: ${avgAPR.toFixed(2)}%`,
                     data: avgLineData,
-                    borderColor: 'rgb(251, 191, 36)',
+                    borderColor: '#d97706',
                     borderWidth: 2,
                     borderDash: [6, 4],
                     tension: 0,
@@ -895,8 +881,8 @@
                         drawOnChartArea: false
                     },
                     ticks: {
-                        color: 'rgb(20, 184, 166)',
-                        font: { size: 11 },
+                        color: '#0d9488',
+                        font: { family: 'Space Mono', size: 11 },
                         callback: function(value) {
                             return value.toFixed(2) + '%';
                         }
@@ -904,13 +890,12 @@
                     title: {
                         display: true,
                         text: rateLabel + ' (%)',
-                        color: 'rgb(20, 184, 166)',
-                        font: { size: 11, weight: '500' }
+                        color: '#0d9488',
+                        font: { family: 'Inter', size: 11, weight: '500' }
                     }
                 };
             }
 
-            // Apply hidden state to datasets
             const tokenHidden = hiddenDatasets[tokenId] || {};
             datasets.forEach((ds, i) => {
                 if (tokenHidden[i]) ds.hidden = true;
@@ -941,11 +926,11 @@
                             position: 'top',
                             align: 'end',
                             labels: {
-                                color: '#f3f4f6',
+                                color: '#374151',
                                 usePointStyle: true,
                                 pointStyle: 'circle',
                                 padding: 20,
-                                font: { size: 12, weight: '500' },
+                                font: { family: 'Inter', size: 12, weight: '500' },
                                 boxWidth: 10,
                                 boxHeight: 10,
                                 generateLabels: function(chart) {
@@ -957,7 +942,7 @@
                                         lineWidth: 2,
                                         hidden: !chart.isDatasetVisible(i),
                                         index: i,
-                                        fontColor: chart.isDatasetVisible(i) ? '#f3f4f6' : 'rgba(243, 244, 246, 0.3)',
+                                        fontColor: chart.isDatasetVisible(i) ? '#374151' : 'rgba(55, 65, 81, 0.3)',
                                         pointStyle: 'circle'
                                     }));
                                 }
@@ -967,20 +952,20 @@
                                 const ci = legend.chart;
                                 const isVisible = ci.isDatasetVisible(index);
                                 ci.setDatasetVisibility(index, !isVisible);
-                                // Track hidden state
                                 if (!hiddenDatasets[tokenId]) hiddenDatasets[tokenId] = {};
                                 hiddenDatasets[tokenId][index] = isVisible;
                                 ci.update();
                             }
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(17, 24, 39, 0.95)',
-                            titleColor: '#9ca3af',
-                            bodyColor: '#f3f4f6',
-                            borderColor: '#374151',
+                            backgroundColor: 'white',
+                            titleColor: '#6b7280',
+                            bodyColor: '#111827',
+                            borderColor: '#e5e7eb',
                             borderWidth: 1,
                             padding: 12,
                             displayColors: true,
+                            bodyFont: { family: 'Space Mono' },
                             callbacks: {
                                 title: function(items) {
                                     return new Date(items[0].parsed.x).toLocaleString('en-US', {
@@ -993,7 +978,7 @@
                                 label: function(context) {
                                     if (context.dataset.label === 'Share Price') {
                                         return `Price: ${context.parsed.y.toFixed(8)}`;
-                                    } else if (context.dataset.label.includes('APR')) {
+                                    } else if (context.dataset.label.includes('APR') || context.dataset.label.includes('APY')) {
                                         return context.parsed.y !== null ? `${context.dataset.label}: ${context.parsed.y.toFixed(2)}%` : null;
                                     }
                                 },
@@ -1065,13 +1050,9 @@
             document.body.removeChild(a);
         }
 
-        // Load data on page load
         loadData();
-
-        // Auto-refresh every 5 minutes
         setInterval(loadData, 5 * 60 * 1000);
 
-        // Global error handler
         window.addEventListener('error', (event) => {
             ErrorBoundary.showError(event.error || event.message, 'Global error');
         });
