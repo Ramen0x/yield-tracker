@@ -765,8 +765,8 @@
             const p95Index = Math.ceil(sortedPrices.length * 0.98) - 1;
             const minPrice = sortedPrices[Math.max(0, p5Index)];
             const maxPrice = sortedPrices[Math.min(sortedPrices.length - 1, p95Index)];
-            const range = maxPrice - minPrice;
-            const padding = range * 0.15 || 0.0001;
+            const priceRange = maxPrice - minPrice;
+            const padding = priceRange * 0.15 || 0.0001;
 
             const datasets = [{
                 label: 'Share Price',
