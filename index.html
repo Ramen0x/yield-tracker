@@ -357,6 +357,88 @@
             }
         }
 
+        /* Copy APR button */
+        .copy-apr-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-tertiary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .copy-apr-btn:hover {
+            background: var(--bg-elevated);
+            border-color: var(--border-default);
+            color: var(--text-secondary);
+        }
+
+        .copy-apr-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Copy toast notification */
+        .copy-toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .copy-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Collapse All button */
+        .btn-collapse {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-weight: 500;
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 44px;
+            font-size: 14px;
+        }
+
+        .btn-collapse:hover {
+            background: var(--bg-elevated);
+            border-color: var(--border-default);
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 640px) {
+            .btn-collapse {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+        }
+
         /* Status indicator */
         .status-dot {
             width: 8px;
@@ -430,6 +512,104 @@
             height: 1px;
             background: var(--border-subtle);
             margin: 0;
+        }
+
+        /* Search bar */
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        @media (max-width: 640px) {
+            .search-container {
+                max-width: none;
+            }
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 10px 40px 10px 40px;
+            font-size: 14px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+            min-height: 44px;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+            background: var(--bg-elevated);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            pointer-events: none;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: transparent;
+            border: none;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .search-clear:hover {
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+        }
+
+        .search-clear.visible {
+            display: flex;
+        }
+
+        .search-shortcut {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            font-size: 11px;
+            font-family: 'Space Mono', monospace;
+            color: var(--text-tertiary);
+            pointer-events: none;
+        }
+
+        .search-shortcut.hidden {
+            display: none;
+        }
+
+        /* Hidden state for filtered elements */
+        .protocol-section.search-hidden,
+        .token-card.search-hidden {
+            display: none !important;
         }
 
         /* Contract link button */
@@ -580,6 +760,61 @@
             color: var(--text-tertiary);
             white-space: nowrap;
         }
+
+        /* Trend Alert Badges */
+        .trend-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            cursor: help;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .trend-badge.rising {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.25);
+        }
+
+        .trend-badge.declining {
+            background: rgba(96, 165, 250, 0.15);
+            border: 1px solid rgba(96, 165, 250, 0.25);
+        }
+
+        .trend-badge:hover {
+            transform: scale(1.1);
+        }
+
+        .trend-badge:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            font-size: 11px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+            border: 1px solid var(--border-default);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+        }
+
+        .trend-badge:hover::before {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 2px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid transparent;
+            border-top-color: var(--border-default);
+            z-index: 100;
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -603,7 +838,27 @@
                         Real-time APY tracking from on-chain price data. Verified yields, institutional precision.
                     </p>
                 </div>
-                <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-6">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+                    <!-- Search Bar -->
+                    <div class="search-container">
+                        <svg class="search-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" id="search-input" class="search-input" placeholder="Search tokens..." autocomplete="off">
+                        <span id="search-shortcut" class="search-shortcut">/</span>
+                        <button id="search-clear" class="search-clear" onclick="clearSearch()">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-6">
+                    <button class="btn-collapse" id="collapse-all-btn" onclick="toggleAllSections()">
+                        <svg class="w-4 h-4" id="collapse-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                        </svg>
+                        <span id="collapse-text">Collapse All</span>
+                    </button>
                     <button class="btn-export" onclick="exportAllToCSV()">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -617,6 +872,7 @@
                             <span class="text-xs font-medium text-zinc-400">LIVE</span>
                         </div>
                         <div class="text-xs sm:text-sm text-zinc-500 font-mono" id="last-update">Loading...</div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -894,6 +1150,32 @@
             return { symbol: '→', class: 'trend-neutral' };
         }
 
+        function getTrendBadge(apr24h, apr7d) {
+            // Returns trend badge HTML if trend is significant
+            // Rising: 24h APR > 7d APR (recent yields higher than average)
+            // Declining: 24h APR < 7d APR (recent yields lower than average)
+            
+            if (apr24h === null || apr24h === undefined || apr7d === null || apr7d === undefined) {
+                return '';
+            }
+            
+            const absDiff = apr24h - apr7d;
+            const relDiff = apr7d !== 0 ? ((apr24h - apr7d) / Math.abs(apr7d)) * 100 : 0;
+            
+            // Significant if: >10% relative change OR >1% absolute difference
+            const isSignificant = Math.abs(relDiff) > 10 || Math.abs(absDiff) > 1;
+            
+            if (!isSignificant) return '';
+            
+            if (absDiff > 0) {
+                // Rising: 24h APR higher than 7d average
+                return `<span class="trend-badge rising" data-tooltip="Yield trending up (+${formatNumber(absDiff, 2)}% vs 7d avg)">🔥</span>`;
+            } else {
+                // Declining: 24h APR lower than 7d average
+                return `<span class="trend-badge declining" data-tooltip="Yield trending down (${formatNumber(absDiff, 2)}% vs 7d avg)">❄️</span>`;
+            }
+        }
+
         function scrollToToken(tokenId) {
             const card = document.getElementById(`token-card-${tokenId}`);
             if (card) {
@@ -1088,6 +1370,9 @@
                 deltaHTML = `<span class="delta-badge ${deltaClass} font-mono">${delta > 0 ? '+' : ''}${formatNumber(delta, 2)}%</span>`;
             }
 
+            // Trend badge
+            const trendBadgeHTML = getTrendBadge(apr24h, apr7d);
+
             // Contract link button
             const explorerUrl = getExplorerUrl(tokenData.chain, tokenData.address);
             const contractLinkHTML = explorerUrl ? `
@@ -1109,7 +1394,10 @@
                                 ${tokenData.symbol.charAt(0)}
                             </div>
                             <div class="min-w-0">
-                                <h3 class="font-semibold text-white text-sm sm:text-base truncate">${tokenData.symbol}</h3>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-semibold text-white text-sm sm:text-base truncate">${tokenData.symbol}</h3>
+                                    ${trendBadgeHTML}
+                                </div>
                                 <p class="text-xs text-zinc-500 truncate">${tokenData.name}</p>
                             </div>
                         </div>
@@ -1122,7 +1410,14 @@
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-5">
                         <div class="data-cell">
                             <div class="data-label">7D APR</div>
-                            <div class="data-value ${aprClass} font-mono text-base sm:text-lg md:text-xl">${formatPercent(apr7d)}</div>
+                            <div class="flex items-center">
+                                <span class="data-value ${aprClass} font-mono text-base sm:text-lg md:text-xl">${formatPercent(apr7d)}</span>
+                                <button class="copy-apr-btn" onclick="copyAPR('${formatPercent(apr7d)}', event)" title="Copy APR">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                         <div class="data-cell">
                             <div class="data-label">24H APR</div>
@@ -1274,6 +1569,237 @@
             a.click();
             URL.revokeObjectURL(url);
         }
+
+        // Copy APR to clipboard
+        function copyAPR(value, event) {
+            event.stopPropagation();
+            if (value === '—') return;
+            
+            navigator.clipboard.writeText(value).then(() => {
+                showCopyToast('Copied!');
+            }).catch(err => {
+                console.error('Copy failed:', err);
+            });
+        }
+
+        function showCopyToast(message) {
+            let toast = document.getElementById('copy-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'copy-toast';
+                toast.className = 'copy-toast';
+                document.body.appendChild(toast);
+            }
+            
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 1500);
+        }
+
+        // Toggle all sections
+        function toggleAllSections() {
+            const sections = document.querySelectorAll('[id^="section-"]');
+            const chevrons = document.querySelectorAll('[id^="chevron-"]');
+            const btn = document.getElementById('collapse-all-btn');
+            const text = document.getElementById('collapse-text');
+            const icon = document.getElementById('collapse-icon');
+            
+            // Determine if we should expand or collapse (based on majority state)
+            const expandedCount = Object.values(expandedSections).filter(v => v).length;
+            const totalCount = Object.keys(expandedSections).length;
+            const shouldCollapse = expandedCount > totalCount / 2;
+            
+            sections.forEach(section => {
+                const protocol = section.id.replace('section-', '').replace(/-/g, ' ');
+                // Find the exact protocol name in expandedSections
+                const protocolKey = Object.keys(expandedSections).find(p => 
+                    p.replace(/\s+/g, '-').toLowerCase() === section.id.replace('section-', '').toLowerCase()
+                );
+                
+                if (shouldCollapse) {
+                    section.classList.add('hidden');
+                    if (protocolKey) expandedSections[protocolKey] = false;
+                } else {
+                    section.classList.remove('hidden');
+                    if (protocolKey) expandedSections[protocolKey] = true;
+                }
+            });
+            
+            chevrons.forEach(chevron => {
+                if (shouldCollapse) {
+                    chevron.classList.remove('rotate-180');
+                } else {
+                    chevron.classList.add('rotate-180');
+                }
+            });
+            
+            // Update button text and icon
+            if (shouldCollapse) {
+                text.textContent = 'Expand All';
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />';
+            } else {
+                text.textContent = 'Collapse All';
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />';
+            }
+        }
+
+        // Search functionality
+        let searchDebounceTimer = null;
+        const searchInput = document.getElementById('search-input');
+        const searchClear = document.getElementById('search-clear');
+        const searchShortcut = document.getElementById('search-shortcut');
+
+        function debounce(fn, delay) {
+            return function(...args) {
+                clearTimeout(searchDebounceTimer);
+                searchDebounceTimer = setTimeout(() => fn.apply(this, args), delay);
+            };
+        }
+
+        function filterTokens(query) {
+            const normalizedQuery = query.toLowerCase().trim();
+            const content = document.getElementById('content');
+            if (!content || !allData?.tokens) return;
+
+            const protocolSections = content.querySelectorAll('.protocol-section');
+
+            protocolSections.forEach(section => {
+                const tokenCards = section.querySelectorAll('.token-card');
+                let visibleCount = 0;
+
+                tokenCards.forEach(card => {
+                    const tokenId = card.id.replace('token-card-', '');
+                    const tokenData = allData.tokens[tokenId];
+                    
+                    if (!tokenData) {
+                        card.classList.add('search-hidden');
+                        return;
+                    }
+
+                    const symbol = (tokenData.symbol || '').toLowerCase();
+                    const name = (tokenData.name || '').toLowerCase();
+                    
+                    if (!normalizedQuery || symbol.includes(normalizedQuery) || name.includes(normalizedQuery)) {
+                        card.classList.remove('search-hidden');
+                        visibleCount++;
+                    } else {
+                        card.classList.add('search-hidden');
+                    }
+                });
+
+                // Hide protocol section if no visible tokens
+                if (visibleCount === 0 && normalizedQuery) {
+                    section.classList.add('search-hidden');
+                } else {
+                    section.classList.remove('search-hidden');
+                }
+            });
+
+            // Also filter heatmap if query is active
+            filterHeatmap(normalizedQuery);
+        }
+
+        function filterHeatmap(query) {
+            const heatmapSection = document.getElementById('heatmap-section');
+            if (!heatmapSection || !allData?.tokens) return;
+
+            const cells = heatmapSection.querySelectorAll('.heatmap-cell');
+            let visibleCount = 0;
+
+            cells.forEach(cell => {
+                const symbolEl = cell.querySelector('.heatmap-symbol span');
+                const symbol = symbolEl ? symbolEl.textContent.toLowerCase() : '';
+                
+                // Find matching token for name search
+                let matchesName = false;
+                for (const tokenData of Object.values(allData.tokens)) {
+                    if (tokenData.symbol.toLowerCase() === symbol) {
+                        matchesName = (tokenData.name || '').toLowerCase().includes(query);
+                        break;
+                    }
+                }
+
+                if (!query || symbol.includes(query) || matchesName) {
+                    cell.style.display = '';
+                    visibleCount++;
+                } else {
+                    cell.style.display = 'none';
+                }
+            });
+
+            // Update heatmap count
+            const countEl = document.getElementById('heatmap-count');
+            if (countEl) {
+                const total = cells.length;
+                if (query && visibleCount < total) {
+                    countEl.textContent = `${visibleCount}/${total} tokens`;
+                } else {
+                    countEl.textContent = `${total} tokens`;
+                }
+            }
+        }
+
+        const debouncedFilter = debounce(filterTokens, 150);
+
+        function handleSearchInput(e) {
+            const query = e.target.value;
+            
+            // Show/hide clear button and shortcut hint
+            if (query.length > 0) {
+                searchClear.classList.add('visible');
+                searchShortcut.classList.add('hidden');
+            } else {
+                searchClear.classList.remove('visible');
+                searchShortcut.classList.remove('hidden');
+            }
+
+            debouncedFilter(query);
+        }
+
+        function clearSearch() {
+            searchInput.value = '';
+            searchClear.classList.remove('visible');
+            searchShortcut.classList.remove('hidden');
+            filterTokens('');
+            searchInput.blur();
+        }
+
+        function focusSearch() {
+            searchInput.focus();
+            searchShortcut.classList.add('hidden');
+        }
+
+        // Event listeners
+        searchInput.addEventListener('input', handleSearchInput);
+
+        searchInput.addEventListener('focus', () => {
+            searchShortcut.classList.add('hidden');
+        });
+
+        searchInput.addEventListener('blur', () => {
+            if (!searchInput.value) {
+                searchShortcut.classList.remove('hidden');
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // "/" to focus search (when not in an input)
+            if (e.key === '/' && document.activeElement !== searchInput && 
+                !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+                e.preventDefault();
+                focusSearch();
+            }
+            
+            // Escape to clear and blur
+            if (e.key === 'Escape' && document.activeElement === searchInput) {
+                e.preventDefault();
+                clearSearch();
+            }
+        });
 
         // Initialize
         loadData();
