@@ -124,6 +124,110 @@
             width: 3px;
             border-radius: 2px;
         }
+
+        /* Institutional protocol headers */
+        .protocol-header {
+            background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+            border-bottom: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+
+        .protocol-header:hover {
+            background: linear-gradient(135deg, #f5f5f5 0%, #efefef 100%);
+        }
+
+        .protocol-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: -0.5px;
+            color: white;
+            box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .protocol-header:hover .protocol-logo {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.2);
+        }
+
+        .protocol-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #111827;
+            letter-spacing: -0.025em;
+        }
+
+        .protocol-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .protocol-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #6b7280;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .protocol-badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .protocol-tokens-preview {
+            display: flex;
+            gap: 6px;
+        }
+
+        .token-pill {
+            padding: 4px 10px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            font-family: 'Space Mono', monospace;
+            color: #374151;
+            transition: all 0.15s ease;
+        }
+
+        .token-pill:hover {
+            border-color: #d1d5db;
+            background: #f9fafb;
+        }
+
+        .expand-indicator {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+
+        .protocol-header:hover .expand-indicator {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen">
@@ -401,39 +505,51 @@
                     return { symbol: t.tokenData.symbol, price: latest.price, apr7d: latest.apr_7d };
                 });
                 
+                // Get protocol initials for logo
+                const initials = protocol.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+                
                 section.innerHTML = `
                     <div 
-                        class="p-4 cursor-pointer hover:bg-gray-50 transition-colors flex items-center justify-between"
+                        class="protocol-header px-5 py-4 cursor-pointer flex items-center justify-between"
                         onclick="toggleProtocolSection('${protocol}')"
                     >
-                        <div class="flex items-center gap-3">
-                            <div class="protocol-accent h-10" style="background: ${branding.color}"></div>
+                        <div class="flex items-center gap-4">
+                            <div class="protocol-logo" style="background: linear-gradient(135deg, ${branding.color} 0%, ${branding.color}dd 100%);">
+                                ${initials}
+                            </div>
                             <div>
-                                <h2 class="text-lg font-semibold text-gray-900">${protocol}</h2>
-                                <p class="text-xs text-gray-400">${tokens.length} token${tokens.length > 1 ? 's' : ''}</p>
+                                <h2 class="protocol-name">${protocol}</h2>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="protocol-badge">
+                                        <span class="protocol-badge-dot" style="background: ${branding.color}"></span>
+                                        ${tokens.length} token${tokens.length > 1 ? 's' : ''}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div class="flex items-center gap-4">
-                            <div class="text-right hidden sm:block">
-                                <div class="text-xs text-gray-400">Tokens</div>
-                                <div class="text-sm font-mono text-gray-600">${latestPrices.map(p => p.symbol).join(', ')}</div>
+                            <div class="protocol-tokens-preview hidden md:flex">
+                                ${latestPrices.slice(0, 3).map(p => `<span class="token-pill">${p.symbol}</span>`).join('')}
+                                ${latestPrices.length > 3 ? `<span class="token-pill">+${latestPrices.length - 3}</span>` : ''}
                             </div>
-                            <svg 
-                                class="w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}" 
-                                id="chevron-${protocol.replace(/\s+/g, '-')}"
-                                fill="none" 
-                                stroke="currentColor" 
-                                viewBox="0 0 24 24"
-                            >
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
+                            <div class="expand-indicator">
+                                <svg 
+                                    class="w-4 h-4 text-gray-500 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}" 
+                                    id="chevron-${protocol.replace(/\s+/g, '-')}"
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
                         </div>
                     </div>
                     <div 
-                        class="border-t border-gray-100 ${isExpanded ? '' : 'hidden'}" 
+                        class="${isExpanded ? '' : 'hidden'}" 
                         id="section-${protocol.replace(/\s+/g, '-')}"
                     >
-                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 p-4 bg-gray-50/50" id="tokens-${protocol.replace(/\s+/g, '-')}">
+                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 p-5 bg-gradient-to-b from-gray-50 to-white" id="tokens-${protocol.replace(/\s+/g, '-')}">
                         </div>
                     </div>
                 `;
