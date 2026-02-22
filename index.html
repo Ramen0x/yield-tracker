@@ -761,10 +761,15 @@
             const now = Date.now();
             const h24 = 24 * 60 * 60 * 1000;
             
+            // Protocols that should use 7d APR directly (slow NAV updates)
+            const slowUpdateProtocols = ['Midas', 'Superstate'];
+            
             const comparisons = Object.entries(allData.tokens).map(([tokenId, data]) => {
                 if (!data.snapshots || data.snapshots.length < 1) return null;
                 
                 const latest = data.snapshots[data.snapshots.length - 1];
+                const protocol = data.protocol || '';
+                const useWeekly = slowUpdateProtocols.includes(protocol);
                 
                 // Get snapshots from last 24h and previous 24h
                 const last24h = data.snapshots.filter(s => (now - s.timestamp) <= h24);
@@ -778,41 +783,54 @@
                     ? prev24h.filter(s => s.apr_1h != null).reduce((sum, s) => sum + s.apr_1h, 0) / prev24h.filter(s => s.apr_1h != null).length || null
                     : null;
                 
-                // Fallback cascade: try longer timeframes from latest snapshot
-                // Skip zero/near-zero values for slow-updating tokens (RWA, etc)
                 const isValidApr = (apr) => apr != null && Math.abs(apr) > 0.01;
                 
-                let currentApr = avg1hAprLast24h;
-                let timeframe = '1h avg';
+                let currentApr, timeframe;
                 
-                if (!isValidApr(currentApr) && isValidApr(latest.apr_24h)) {
-                    currentApr = latest.apr_24h;
-                    timeframe = '24h';
-                }
-                if (!isValidApr(currentApr) && isValidApr(latest.apr_3d)) {
-                    currentApr = latest.apr_3d;
-                    timeframe = '3d';
-                }
-                if (!isValidApr(currentApr) && isValidApr(latest.apr_7d)) {
+                // For slow-updating protocols, use 7d directly
+                if (useWeekly) {
                     currentApr = latest.apr_7d;
                     timeframe = '7d';
+                    // Fallback to 30d if 7d not valid
+                    if (!isValidApr(currentApr) && isValidApr(latest.apr_30d)) {
+                        currentApr = latest.apr_30d;
+                        timeframe = '30d';
+                    }
+                } else {
+                    // Normal fallback cascade for other protocols
+                    currentApr = avg1hAprLast24h;
+                    timeframe = '1h avg';
+                    
+                    if (!isValidApr(currentApr) && isValidApr(latest.apr_24h)) {
+                        currentApr = latest.apr_24h;
+                        timeframe = '24h';
+                    }
+                    if (!isValidApr(currentApr) && isValidApr(latest.apr_3d)) {
+                        currentApr = latest.apr_3d;
+                        timeframe = '3d';
+                    }
+                    if (!isValidApr(currentApr) && isValidApr(latest.apr_7d)) {
+                        currentApr = latest.apr_7d;
+                        timeframe = '7d';
+                    }
+                    if (!isValidApr(currentApr) && isValidApr(latest.apr_14d)) {
+                        currentApr = latest.apr_14d;
+                        timeframe = '14d';
+                    }
+                    if (!isValidApr(currentApr) && isValidApr(latest.apr_30d)) {
+                        currentApr = latest.apr_30d;
+                        timeframe = '30d';
+                    }
                 }
-                if (!isValidApr(currentApr) && isValidApr(latest.apr_14d)) {
-                    currentApr = latest.apr_14d;
-                    timeframe = '14d';
-                }
-                if (!isValidApr(currentApr) && isValidApr(latest.apr_30d)) {
-                    currentApr = latest.apr_30d;
-                    timeframe = '30d';
-                }
+                
                 // If still no valid APR, use whatever we have (even 0)
                 if (currentApr == null) {
                     currentApr = latest.apr_30d ?? latest.apr_7d ?? latest.apr_24h ?? 0;
                     timeframe = '—';
                 }
                 
-                // Only calculate change if we have the primary 1h avg method
-                const change = avg1hAprLast24h != null && avg1hAprPrev24h != null ? avg1hAprLast24h - avg1hAprPrev24h : null;
+                // Only calculate change if we have the primary 1h avg method (not for slow protocols)
+                const change = !useWeekly && avg1hAprLast24h != null && avg1hAprPrev24h != null ? avg1hAprLast24h - avg1hAprPrev24h : null;
                 
                 return { 
                     symbol: data.symbol, 
