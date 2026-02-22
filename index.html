@@ -1581,62 +1581,99 @@
                         </div>
                     </div>
 
-                    <!-- Chart Controls -->
-                    <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4 p-2 sm:p-3 rounded-lg" style="background: var(--bg-tertiary); border: 1px solid var(--border-subtle);">
-                        <!-- Time Range Selector -->
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-[10px] uppercase tracking-wide font-medium hidden sm:inline" style="color: var(--text-tertiary);">Range</span>
-                            <div class="time-selector" id="time-selector-${tokenId}">
-                                ${['3h', '6h', '12h', '24h', '7d', '30d', 'all'].map(range => `
-                                    <button class="time-btn ${timeRanges[tokenId] === range ? 'active' : ''}" 
-                                            onclick="changeTimeRange('${tokenId}', '${range}')"
-                                            data-token="${tokenId}" data-range="${range}">${range}</button>
-                                `).join('')}
+                    <!-- Chart + APR Panel Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-[1fr_180px] gap-3 sm:gap-4">
+                        <!-- Left: Chart Section -->
+                        <div>
+                            <!-- Chart Controls -->
+                            <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4 p-2 sm:p-3 rounded-lg" style="background: var(--bg-tertiary); border: 1px solid var(--border-subtle);">
+                                <!-- Time Range Selector -->
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] uppercase tracking-wide font-medium hidden sm:inline" style="color: var(--text-tertiary);">Range</span>
+                                    <div class="time-selector" id="time-selector-${tokenId}">
+                                        ${['3h', '6h', '12h', '24h', '7d', '30d', 'all'].map(range => `
+                                            <button class="time-btn ${timeRanges[tokenId] === range ? 'active' : ''}" 
+                                                    onclick="changeTimeRange('${tokenId}', '${range}')"
+                                                    data-token="${tokenId}" data-range="${range}">${range}</button>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                
+                                <!-- APR Timeframe Selector -->
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] uppercase tracking-wide font-medium hidden sm:inline" style="color: var(--text-tertiary);">APR</span>
+                                    <div class="time-selector" id="apr-selector-${tokenId}">
+                                        ${['1h', '3h', '6h', '24h', '7d'].map(tf => `
+                                            <button class="time-btn ${aprTimeframes[tokenId] === tf ? 'active' : ''}" 
+                                                    onclick="changeAprTimeframe('${tokenId}', '${tf}')"
+                                                    data-token="${tokenId}" data-apr="${tf}">${tf}</button>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                
+                                <!-- APR/APY Toggle -->
+                                <button class="time-btn ${showAsAPY[tokenId] ? '' : 'active'}" 
+                                        onclick="toggleApyMode('${tokenId}')"
+                                        id="apy-toggle-${tokenId}"
+                                        style="min-width: 44px;">
+                                    ${showAsAPY[tokenId] ? 'APY' : 'APR'}
+                                </button>
+                                
+                                <!-- Dual Axis Toggle -->
+                                <button class="time-btn ${chartModes[tokenId] === 'dual' ? 'active' : ''}" 
+                                        onclick="toggleChartMode('${tokenId}')"
+                                        id="chart-mode-btn-${tokenId}"
+                                        title="Toggle APR overlay">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                    </svg>
+                                </button>
+                                
+                                <!-- Export Button -->
+                                <button class="time-btn" 
+                                        onclick="exportTokenToCSV('${tokenId}')"
+                                        title="Export CSV">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                    </svg>
+                                </button>
                             </div>
-                        </div>
-                        
-                        <!-- APR Timeframe Selector -->
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-[10px] uppercase tracking-wide font-medium hidden sm:inline" style="color: var(--text-tertiary);">APR</span>
-                            <div class="time-selector" id="apr-selector-${tokenId}">
-                                ${['1h', '3h', '6h', '24h', '7d'].map(tf => `
-                                    <button class="time-btn ${aprTimeframes[tokenId] === tf ? 'active' : ''}" 
-                                            onclick="changeAprTimeframe('${tokenId}', '${tf}')"
-                                            data-token="${tokenId}" data-apr="${tf}">${tf}</button>
-                                `).join('')}
-                            </div>
-                        </div>
-                        
-                        <!-- APR/APY Toggle -->
-                        <button class="time-btn ${showAsAPY[tokenId] ? '' : 'active'}" 
-                                onclick="toggleApyMode('${tokenId}')"
-                                id="apy-toggle-${tokenId}"
-                                style="min-width: 44px;">
-                            ${showAsAPY[tokenId] ? 'APY' : 'APR'}
-                        </button>
-                        
-                        <!-- Dual Axis Toggle -->
-                        <button class="time-btn ${chartModes[tokenId] === 'dual' ? 'active' : ''}" 
-                                onclick="toggleChartMode('${tokenId}')"
-                                id="chart-mode-btn-${tokenId}"
-                                title="Toggle APR overlay">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                            </svg>
-                        </button>
-                        
-                        <!-- Export Button -->
-                        <button class="time-btn" 
-                                onclick="exportTokenToCSV('${tokenId}')"
-                                title="Export CSV">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                            </svg>
-                        </button>
-                    </div>
 
-                    <div class="chart-container" style="height: 400px;">
-                        <canvas id="chart-${tokenId}"></canvas>
+                            <div class="chart-container" style="height: 400px;">
+                                <canvas id="chart-${tokenId}"></canvas>
+                            </div>
+                        </div>
+                        
+                        <!-- Right: Realized APR Panel -->
+                        <div class="flex flex-col" style="background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px;">
+                            <div class="flex items-center justify-between mb-3 pb-2" style="border-bottom: 1px solid var(--border-subtle);">
+                                <h4 class="text-xs font-semibold uppercase tracking-wide" style="color: var(--text-secondary);">Realized APR</h4>
+                                ${latest.data_hours ? `<span class="text-[10px] font-mono" style="color: var(--text-tertiary);">${Math.round(latest.data_hours)}h data</span>` : ''}
+                            </div>
+                            <div class="flex flex-col gap-1.5 flex-1 overflow-y-auto">
+                                ${[
+                                    { key: 'apr_1h', label: '1H' },
+                                    { key: 'apr_3h', label: '3H' },
+                                    { key: 'apr_6h', label: '6H' },
+                                    { key: 'apr_12h', label: '12H' },
+                                    { key: 'apr_24h', label: '1D' },
+                                    { key: 'apr_3d', label: '3D' },
+                                    { key: 'apr_7d', label: '7D' },
+                                    { key: 'apr_14d', label: '14D' },
+                                    { key: 'apr_21d', label: '21D' },
+                                    { key: 'apr_30d', label: '30D' }
+                                ].map(t => {
+                                    const val = latest[t.key];
+                                    const display = val != null ? formatNumber(val, 2) + '%' : '—';
+                                    const extrapolated = latest[t.key + '_extrapolated'];
+                                    const valClass = val != null ? (val > 0 ? 'positive' : val < 0 ? 'negative' : '') : '';
+                                    return `<div class="flex justify-between items-center px-2 py-1.5 rounded-lg ${extrapolated ? 'opacity-50' : ''}" style="background: var(--bg-secondary); border: 1px solid var(--border-subtle);">
+                                        <span class="text-[10px] font-semibold tracking-wide" style="color: var(--text-tertiary);">${t.label}</span>
+                                        <span class="text-sm font-mono font-semibold ${valClass}" style="color: ${valClass === 'positive' ? 'var(--positive)' : valClass === 'negative' ? 'var(--negative)' : 'var(--text-primary)'};">${display}</span>
+                                    </div>`;
+                                }).join('')}
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1766,11 +1803,14 @@
             const priceRange = maxPrice - minPrice;
             const padding = priceRange * 0.15 || 0.0001;
 
+            // Blue for price line (consistent across all tokens)
+            const priceColor = '#3b82f6';
+            
             const datasets = [{
                 label: 'Share Price',
                 data: prices,
-                borderColor: branding.color,
-                backgroundColor: branding.color + '15',
+                borderColor: priceColor,
+                backgroundColor: priceColor + '15',
                 borderWidth: 2,
                 tension: 0.4,
                 fill: true,
