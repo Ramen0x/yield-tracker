@@ -241,7 +241,17 @@
                     </h1>
                     <p class="text-gray-500 text-sm">Real APY calculated from on-chain price snapshots vs advertised rates</p>
                 </div>
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <button
+                        id="collapse-all-btn"
+                        class="px-4 py-2 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors flex items-center gap-2 shadow-sm"
+                        onclick="toggleAllSections()"
+                    >
+                        <svg class="w-4 h-4" id="collapse-all-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                        </svg>
+                        <span id="collapse-all-text">Expand All</span>
+                    </button>
                     <button
                         id="export-all-btn"
                         class="px-4 py-2 bg-slate-600 hover:bg-slate-700 rounded-lg text-sm font-medium text-white transition-colors flex items-center gap-2 shadow-sm"
@@ -250,7 +260,7 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        Export All Data
+                        Export
                     </button>
                     <div class="text-right">
                         <div class="text-xs text-gray-500" id="last-update">Loading...</div>
@@ -259,6 +269,19 @@
                 </div>
             </div>
         </header>
+
+        <!-- APR Comparison Section -->
+        <section id="comparison-section" class="mb-6 hidden animate-fade-in">
+            <div class="card p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">24h APR Comparison</h2>
+                    <span class="text-xs text-gray-400">Current vs Previous 24h</span>
+                </div>
+                <div id="comparison-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
 
         <!-- Error Boundary -->
         <div id="error-container" class="hidden mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
@@ -309,6 +332,44 @@
         <div id="content" class="hidden space-y-4">
             <!-- Token sections will be inserted here -->
         </div>
+
+        <!-- Methodology Section -->
+        <section id="methodology-section" class="mt-12 mb-8 hidden">
+            <div class="card p-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Methodology
+                </h2>
+                <div class="grid md:grid-cols-2 gap-6 text-sm text-gray-600">
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-2">How APR is Calculated</h3>
+                        <p class="mb-3">APR is calculated by measuring the actual change in share price over time, then annualizing the return. This reflects the real yield earned by depositors.</p>
+                        <p class="font-mono text-xs bg-gray-50 p-3 rounded-lg border border-gray-100">
+                            APR = ((Price_end / Price_start) - 1) × (365 × 24 / hours) × 100
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Data Collection</h3>
+                        <ul class="space-y-2">
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0"></span>
+                                <span>Share prices fetched every 10 minutes from on-chain sources</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0"></span>
+                                <span>APR calculated over multiple timeframes (1h, 3h, 6h, 12h, 24h, 3d, 7d, 14d, 21d, 30d)</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0"></span>
+                                <span>Historical data stored for trend analysis and comparison</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
     <script>
@@ -429,8 +490,10 @@
                     showEmptyState();
                 } else {
                     renderTokens();
+                    renderComparisonSection();
                     document.getElementById('loading').classList.add('hidden');
                     document.getElementById('content').classList.remove('hidden');
+                    document.getElementById('methodology-section')?.classList.remove('hidden');
                 }
             } catch (error) {
                 ErrorBoundary.showError(error, 'Loading data');
@@ -590,6 +653,93 @@
             }
         }
 
+        function toggleAllSections() {
+            const allProtocols = Object.keys(expandedSections);
+            const expandedCount = Object.values(expandedSections).filter(v => v).length;
+            const shouldExpand = expandedCount < allProtocols.length / 2;
+            
+            allProtocols.forEach(protocol => {
+                const sectionId = `section-${protocol.replace(/\s+/g, '-')}`;
+                const chevronId = `chevron-${protocol.replace(/\s+/g, '-')}`;
+                const section = document.getElementById(sectionId);
+                const chevron = document.getElementById(chevronId);
+                
+                if (section) {
+                    if (shouldExpand) {
+                        section.classList.remove('hidden');
+                        chevron?.classList.add('rotate-180');
+                        expandedSections[protocol] = true;
+                    } else {
+                        section.classList.add('hidden');
+                        chevron?.classList.remove('rotate-180');
+                        expandedSections[protocol] = false;
+                    }
+                }
+            });
+            
+            // Update button text
+            const btn = document.getElementById('collapse-all-text');
+            if (btn) {
+                btn.textContent = shouldExpand ? 'Collapse All' : 'Expand All';
+            }
+        }
+
+        function renderComparisonSection() {
+            const grid = document.getElementById('comparison-grid');
+            const section = document.getElementById('comparison-section');
+            if (!grid || !allData?.tokens) return;
+            
+            const comparisons = Object.entries(allData.tokens).map(([tokenId, data]) => {
+                if (!data.snapshots || data.snapshots.length < 2) return null;
+                const latest = data.snapshots[data.snapshots.length - 1];
+                // Find snapshot from ~24h ago
+                const now = Date.now();
+                const snapshot24hAgo = data.snapshots.find(s => (now - s.timestamp) >= 24 * 60 * 60 * 1000) || data.snapshots[0];
+                const currentApr = latest.apr_24h;
+                const prevApr = snapshot24hAgo.apr_24h;
+                const change = currentApr != null && prevApr != null ? currentApr - prevApr : null;
+                return { symbol: data.symbol, currentApr, prevApr, change };
+            }).filter(Boolean).sort((a, b) => (b.change || 0) - (a.change || 0));
+            
+            grid.innerHTML = comparisons.map(c => {
+                const changeClass = c.change > 0 ? 'text-emerald-600' : c.change < 0 ? 'text-red-500' : 'text-gray-400';
+                const changeIcon = c.change > 0 ? '↑' : c.change < 0 ? '↓' : '→';
+                return `
+                    <div class="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                        <div class="font-semibold text-gray-900 text-sm font-mono">${c.symbol}</div>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <span class="text-lg font-mono font-bold text-gray-800">${c.currentApr?.toFixed(2) || '—'}%</span>
+                            <span class="text-xs ${changeClass} font-medium">${changeIcon} ${c.change != null ? Math.abs(c.change).toFixed(2) : '—'}%</span>
+                        </div>
+                        <div class="text-xs text-gray-400 mt-1">was ${c.prevApr?.toFixed(2) || '—'}%</div>
+                    </div>
+                `;
+            }).join('');
+            
+            section.classList.remove('hidden');
+        }
+
+        // Block explorers for contract links
+        const blockExplorers = {
+            'ethereum': 'https://etherscan.io/address/',
+            'eth': 'https://etherscan.io/address/',
+            'mainnet': 'https://etherscan.io/address/',
+            'avalanche': 'https://snowtrace.io/address/',
+            'avax': 'https://snowtrace.io/address/',
+            'plasma': 'https://plasma-explorer.com/address/',
+            'arbitrum': 'https://arbiscan.io/address/',
+            'optimism': 'https://optimistic.etherscan.io/address/',
+            'polygon': 'https://polygonscan.com/address/',
+            'base': 'https://basescan.org/address/'
+        };
+
+        function getExplorerUrl(chain, address) {
+            if (!address) return null;
+            const chainLower = (chain || 'ethereum').toLowerCase();
+            const baseUrl = blockExplorers[chainLower] || blockExplorers['ethereum'];
+            return baseUrl + address;
+        }
+
         function createTokenSection(tokenId, tokenData) {
             const section = document.createElement('div');
             section.className = 'bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm animate-fade-in';
@@ -653,12 +803,25 @@
                 </div>`;
             }).join('');
 
+            const explorerUrl = getExplorerUrl(tokenData.chain, tokenData.address);
+            const contractLink = explorerUrl ? `
+                <a href="${explorerUrl}" target="_blank" rel="noopener noreferrer" 
+                   class="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors mt-1"
+                   title="View contract">
+                    <span class="font-mono">${tokenData.address?.slice(0, 6)}...${tokenData.address?.slice(-4)}</span>
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+            ` : '';
+
             section.innerHTML = `
                 <div class="p-4 border-b border-gray-100">
                     <div class="flex items-center justify-between">
                         <div>
                             <h2 class="text-xl font-semibold text-gray-900">${tokenData.symbol}</h2>
                             <p class="text-sm text-gray-500">${tokenData.name}</p>
+                            ${contractLink}
                         </div>
                         <div class="text-right">
                             <div class="text-sm font-medium" style="color: ${branding.color}">${tokenData.protocol}</div>
