@@ -282,8 +282,8 @@
         <section id="comparison-section" class="mb-6 hidden animate-fade-in">
             <div class="card p-4">
                 <div class="flex items-center justify-between mb-3">
-                    <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Avg 1h APR (Last 24h)</h2>
-                    <span class="text-xs text-gray-400">Average of 1h APR readings · vs previous 24h period</span>
+                    <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">APR Comparison</h2>
+                    <span class="text-xs text-gray-400">Best available APR · timeframe shown per token</span>
                 </div>
                 <div id="comparison-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                     <!-- Populated by JS -->
@@ -762,37 +762,79 @@
             const h24 = 24 * 60 * 60 * 1000;
             
             const comparisons = Object.entries(allData.tokens).map(([tokenId, data]) => {
-                if (!data.snapshots || data.snapshots.length < 2) return null;
+                if (!data.snapshots || data.snapshots.length < 1) return null;
+                
+                const latest = data.snapshots[data.snapshots.length - 1];
                 
                 // Get snapshots from last 24h and previous 24h
                 const last24h = data.snapshots.filter(s => (now - s.timestamp) <= h24);
                 const prev24h = data.snapshots.filter(s => (now - s.timestamp) > h24 && (now - s.timestamp) <= h24 * 2);
                 
-                // Calculate average of 1h APR for each period
+                // Calculate average of 1h APR for each period (primary method)
                 const avg1hAprLast24h = last24h.length > 0 
-                    ? last24h.filter(s => s.apr_1h != null).reduce((sum, s) => sum + s.apr_1h, 0) / last24h.filter(s => s.apr_1h != null).length
+                    ? last24h.filter(s => s.apr_1h != null).reduce((sum, s) => sum + s.apr_1h, 0) / last24h.filter(s => s.apr_1h != null).length || null
                     : null;
                 const avg1hAprPrev24h = prev24h.length > 0 
-                    ? prev24h.filter(s => s.apr_1h != null).reduce((sum, s) => sum + s.apr_1h, 0) / prev24h.filter(s => s.apr_1h != null).length
+                    ? prev24h.filter(s => s.apr_1h != null).reduce((sum, s) => sum + s.apr_1h, 0) / prev24h.filter(s => s.apr_1h != null).length || null
                     : null;
                 
+                // Fallback cascade: try longer timeframes from latest snapshot
+                let currentApr = avg1hAprLast24h;
+                let timeframe = '1h avg';
+                
+                if (currentApr == null && latest.apr_24h != null) {
+                    currentApr = latest.apr_24h;
+                    timeframe = '24h';
+                }
+                if (currentApr == null && latest.apr_3d != null) {
+                    currentApr = latest.apr_3d;
+                    timeframe = '3d';
+                }
+                if (currentApr == null && latest.apr_7d != null) {
+                    currentApr = latest.apr_7d;
+                    timeframe = '7d';
+                }
+                if (currentApr == null && latest.apr_14d != null) {
+                    currentApr = latest.apr_14d;
+                    timeframe = '14d';
+                }
+                if (currentApr == null && latest.apr_30d != null) {
+                    currentApr = latest.apr_30d;
+                    timeframe = '30d';
+                }
+                
+                // Only calculate change if we have the primary 1h avg method
                 const change = avg1hAprLast24h != null && avg1hAprPrev24h != null ? avg1hAprLast24h - avg1hAprPrev24h : null;
-                return { symbol: data.symbol, currentApr: avg1hAprLast24h, prevApr: avg1hAprPrev24h, change, dataPoints: last24h.length };
-            }).filter(Boolean).sort((a, b) => (b.currentApr || 0) - (a.currentApr || 0));
+                
+                return { 
+                    symbol: data.symbol, 
+                    currentApr, 
+                    prevApr: avg1hAprPrev24h, 
+                    change, 
+                    timeframe,
+                    dataPoints: last24h.length 
+                };
+            }).filter(c => c && c.currentApr != null).sort((a, b) => (b.currentApr || 0) - (a.currentApr || 0));
             
             grid.innerHTML = comparisons.map(c => {
                 const colors = getHeatmapColor(c.currentApr);
                 const changeIcon = c.change > 0 ? '↑' : c.change < 0 ? '↓' : '→';
                 const changeColor = c.change > 0 ? '#059669' : c.change < 0 ? '#dc2626' : '#6b7280';
+                const showChange = c.change != null;
                 return `
                     <div class="rounded-lg p-3 transition-all hover:scale-[1.02] cursor-default" 
                          style="background: ${colors.bg}; border: 1px solid ${colors.border || '#e5e7eb'};">
-                        <div class="font-semibold text-sm font-mono" style="color: ${colors.text}">${c.symbol}</div>
+                        <div class="flex items-center justify-between">
+                            <span class="font-semibold text-sm font-mono" style="color: ${colors.text}">${c.symbol}</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/60 text-gray-500 font-medium">${c.timeframe}</span>
+                        </div>
                         <div class="text-2xl font-mono font-bold mt-1" style="color: ${colors.text}">${c.currentApr?.toFixed(2) || '—'}%</div>
+                        ${showChange ? `
                         <div class="flex items-center gap-1 mt-1">
-                            <span class="text-xs font-medium" style="color: ${changeColor}">${changeIcon} ${c.change != null ? Math.abs(c.change).toFixed(2) : '—'}%</span>
+                            <span class="text-xs font-medium" style="color: ${changeColor}">${changeIcon} ${Math.abs(c.change).toFixed(2)}%</span>
                             <span class="text-xs text-gray-400">vs 24h ago</span>
                         </div>
+                        ` : `<div class="text-[10px] text-gray-400 mt-1">no 24h comparison</div>`}
                     </div>
                 `;
             }).join('');
