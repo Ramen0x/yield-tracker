@@ -1582,7 +1582,7 @@
                     </div>
 
                     <!-- Chart + APR Panel Grid -->
-                    <div class="grid grid-cols-1 lg:grid-cols-[1fr_180px] gap-3 sm:gap-4">
+                    <div class="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-3 sm:gap-4">
                         <!-- Left: Chart Section -->
                         <div>
                             <!-- Chart Controls -->
@@ -1639,7 +1639,7 @@
                                 </button>
                             </div>
 
-                            <div class="chart-container" style="height: 400px;">
+                            <div class="chart-container" style="height: 500px;">
                                 <canvas id="chart-${tokenId}"></canvas>
                             </div>
                         </div>
@@ -1883,20 +1883,21 @@
                 const minRange = 0.5;
                 const aprPadding = aprRange < minRange ? (minRange - aprRange) / 2 + 0.05 : aprRange * 0.15;
 
-                // APR line
+                // APR line - smooth with cubic interpolation
                 datasets.push({
                     label: `${selectedAprTf} ${rateLabel}`,
                     data: aprData,
-                    borderColor: '#0d9488',
-                    backgroundColor: 'rgba(20, 184, 166, 0.08)',
+                    borderColor: '#14b8a6',
+                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
                     borderWidth: 2,
-                    tension: 0.4,
-                    fill: false,
+                    tension: 0.35,
+                    fill: true,
                     pointRadius: 0,
                     pointHoverRadius: 4,
                     yAxisID: 'y1',
                     spanGaps: true,
-                    order: 2
+                    order: 2,
+                    cubicInterpolationMode: 'monotone'
                 });
 
                 // Average APR line (dashed)
