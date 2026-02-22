@@ -29,39 +29,58 @@
             --negative-bg: rgba(239, 68, 68, 0.1);
         }
 
-        /* Light mode - soft pastel theme */
+        /* Light mode - clean white theme */
         [data-theme="light"] {
-            --bg-primary: #faf8f5;
+            --bg-primary: #f8fafc;
             --bg-secondary: #ffffff;
-            --bg-tertiary: #f5f3f0;
+            --bg-tertiary: #f1f5f9;
             --bg-elevated: #ffffff;
-            --border-subtle: rgba(0, 0, 0, 0.06);
-            --border-default: rgba(0, 0, 0, 0.1);
-            --text-primary: #1a1a1a;
-            --text-secondary: #525252;
-            --text-tertiary: #737373;
-            --accent-gold: #b8860b;
-            --accent-gold-muted: rgba(184, 134, 11, 0.12);
-            --positive: #16a34a;
-            --positive-bg: rgba(22, 163, 74, 0.1);
+            --border-subtle: rgba(0, 0, 0, 0.08);
+            --border-default: rgba(0, 0, 0, 0.12);
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --text-tertiary: #6b7280;
+            --accent-gold: #d97706;
+            --accent-gold-muted: rgba(217, 119, 6, 0.12);
+            --positive: #059669;
+            --positive-bg: rgba(5, 150, 105, 0.1);
             --negative: #dc2626;
             --negative-bg: rgba(220, 38, 38, 0.1);
         }
 
         [data-theme="light"] .card {
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            border-color: #e5e7eb;
         }
 
         [data-theme="light"] .protocol-header {
-            background: linear-gradient(180deg, #f5f3f0 0%, #ffffff 100%);
+            background: linear-gradient(180deg, #f9fafb 0%, #ffffff 100%);
         }
 
         [data-theme="light"] .data-cell {
-            background: #f8f6f3;
+            background: #f9fafb;
+            border-color: #e5e7eb;
         }
 
         [data-theme="light"] .heatmap-section {
-            background: linear-gradient(180deg, #f5f3f0 0%, #faf8f5 100%);
+            background: linear-gradient(180deg, #f1f5f9 0%, #f8fafc 100%);
+        }
+
+        [data-theme="light"] .time-btn {
+            background: #ffffff;
+            border-color: #e5e7eb;
+            color: #4b5563;
+        }
+
+        [data-theme="light"] .time-btn.active {
+            background: #fbbf24;
+            border-color: #f59e0b;
+            color: #1f2937;
+        }
+
+        [data-theme="light"] .token-card {
+            background: #ffffff;
+            border-color: #e5e7eb;
         }
 
         * {
@@ -1582,7 +1601,7 @@
                     </div>
 
                     <!-- Chart + APR Panel Grid -->
-                    <div class="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-3 sm:gap-4">
+                    <div class="grid grid-cols-1 xl:grid-cols-[1fr_200px] gap-3 sm:gap-4">
                         <!-- Left: Chart Section -->
                         <div>
                             <!-- Chart Controls -->
@@ -1783,9 +1802,19 @@
             const aprKey = `apr_${selectedAprTf}`;
             const useAPY = showAsAPY[tokenId] || false;
             const tfHours = { '1h': 1, '3h': 3, '6h': 6, '12h': 12, '24h': 24, '3d': 72, '7d': 168 };
-            const aprData = filteredSnapshots.map(s => {
+            const rawAprData = filteredSnapshots.map(s => {
                 const apr = s[aprKey];
                 return useAPY ? aprToApy(apr, tfHours[selectedAprTf] || 24) : apr;
+            });
+            
+            // Smooth APR data with moving average (window size based on data length)
+            const smoothWindow = Math.max(3, Math.min(12, Math.floor(rawAprData.length / 20)));
+            const aprData = rawAprData.map((val, idx, arr) => {
+                if (val === null || val === undefined) return val;
+                const start = Math.max(0, idx - Math.floor(smoothWindow / 2));
+                const end = Math.min(arr.length, idx + Math.ceil(smoothWindow / 2));
+                const window = arr.slice(start, end).filter(v => v !== null && v !== undefined);
+                return window.length > 0 ? window.reduce((a, b) => a + b, 0) / window.length : val;
             });
             const rateLabel = useAPY ? 'APY' : 'APR';
 
