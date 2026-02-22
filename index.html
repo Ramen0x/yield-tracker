@@ -471,6 +471,26 @@
             'Strata': { 
                 color: '#14b8a6', 
                 logo: 'https://icons.llamao.fi/icons/protocols/strata'
+            },
+            'Usual': { 
+                color: '#1a1a2e', 
+                logo: 'https://icons.llamao.fi/icons/protocols/usual'
+            },
+            'OpenEden': { 
+                color: '#10b981', 
+                logo: 'https://icons.llamao.fi/icons/protocols/openeden-tbill'
+            },
+            'Ondo': { 
+                color: '#2563eb', 
+                logo: 'https://icons.llamao.fi/icons/protocols/ondo-yield-assets'
+            },
+            'BlackRock': { 
+                color: '#000000', 
+                logo: 'https://icons.llamao.fi/icons/protocols/blackrock-buidl'
+            },
+            'VanEck': { 
+                color: '#0066cc', 
+                logo: null  // Use initials
             }
         };
 
@@ -762,7 +782,7 @@
             const h24 = 24 * 60 * 60 * 1000;
             
             // Protocols that should use 7d APR directly (slow NAV updates)
-            const slowUpdateProtocols = ['Midas', 'Superstate'];
+            const slowUpdateProtocols = ['Midas', 'Superstate', 'OpenEden', 'Ondo', 'BlackRock', 'VanEck'];
             
             const comparisons = Object.entries(allData.tokens).map(([tokenId, data]) => {
                 if (!data.snapshots || data.snapshots.length < 1) return null;
