@@ -85,6 +85,13 @@
             padding: 16px;
         }
 
+        @media (max-width: 640px) {
+            .data-cell {
+                padding: 12px;
+                border-radius: 10px;
+            }
+        }
+
         .data-label {
             font-size: 11px;
             font-weight: 500;
@@ -94,11 +101,24 @@
             margin-bottom: 6px;
         }
 
+        @media (max-width: 640px) {
+            .data-label {
+                font-size: 10px;
+                margin-bottom: 4px;
+            }
+        }
+
         .data-value {
             font-size: 24px;
             font-weight: 600;
             color: var(--text-primary);
             line-height: 1.2;
+        }
+        
+        @media (max-width: 640px) {
+            .data-value {
+                font-size: 18px;
+            }
         }
 
         .data-value.positive { color: var(--positive); }
@@ -153,6 +173,22 @@
             cursor: pointer;
             border: none;
             background: transparent;
+            min-height: 44px;
+            min-width: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @media (max-width: 640px) {
+            .time-btn {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+            .time-selector {
+                padding: 3px;
+                gap: 1px;
+            }
         }
 
         .time-btn:hover {
@@ -173,6 +209,14 @@
             border: 1px solid var(--border-subtle);
             border-radius: 12px;
             padding: 20px;
+            touch-action: pan-y pinch-zoom;
+        }
+        
+        @media (max-width: 640px) {
+            .chart-container {
+                padding: 12px;
+                border-radius: 10px;
+            }
         }
 
         /* Scrollbar styling */
@@ -230,14 +274,28 @@
             overflow: hidden;
             margin-bottom: 16px;
         }
+        
+        @media (max-width: 640px) {
+            .protocol-section {
+                border-radius: 12px;
+                margin-bottom: 12px;
+            }
+        }
 
         .protocol-toggle {
             cursor: pointer;
             transition: background 0.2s;
+            min-height: 72px;
         }
 
         .protocol-toggle:hover {
             background: rgba(255, 255, 255, 0.02);
+        }
+        
+        @media (max-width: 640px) {
+            .protocol-toggle {
+                min-height: 64px;
+            }
         }
 
         /* Token grid */
@@ -248,11 +306,23 @@
             overflow: hidden;
             transition: all 0.3s;
         }
+        
+        @media (max-width: 640px) {
+            .token-card {
+                border-radius: 12px;
+            }
+        }
 
         .token-card:hover {
             border-color: var(--border-default);
             transform: translateY(-2px);
             box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.4);
+        }
+        
+        @media (max-width: 640px) {
+            .token-card:hover {
+                transform: none;
+            }
         }
 
         /* Export button */
@@ -268,11 +338,23 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            min-height: 44px;
         }
 
         .btn-export:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+        }
+        
+        @media (max-width: 640px) {
+            .btn-export {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+            .btn-export svg {
+                width: 14px;
+                height: 14px;
+            }
         }
 
         /* Status indicator */
@@ -336,46 +418,198 @@
             background: var(--border-subtle);
             margin: 0;
         }
+
+        /* Yield Heatmap */
+        .heatmap-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .heatmap-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            background: linear-gradient(180deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px;
+            padding: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .heatmap-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 10px;
+                padding: 20px;
+            }
+        }
+
+        .heatmap-cell {
+            position: relative;
+            padding: 14px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            overflow: hidden;
+        }
+
+        .heatmap-cell::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0.12;
+            background: inherit;
+            border-radius: inherit;
+        }
+
+        .heatmap-cell:hover {
+            transform: translateY(-2px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+        }
+
+        .heatmap-cell:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .heatmap-symbol {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .heatmap-apr {
+            font-size: 18px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.98);
+            letter-spacing: -0.02em;
+        }
+
+        .heatmap-trend {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-left: 4px;
+        }
+
+        .trend-up { color: #4ade80; }
+        .trend-down { color: #f87171; }
+        .trend-neutral { color: #a1a1aa; }
+
+        /* Heatmap color classes */
+        .heat-negative-3 { background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%); }
+        .heat-negative-2 { background: linear-gradient(135deg, #991b1b 0%, #b91c1c 100%); }
+        .heat-negative-1 { background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%); }
+        .heat-low-1 { background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); }
+        .heat-low-2 { background: linear-gradient(135deg, #ea580c 0%, #f97316 100%); }
+        .heat-mid-1 { background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%); }
+        .heat-mid-2 { background: linear-gradient(135deg, #ca8a04 0%, #eab308 100%); }
+        .heat-high-1 { background: linear-gradient(135deg, #65a30d 0%, #84cc16 100%); }
+        .heat-high-2 { background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%); }
+        .heat-high-3 { background: linear-gradient(135deg, #059669 0%, #10b981 100%); }
+
+        .heatmap-legend {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-top: 1px solid var(--border-subtle);
+            background: var(--bg-tertiary);
+        }
+
+        .legend-gradient {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #7f1d1d 0%, #dc2626 20%, #f59e0b 40%, #eab308 50%, #84cc16 70%, #22c55e 85%, #10b981 100%);
+        }
+
+        .legend-label {
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body class="min-h-screen">
-    <div class="max-w-[1920px] mx-auto px-6 py-8">
+    <div class="max-w-[1920px] mx-auto px-3 py-4 sm:px-4 sm:py-6 md:px-6 md:py-8">
         <!-- Header -->
-        <header class="mb-10 animate-in">
-            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+        <header class="mb-6 sm:mb-8 md:mb-10 animate-in">
+            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6">
                 <div>
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 flex items-center justify-center border border-amber-500/20">
-                            <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 flex items-center justify-center border border-amber-500/20">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                             </svg>
                         </div>
-                        <span class="text-sm font-medium text-zinc-500 uppercase tracking-wider">Yield Analytics</span>
+                        <span class="text-xs sm:text-sm font-medium text-zinc-500 uppercase tracking-wider">Yield Analytics</span>
                     </div>
-                    <h1 class="text-4xl font-semibold text-white tracking-tight mb-2">
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl font-semibold text-white tracking-tight mb-1 sm:mb-2">
                         Institutional <span class="brand-text">Yield Monitor</span>
                     </h1>
-                    <p class="text-zinc-500 text-base max-w-xl">
+                    <p class="text-zinc-500 text-sm sm:text-base max-w-xl hidden sm:block">
                         Real-time APY tracking from on-chain price data. Verified yields, institutional precision.
                     </p>
                 </div>
-                <div class="flex items-center gap-6">
+                <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-6">
                     <button class="btn-export" onclick="exportAllToCSV()">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        Export Data
+                        <span class="hidden sm:inline">Export Data</span>
+                        <span class="sm:hidden">Export</span>
                     </button>
                     <div class="text-right">
                         <div class="flex items-center justify-end gap-2 mb-1">
                             <div class="status-dot"></div>
                             <span class="text-xs font-medium text-zinc-400">LIVE</span>
                         </div>
-                        <div class="text-sm text-zinc-500 font-mono" id="last-update">Loading...</div>
+                        <div class="text-xs sm:text-sm text-zinc-500 font-mono" id="last-update">Loading...</div>
                     </div>
                 </div>
             </div>
         </header>
+
+        <!-- Yield Heatmap -->
+        <section id="heatmap-section" class="heatmap-section hidden animate-in">
+            <div class="heatmap-header">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500/20 to-amber-500/20 flex items-center justify-center border border-white/5">
+                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-base font-semibold text-white">Yield Heatmap</h2>
+                            <p class="text-xs text-zinc-500">7-day APR overview • sorted by yield</p>
+                        </div>
+                    </div>
+                    <div class="text-xs text-zinc-500 font-mono" id="heatmap-count"></div>
+                </div>
+            </div>
+            <div class="heatmap-grid" id="heatmap-grid">
+                <!-- Heatmap cells rendered by JS -->
+            </div>
+            <div class="heatmap-legend">
+                <span class="legend-label">Low/Negative</span>
+                <div class="legend-gradient"></div>
+                <span class="legend-label">High APR</span>
+            </div>
+        </section>
 
         <!-- Error State -->
         <div id="error-container" class="hidden mb-8 p-5 bg-red-500/10 border border-red-500/20 rounded-xl animate-in">
@@ -548,6 +782,7 @@
                 if (!hasData) {
                     showEmptyState();
                 } else {
+                    renderHeatmap();
                     renderTokens();
                     document.getElementById('loading').classList.add('hidden');
                     document.getElementById('content').classList.remove('hidden');
@@ -561,6 +796,7 @@
         function showEmptyState() {
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('empty-state').classList.remove('hidden');
+            document.getElementById('heatmap-section').classList.add('hidden');
         }
 
         function retryLoad() {
@@ -568,7 +804,122 @@
             document.getElementById('loading').classList.remove('hidden');
             document.getElementById('content').classList.add('hidden');
             document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('heatmap-section').classList.add('hidden');
             loadData();
+        }
+
+        function getHeatClass(apr) {
+            if (apr === null || apr === undefined || isNaN(apr)) return 'heat-mid-1';
+            if (apr < -5) return 'heat-negative-3';
+            if (apr < -2) return 'heat-negative-2';
+            if (apr < 0) return 'heat-negative-1';
+            if (apr < 2) return 'heat-low-1';
+            if (apr < 4) return 'heat-low-2';
+            if (apr < 6) return 'heat-mid-1';
+            if (apr < 8) return 'heat-mid-2';
+            if (apr < 12) return 'heat-high-1';
+            if (apr < 18) return 'heat-high-2';
+            return 'heat-high-3';
+        }
+
+        function getTrendIndicator(snapshots) {
+            if (!snapshots || snapshots.length < 2) return { symbol: '→', class: 'trend-neutral' };
+            
+            const latest = snapshots[snapshots.length - 1];
+            const previous = snapshots[snapshots.length - 2];
+            
+            if (!latest.apr_7d || !previous.apr_7d) return { symbol: '→', class: 'trend-neutral' };
+            
+            const diff = latest.apr_7d - previous.apr_7d;
+            const threshold = 0.1; // 0.1% change threshold
+            
+            if (diff > threshold) return { symbol: '↑', class: 'trend-up' };
+            if (diff < -threshold) return { symbol: '↓', class: 'trend-down' };
+            return { symbol: '→', class: 'trend-neutral' };
+        }
+
+        function scrollToToken(tokenId) {
+            const card = document.getElementById(`token-card-${tokenId}`);
+            if (card) {
+                // Find protocol section and expand if collapsed
+                const section = card.closest('.protocol-section');
+                if (section) {
+                    const content = section.querySelector('[id^="section-"]');
+                    if (content && content.classList.contains('hidden')) {
+                        const chevron = section.querySelector('[id^="chevron-"]');
+                        content.classList.remove('hidden');
+                        if (chevron) chevron.classList.add('rotate-180');
+                        // Update expandedSections state
+                        const protocol = section.querySelector('.protocol-toggle h2')?.textContent;
+                        if (protocol) expandedSections[protocol] = true;
+                    }
+                }
+                
+                // Small delay to let section expand
+                setTimeout(() => {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    card.style.boxShadow = '0 0 0 2px var(--accent-gold), 0 12px 40px -12px rgba(0, 0, 0, 0.4)';
+                    setTimeout(() => {
+                        card.style.boxShadow = '';
+                    }, 2000);
+                }, 100);
+            }
+        }
+
+        function renderHeatmap() {
+            const grid = document.getElementById('heatmap-grid');
+            const section = document.getElementById('heatmap-section');
+            const countEl = document.getElementById('heatmap-count');
+            
+            if (!allData?.tokens) {
+                section.classList.add('hidden');
+                return;
+            }
+
+            // Collect all tokens with their 7D APR
+            const tokenList = [];
+            for (const [tokenId, tokenData] of Object.entries(allData.tokens)) {
+                if (!tokenData.snapshots?.length) continue;
+                const latest = tokenData.snapshots[tokenData.snapshots.length - 1];
+                if (latest.apr_7d === null || latest.apr_7d === undefined) continue;
+                
+                tokenList.push({
+                    tokenId,
+                    symbol: tokenData.symbol,
+                    apr: latest.apr_7d,
+                    snapshots: tokenData.snapshots
+                });
+            }
+
+            if (tokenList.length === 0) {
+                section.classList.add('hidden');
+                return;
+            }
+
+            // Sort by APR descending
+            tokenList.sort((a, b) => (b.apr || 0) - (a.apr || 0));
+
+            // Update count
+            countEl.textContent = `${tokenList.length} tokens`;
+
+            // Render cells
+            grid.innerHTML = tokenList.map(token => {
+                const heatClass = getHeatClass(token.apr);
+                const trend = getTrendIndicator(token.snapshots);
+                const aprDisplay = formatPercent(token.apr, 1);
+                
+                return `
+                    <div class="heatmap-cell ${heatClass}" onclick="scrollToToken('${token.tokenId}')" title="${token.symbol}: ${aprDisplay} 7D APR">
+                        <div class="heatmap-symbol">
+                            <span>${token.symbol}</span>
+                            <span class="heatmap-trend ${trend.class}">${trend.symbol}</span>
+                        </div>
+                        <div class="heatmap-apr font-mono">${aprDisplay}</div>
+                    </div>
+                `;
+            }).join('');
+
+            section.classList.remove('hidden');
         }
 
         function renderTokens() {
@@ -605,32 +956,32 @@
                 section.className = 'protocol-section bg-zinc-900/50 animate-in';
                 
                 section.innerHTML = `
-                    <div class="protocol-toggle p-5 flex items-center justify-between" onclick="toggleSection('${protocol}')">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${branding.gradient} flex items-center justify-center border border-white/5">
-                                <div class="w-3 h-3 rounded-full" style="background: ${branding.color}; box-shadow: 0 0 12px ${branding.color}40;"></div>
+                    <div class="protocol-toggle p-3 sm:p-4 md:p-5 flex items-center justify-between" onclick="toggleSection('${protocol}')">
+                        <div class="flex items-center gap-3 sm:gap-4">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br ${branding.gradient} flex items-center justify-center border border-white/5 flex-shrink-0">
+                                <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full" style="background: ${branding.color}; box-shadow: 0 0 12px ${branding.color}40;"></div>
                             </div>
-                            <div>
-                                <h2 class="text-lg font-semibold text-white">${protocol}</h2>
-                                <p class="text-sm text-zinc-500">${tokens.length} instrument${tokens.length > 1 ? 's' : ''}</p>
+                            <div class="min-w-0">
+                                <h2 class="text-base sm:text-lg font-semibold text-white truncate">${protocol}</h2>
+                                <p class="text-xs sm:text-sm text-zinc-500">${tokens.length} instrument${tokens.length > 1 ? 's' : ''}</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-6">
-                            <div class="hidden md:flex items-center gap-3">
+                        <div class="flex items-center gap-3 sm:gap-6">
+                            <div class="hidden lg:flex items-center gap-3">
                                 ${tokens.slice(0, 4).map(t => `
                                     <span class="px-3 py-1 rounded-lg bg-zinc-800/50 border border-zinc-700/50 text-xs font-mono text-zinc-400">${t.tokenData.symbol}</span>
                                 `).join('')}
                                 ${tokens.length > 4 ? `<span class="text-xs text-zinc-500">+${tokens.length - 4} more</span>` : ''}
                             </div>
-                            <svg class="w-5 h-5 text-zinc-500 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}" id="chevron-${protocol.replace(/\s+/g, '-')}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 text-zinc-500 transition-transform duration-300 flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}" id="chevron-${protocol.replace(/\s+/g, '-')}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </div>
                     </div>
                     <div class="${isExpanded ? '' : 'hidden'}" id="section-${protocol.replace(/\s+/g, '-')}">
                         <div class="divider"></div>
-                        <div class="p-5">
-                            <div class="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4" id="tokens-${protocol.replace(/\s+/g, '-')}"></div>
+                        <div class="p-3 sm:p-4 md:p-5">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-3 sm:gap-4" id="tokens-${protocol.replace(/\s+/g, '-')}"></div>
                         </div>
                     </div>
                 `;
@@ -666,6 +1017,7 @@
         function createTokenCard(tokenId, tokenData, branding) {
             const card = document.createElement('div');
             card.className = 'token-card';
+            card.id = `token-card-${tokenId}`;
 
             const latest = tokenData.snapshots[tokenData.snapshots.length - 1];
             const apr7d = latest.apr_7d;
