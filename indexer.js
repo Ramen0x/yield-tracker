@@ -232,6 +232,10 @@ async function snapshot() {
         protocol: token.protocol,
         snapshots: []
       };
+    } else {
+      // Always sync metadata from tokens.json
+      data.tokens[token.id].protocol = token.protocol;
+      data.tokens[token.id].name = token.name;
     }
 
     const apr = await calculateAPR(token.id, price, data);
