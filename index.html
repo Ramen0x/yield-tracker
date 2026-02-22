@@ -1260,9 +1260,70 @@
             section.classList.remove('hidden');
         }
 
+        function getHeatmapColor(apr) {
+            if (apr === null || apr === undefined || isNaN(apr)) return '#9ca3af';
+            if (apr < 0) return '#ef4444';
+            if (apr < 3) return '#f97316';
+            if (apr < 6) return '#eab308';
+            if (apr < 10) return '#84cc16';
+            if (apr < 15) return '#22c55e';
+            return '#10b981';
+        }
+
+        function renderHeatmap() {
+            const grid = document.getElementById('heatmap-grid');
+            const section = document.getElementById('heatmap-section');
+            if (!grid || !allData?.tokens) return;
+
+            const tokens = Object.entries(allData.tokens)
+                .filter(([id, data]) => data.snapshots?.length > 0)
+                .map(([id, data]) => {
+                    const latest = data.snapshots[data.snapshots.length - 1];
+                    const prev = data.snapshots.length > 6 ? data.snapshots[data.snapshots.length - 7] : null;
+                    const apr7d = latest.apr_7d;
+                    const trend = prev && prev.apr_7d != null && apr7d != null ? 
+                        (apr7d > prev.apr_7d ? '↑' : apr7d < prev.apr_7d ? '↓' : '→') : '→';
+                    return { id, symbol: data.symbol, apr7d, trend, protocol: data.protocol };
+                })
+                .sort((a, b) => (b.apr7d || 0) - (a.apr7d || 0));
+
+            grid.innerHTML = tokens.map(t => `
+                <div class="p-2 rounded-lg cursor-pointer transition-all hover:scale-105 hover:shadow-md text-center"
+                     style="background: ${getHeatmapColor(t.apr7d)}15; border: 1px solid ${getHeatmapColor(t.apr7d)}30;"
+                     onclick="scrollToToken('${t.id}', '${t.protocol}')"
+                     title="${t.symbol}: ${t.apr7d?.toFixed(2) || '—'}% APR">
+                    <div class="font-medium text-xs text-gray-700 truncate">${t.symbol}</div>
+                    <div class="font-mono text-sm font-bold" style="color: ${getHeatmapColor(t.apr7d)}">
+                        ${t.apr7d != null ? t.apr7d.toFixed(1) + '%' : '—'}
+                    </div>
+                    <div class="text-xs text-gray-400">${t.trend}</div>
+                </div>
+            `).join('');
+
+            section.classList.remove('hidden');
+        }
+
+        function scrollToToken(tokenId, protocol) {
+            const sectionId = 'section-' + protocol.replace(/\s+/g, '-');
+            const section = document.getElementById(sectionId);
+            if (section && section.classList.contains('hidden')) {
+                toggleProtocolSection(protocol);
+            }
+            setTimeout(() => {
+                const card = document.getElementById('token-card-' + tokenId);
+                if (card) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    card.style.boxShadow = '0 0 0 3px #fbbf24';
+                    setTimeout(() => card.style.boxShadow = '', 2000);
+                }
+            }, 150);
+        }
+
         function renderTokens() {
             const container = document.getElementById('content');
             container.innerHTML = '';
+            
+            renderHeatmap();
 
             const tokensByProtocol = {};
             for (const [tokenId, tokenData] of Object.entries(allData.tokens)) {
@@ -1356,6 +1417,7 @@
             const card = document.createElement('div');
             card.className = 'token-card';
             card.id = `token-card-${tokenId}`;
+            card.setAttribute('data-token-id', tokenId);
 
             const latest = tokenData.snapshots[tokenData.snapshots.length - 1];
             const apr7d = latest.apr_7d;
