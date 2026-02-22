@@ -1530,6 +1530,14 @@
 
             const aprClass = apr7d > 0 ? 'positive' : apr7d < 0 ? 'negative' : '';
 
+            // Initialize state for this token
+            const defaultRange = protocolDefaults[tokenData.protocol] || '7d';
+            if (!timeRanges[tokenId]) timeRanges[tokenId] = defaultRange;
+            if (!chartModes[tokenId]) chartModes[tokenId] = 'dual';
+            if (!aprTimeframes[tokenId]) aprTimeframes[tokenId] = '1h';
+            if (!showAsAPY[tokenId]) showAsAPY[tokenId] = false;
+            if (!hiddenDatasets[tokenId]) hiddenDatasets[tokenId] = {};
+
             card.innerHTML = `
                 <div class="p-3 sm:p-4 md:p-5">
                     <div class="flex items-start justify-between mb-3 sm:mb-4 md:mb-5">
@@ -1573,125 +1581,456 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between mb-3 sm:mb-4">
-                        <div class="time-selector flex-1 sm:flex-none" id="time-selector-${tokenId}">
-                            <button class="time-btn flex-1 sm:flex-none ${timeRanges[tokenId] === '24h' ? 'active' : ''}" onclick="setTimeRange('${tokenId}', '24h')">24H</button>
-                            <button class="time-btn flex-1 sm:flex-none ${timeRanges[tokenId] === '7d' || !timeRanges[tokenId] ? 'active' : ''}" onclick="setTimeRange('${tokenId}', '7d')">7D</button>
-                            <button class="time-btn flex-1 sm:flex-none ${timeRanges[tokenId] === '14d' ? 'active' : ''}" onclick="setTimeRange('${tokenId}', '14d')">14D</button>
-                            <button class="time-btn flex-1 sm:flex-none ${timeRanges[tokenId] === '30d' ? 'active' : ''}" onclick="setTimeRange('${tokenId}', '30d')">30D</button>
+                    <!-- Chart Controls -->
+                    <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4 p-2 sm:p-3 rounded-lg" style="background: var(--bg-tertiary); border: 1px solid var(--border-subtle);">
+                        <!-- Time Range Selector -->
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[10px] uppercase tracking-wide font-medium hidden sm:inline" style="color: var(--text-tertiary);">Range</span>
+                            <div class="time-selector" id="time-selector-${tokenId}">
+                                ${['3h', '6h', '12h', '24h', '7d', '30d', 'all'].map(range => `
+                                    <button class="time-btn ${timeRanges[tokenId] === range ? 'active' : ''}" 
+                                            onclick="changeTimeRange('${tokenId}', '${range}')"
+                                            data-token="${tokenId}" data-range="${range}">${range}</button>
+                                `).join('')}
+                            </div>
                         </div>
+                        
+                        <!-- APR Timeframe Selector -->
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[10px] uppercase tracking-wide font-medium hidden sm:inline" style="color: var(--text-tertiary);">APR</span>
+                            <div class="time-selector" id="apr-selector-${tokenId}">
+                                ${['1h', '3h', '6h', '24h', '7d'].map(tf => `
+                                    <button class="time-btn ${aprTimeframes[tokenId] === tf ? 'active' : ''}" 
+                                            onclick="changeAprTimeframe('${tokenId}', '${tf}')"
+                                            data-token="${tokenId}" data-apr="${tf}">${tf}</button>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <!-- APR/APY Toggle -->
+                        <button class="time-btn ${showAsAPY[tokenId] ? '' : 'active'}" 
+                                onclick="toggleApyMode('${tokenId}')"
+                                id="apy-toggle-${tokenId}"
+                                style="min-width: 44px;">
+                            ${showAsAPY[tokenId] ? 'APY' : 'APR'}
+                        </button>
+                        
+                        <!-- Dual Axis Toggle -->
+                        <button class="time-btn ${chartModes[tokenId] === 'dual' ? 'active' : ''}" 
+                                onclick="toggleChartMode('${tokenId}')"
+                                id="chart-mode-btn-${tokenId}"
+                                title="Toggle APR overlay">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                        </button>
+                        
+                        <!-- Export Button -->
+                        <button class="time-btn" 
+                                onclick="exportTokenToCSV('${tokenId}')"
+                                title="Export CSV">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                        </button>
                     </div>
 
-                    <div class="chart-container" style="height: 160px;">
+                    <div class="chart-container" style="height: 400px;">
                         <canvas id="chart-${tokenId}"></canvas>
                     </div>
                 </div>
             `;
 
-            setTimeout(() => initChart(tokenId, tokenData), 100);
+            setTimeout(() => createChart(tokenId, tokenData), 100);
             return card;
         }
 
-        function setTimeRange(tokenId, range) {
-            timeRanges[tokenId] = range;
-            const selector = document.getElementById(`time-selector-${tokenId}`);
-            selector.querySelectorAll('.time-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.textContent === range.toUpperCase());
-            });
-            if (charts[tokenId]) {
-                updateChart(tokenId, allData.tokens[tokenId]);
-            }
+        function filterSnapshotsByTimeRange(snapshots, range) {
+            if (range === 'all') return snapshots;
+            
+            const now = Date.now();
+            const ranges = {
+                '3h': 3 * 60 * 60 * 1000,
+                '6h': 6 * 60 * 60 * 1000,
+                '12h': 12 * 60 * 60 * 1000,
+                '24h': 24 * 60 * 60 * 1000,
+                '7d': 7 * 24 * 60 * 60 * 1000,
+                '14d': 14 * 24 * 60 * 60 * 1000,
+                '30d': 30 * 24 * 60 * 60 * 1000
+            };
+            
+            const cutoff = now - (ranges[range] || ranges['7d']);
+            return snapshots.filter(s => s.timestamp >= cutoff);
         }
 
-        function initChart(tokenId, tokenData) {
-            const ctx = document.getElementById(`chart-${tokenId}`)?.getContext('2d');
-            if (!ctx) return;
+        function changeTimeRange(tokenId, range) {
+            timeRanges[tokenId] = range;
+            
+            // Update button states
+            const selector = document.getElementById(`time-selector-${tokenId}`);
+            if (selector) {
+                selector.querySelectorAll('.time-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.range === range);
+                });
+            }
+            
+            createChart(tokenId, allData.tokens[tokenId]);
+        }
 
-            if (!timeRanges[tokenId]) {
-                timeRanges[tokenId] = protocolDefaults[tokenData.protocol] || '7d';
+        function changeAprTimeframe(tokenId, timeframe) {
+            aprTimeframes[tokenId] = timeframe;
+            
+            // Update button states
+            const selector = document.getElementById(`apr-selector-${tokenId}`);
+            if (selector) {
+                selector.querySelectorAll('.time-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.apr === timeframe);
+                });
+            }
+            
+            createChart(tokenId, allData.tokens[tokenId]);
+        }
+
+        function toggleApyMode(tokenId) {
+            showAsAPY[tokenId] = !showAsAPY[tokenId];
+            
+            const btn = document.getElementById(`apy-toggle-${tokenId}`);
+            if (btn) {
+                btn.textContent = showAsAPY[tokenId] ? 'APY' : 'APR';
+                btn.classList.toggle('active', !showAsAPY[tokenId]);
+            }
+            
+            createChart(tokenId, allData.tokens[tokenId]);
+        }
+
+        function toggleChartMode(tokenId) {
+            chartModes[tokenId] = chartModes[tokenId] === 'dual' ? 'single' : 'dual';
+            
+            const btn = document.getElementById(`chart-mode-btn-${tokenId}`);
+            if (btn) {
+                btn.classList.toggle('active', chartModes[tokenId] === 'dual');
+            }
+            
+            createChart(tokenId, allData.tokens[tokenId]);
+        }
+
+        function createChart(tokenId, tokenData) {
+            const canvas = document.getElementById(`chart-${tokenId}`);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+
+            // Destroy existing chart
+            if (charts[tokenId]) {
+                charts[tokenId].destroy();
             }
 
-            const range = timeRanges[tokenId];
-            const now = Date.now();
-            const rangeMs = { '24h': 86400000, '7d': 604800000, '14d': 1209600000, '30d': 2592000000 }[range];
-            const cutoff = now - rangeMs;
+            const range = timeRanges[tokenId] || '7d';
+            const mode = chartModes[tokenId] || 'dual';
+            const filteredSnapshots = filterSnapshotsByTimeRange(tokenData.snapshots, range);
 
-            const snapshots = tokenData.snapshots.filter(s => s.timestamp > cutoff);
+            if (filteredSnapshots.length === 0) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'var(--text-tertiary)';
+                ctx.font = '14px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data for selected time range', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            const labels = filteredSnapshots.map(s => new Date(s.timestamp));
+            const prices = filteredSnapshots.map(s => s.price);
             
+            // APR data based on selected timeframe
+            const selectedAprTf = aprTimeframes[tokenId] || '1h';
+            const aprKey = `apr_${selectedAprTf}`;
+            const useAPY = showAsAPY[tokenId] || false;
+            const tfHours = { '1h': 1, '3h': 3, '6h': 6, '12h': 12, '24h': 24, '3d': 72, '7d': 168 };
+            const aprData = filteredSnapshots.map(s => {
+                const apr = s[aprKey];
+                return useAPY ? aprToApy(apr, tfHours[selectedAprTf] || 24) : apr;
+            });
+            const rateLabel = useAPY ? 'APY' : 'APR';
+
             const branding = protocolBranding[tokenData.protocol] || { color: '#64748b' };
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const gridColor = isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.06)';
+            const textColor = isLight ? '#737373' : '#71717a';
+
+            // Use percentile-based scaling to exclude outliers
+            const sortedPrices = [...prices].sort((a, b) => a - b);
+            const p5Index = Math.floor(sortedPrices.length * 0.02);
+            const p95Index = Math.ceil(sortedPrices.length * 0.98) - 1;
+            const minPrice = sortedPrices[Math.max(0, p5Index)];
+            const maxPrice = sortedPrices[Math.min(sortedPrices.length - 1, p95Index)];
+            const priceRange = maxPrice - minPrice;
+            const padding = priceRange * 0.15 || 0.0001;
+
+            const datasets = [{
+                label: 'Share Price',
+                data: prices,
+                borderColor: branding.color,
+                backgroundColor: branding.color + '15',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                yAxisID: 'y',
+                order: 3
+            }];
+
+            const scales = {
+                y: {
+                    type: 'linear',
+                    position: 'left',
+                    min: minPrice - padding,
+                    max: maxPrice + padding,
+                    grid: {
+                        color: gridColor,
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: textColor,
+                        font: { family: 'Space Mono', size: 10 },
+                        maxTicksLimit: 6,
+                        callback: function(value) {
+                            return value.toFixed(4);
+                        }
+                    },
+                    title: {
+                        display: mode === 'dual',
+                        text: 'Price',
+                        color: textColor,
+                        font: { family: 'Inter', size: 11 }
+                    },
+                    border: { display: false }
+                },
+                x: {
+                    type: 'time',
+                    time: {
+                        tooltipFormat: 'MMM d, h:mm a',
+                        displayFormats: {
+                            minute: 'h:mm a',
+                            hour: 'h:mm a',
+                            day: 'MMM d'
+                        }
+                    },
+                    grid: {
+                        color: gridColor,
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: textColor,
+                        font: { family: 'Space Mono', size: 10 },
+                        maxTicksLimit: 6
+                    },
+                    border: { display: false }
+                }
+            };
+
+            // Add APR dataset and axis if in dual mode
+            if (mode === 'dual' && aprData.some(v => v !== null && v !== undefined)) {
+                const validAPRs = aprData.filter(v => v !== null && v !== undefined);
+                
+                // Use percentile-based scaling for APR too
+                const sortedAPRs = [...validAPRs].sort((a, b) => a - b);
+                const aprP5 = Math.floor(sortedAPRs.length * 0.02);
+                const aprP95 = Math.ceil(sortedAPRs.length * 0.98) - 1;
+                const minAPR = sortedAPRs[Math.max(0, aprP5)];
+                const maxAPR = sortedAPRs[Math.min(sortedAPRs.length - 1, aprP95)];
+                const aprRange = maxAPR - minAPR;
+                const minRange = 0.5;
+                const aprPadding = aprRange < minRange ? (minRange - aprRange) / 2 + 0.05 : aprRange * 0.15;
+
+                // APR line
+                datasets.push({
+                    label: `${selectedAprTf} ${rateLabel}`,
+                    data: aprData,
+                    borderColor: '#0d9488',
+                    backgroundColor: 'rgba(20, 184, 166, 0.08)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: false,
+                    pointRadius: 0,
+                    pointHoverRadius: 4,
+                    yAxisID: 'y1',
+                    spanGaps: true,
+                    order: 2
+                });
+
+                // Average APR line (dashed)
+                const avgAPR = validAPRs.reduce((a, b) => a + b, 0) / validAPRs.length;
+                const avgLineData = aprData.map(() => avgAPR);
+                datasets.push({
+                    label: `Avg: ${avgAPR.toFixed(2)}%`,
+                    data: avgLineData,
+                    borderColor: '#d97706',
+                    borderWidth: 2,
+                    borderDash: [6, 4],
+                    tension: 0,
+                    fill: false,
+                    pointRadius: 0,
+                    pointHoverRadius: 0,
+                    yAxisID: 'y1',
+                    spanGaps: true,
+                    order: 1
+                });
+
+                scales.y1 = {
+                    type: 'linear',
+                    position: 'right',
+                    min: minAPR - aprPadding,
+                    max: maxAPR + aprPadding,
+                    grid: {
+                        drawOnChartArea: false
+                    },
+                    ticks: {
+                        color: '#0d9488',
+                        font: { family: 'Space Mono', size: 11 },
+                        callback: function(value) {
+                            return value.toFixed(2) + '%';
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: rateLabel + ' (%)',
+                        color: '#0d9488',
+                        font: { family: 'Inter', size: 11, weight: '500' }
+                    },
+                    border: { display: false }
+                };
+            }
+
+            // Apply hidden dataset state
+            const tokenHidden = hiddenDatasets[tokenId] || {};
+            datasets.forEach((ds, i) => {
+                if (tokenHidden[i]) ds.hidden = true;
+            });
 
             charts[tokenId] = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: snapshots.map(s => new Date(s.timestamp)),
-                    datasets: [{
-                        label: 'Price',
-                        data: snapshots.map(s => s.price),
-                        borderColor: branding.color,
-                        backgroundColor: branding.color + '20',
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 0,
-                        pointHoverRadius: 4,
-                        borderWidth: 2
-                    }]
-                },
+                data: { labels, datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: { left: 5, right: 5 }
+                    },
                     interaction: {
                         intersect: false,
                         mode: 'index'
                     },
                     plugins: {
-                        legend: { display: false },
+                        legend: {
+                            display: mode === 'dual',
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                color: textColor,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 15,
+                                font: { family: 'Inter', size: 11, weight: '500' },
+                                boxWidth: 8,
+                                boxHeight: 8,
+                                generateLabels: function(chart) {
+                                    const datasets = chart.data.datasets;
+                                    return datasets.map((dataset, i) => {
+                                        const isVisible = chart.isDatasetVisible(i);
+                                        const baseColor = dataset.borderColor;
+                                        return {
+                                            text: dataset.label,
+                                            fillStyle: isVisible ? baseColor : 'rgba(156, 163, 175, 0.4)',
+                                            strokeStyle: isVisible ? baseColor : 'rgba(156, 163, 175, 0.4)',
+                                            lineWidth: 2,
+                                            hidden: false,
+                                            index: i,
+                                            fontColor: isVisible ? textColor : 'rgba(156, 163, 175, 0.5)',
+                                            pointStyle: 'circle',
+                                            datasetIndex: i
+                                        };
+                                    });
+                                }
+                            },
+                            onClick: function(e, legendItem, legend) {
+                                const index = legendItem.index;
+                                const ci = legend.chart;
+                                const isVisible = ci.isDatasetVisible(index);
+                                ci.setDatasetVisibility(index, !isVisible);
+                                if (!hiddenDatasets[tokenId]) hiddenDatasets[tokenId] = {};
+                                hiddenDatasets[tokenId][index] = isVisible;
+                                ci.update();
+                            }
+                        },
                         tooltip: {
-                            backgroundColor: '#18181b',
-                            titleColor: '#fafafa',
-                            bodyColor: '#a1a1aa',
-                            borderColor: '#27272a',
+                            backgroundColor: isLight ? '#ffffff' : '#18181b',
+                            titleColor: isLight ? '#374151' : '#fafafa',
+                            bodyColor: isLight ? '#6b7280' : '#a1a1aa',
+                            borderColor: isLight ? '#e5e7eb' : '#27272a',
                             borderWidth: 1,
                             padding: 12,
-                            displayColors: false,
+                            displayColors: true,
                             titleFont: { family: 'Inter', weight: '600' },
                             bodyFont: { family: 'Space Mono' },
                             callbacks: {
-                                title: (items) => new Date(items[0].parsed.x).toLocaleString(),
-                                label: (item) => `Price: ${formatNumber(item.parsed.y, 6)}`
+                                title: function(items) {
+                                    return new Date(items[0].parsed.x).toLocaleString('en-US', {
+                                        month: 'short', day: 'numeric',
+                                        hour: '2-digit', minute: '2-digit'
+                                    });
+                                },
+                                label: function(context) {
+                                    if (context.dataset.label === 'Share Price') {
+                                        return `Price: ${context.parsed.y.toFixed(8)}`;
+                                    } else if (context.dataset.label.includes('APR') || context.dataset.label.includes('APY') || context.dataset.label.includes('Avg')) {
+                                        return context.parsed.y !== null ? `${context.dataset.label}: ${context.parsed.y.toFixed(2)}%` : null;
+                                    }
+                                    return null;
+                                },
+                                afterLabel: function(context) {
+                                    if (context.dataset.label !== 'Share Price') return [];
+                                    const snap = filteredSnapshots[context.dataIndex];
+                                    if (!snap) return [];
+                                    const lines = [];
+                                    const ranges = ['1h', '3h', '6h', '24h', '7d', '30d'];
+                                    ranges.forEach(r => {
+                                        const key = `apr_${r}`;
+                                        if (snap[key] != null) {
+                                            lines.push(`${r} APR: ${snap[key].toFixed(2)}%`);
+                                        }
+                                    });
+                                    return lines.length > 0 ? ['', ...lines] : [];
+                                }
                             }
                         }
                     },
-                    scales: {
-                        x: {
-                            type: 'time',
-                            grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false },
-                            ticks: { color: '#71717a', font: { family: 'Space Mono', size: 10 }, maxTicksLimit: 6 },
-                            border: { display: false }
-                        },
-                        y: {
-                            grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false },
-                            ticks: { color: '#71717a', font: { family: 'Space Mono', size: 10 }, callback: v => formatNumber(v, 4) },
-                            border: { display: false }
-                        }
-                    }
+                    scales
                 }
             });
         }
 
-        function updateChart(tokenId, tokenData) {
-            const chart = charts[tokenId];
-            if (!chart) return;
+        function exportTokenToCSV(tokenId) {
+            const tokenData = allData.tokens[tokenId];
+            if (!tokenData) return;
 
-            const range = timeRanges[tokenId] || '7d';
-            const now = Date.now();
-            const rangeMs = { '24h': 86400000, '7d': 604800000, '14d': 1209600000, '30d': 2592000000 }[range];
-            const cutoff = now - rangeMs;
+            let csv = 'Timestamp,Price,1h APR,3h APR,6h APR,12h APR,24h APR,3d APR,7d APR,14d APR,21d APR,30d APR\n';
 
-            const snapshots = tokenData.snapshots.filter(s => s.timestamp > cutoff);
-            
-            chart.data.labels = snapshots.map(s => new Date(s.timestamp));
-            chart.data.datasets[0].data = snapshots.map(s => s.price);
-            chart.update('none');
+            tokenData.snapshots.forEach(snap => {
+                const timestamp = new Date(snap.timestamp).toISOString();
+                csv += `${timestamp},${snap.price},`;
+                csv += `${snap.apr_1h || ''},${snap.apr_3h || ''},${snap.apr_6h || ''},${snap.apr_12h || ''},`;
+                csv += `${snap.apr_24h || ''},${snap.apr_3d || ''},${snap.apr_7d || ''},${snap.apr_14d || ''},`;
+                csv += `${snap.apr_21d || ''},${snap.apr_30d || ''}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${tokenData.symbol}-yield-data.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
         }
 
         function exportAllToCSV() {
@@ -1762,13 +2101,41 @@
             const isLight = document.documentElement.getAttribute('data-theme') === 'light';
             const gridColor = isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.06)';
             const textColor = isLight ? '#737373' : '#71717a';
+            const tooltipBg = isLight ? '#ffffff' : '#18181b';
+            const tooltipTitle = isLight ? '#374151' : '#fafafa';
+            const tooltipBody = isLight ? '#6b7280' : '#a1a1aa';
+            const tooltipBorder = isLight ? '#e5e7eb' : '#27272a';
             
             Object.values(charts).forEach(chart => {
                 if (chart && chart.options) {
+                    // Update scale colors
                     chart.options.scales.x.grid.color = gridColor;
                     chart.options.scales.y.grid.color = gridColor;
                     chart.options.scales.x.ticks.color = textColor;
                     chart.options.scales.y.ticks.color = textColor;
+                    if (chart.options.scales.y.title) {
+                        chart.options.scales.y.title.color = textColor;
+                    }
+                    
+                    // Update y1 axis if it exists (APR axis)
+                    if (chart.options.scales.y1) {
+                        chart.options.scales.y1.ticks.color = '#0d9488';
+                        chart.options.scales.y1.title.color = '#0d9488';
+                    }
+                    
+                    // Update tooltip colors
+                    if (chart.options.plugins.tooltip) {
+                        chart.options.plugins.tooltip.backgroundColor = tooltipBg;
+                        chart.options.plugins.tooltip.titleColor = tooltipTitle;
+                        chart.options.plugins.tooltip.bodyColor = tooltipBody;
+                        chart.options.plugins.tooltip.borderColor = tooltipBorder;
+                    }
+                    
+                    // Update legend colors
+                    if (chart.options.plugins.legend && chart.options.plugins.legend.labels) {
+                        chart.options.plugins.legend.labels.color = textColor;
+                    }
+                    
                     chart.update('none');
                 }
             });
