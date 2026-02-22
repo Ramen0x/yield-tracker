@@ -405,21 +405,56 @@
             return apy;
         }
 
-        // Protocol branding - muted pastel colors
+        // Protocol branding - colors and logos
         const protocolBranding = {
-            'Maple Finance': { color: '#64748b' },
-            'Radiant Capital': { color: '#f9a8d4' },
-            'Ethena': { color: '#7dd3fc' },
-            'Tangible': { color: '#fbcfe8' },
-            'Strata': { color: '#0d9488' },
-            'Cap Finance': { color: '#86efac' },
-            'Reservoir': { color: '#93c5fd' },
-            'Resolv': { color: '#a5b4fc' },
-            'Avant': { color: '#fcd34d' },
-            'Superstate': { color: '#f9a8d4' },
-            'Yuzu': { color: '#fde047' },
-            'Midas': { color: '#67e8f9' },
-            'Basis Trading': { color: '#64748b' }
+            'Maple Finance': { 
+                color: '#1e3a5f', 
+                logo: 'https://cryptologos.cc/logos/maple-mpl-logo.png?v=040'
+            },
+            'Ethena': { 
+                color: '#0ea5e9', 
+                logo: 'https://app.ethena.fi/shared/ethena-logo.svg'
+            },
+            'Resolv': { 
+                color: '#6366f1', 
+                logo: 'https://www.resolv.xyz/logo.svg'
+            },
+            'Cap Finance': { 
+                color: '#22c55e', 
+                logo: null
+            },
+            'Reservoir': { 
+                color: '#3b82f6', 
+                logo: null
+            },
+            'Avant': { 
+                color: '#eab308', 
+                logo: null
+            },
+            'Superstate': { 
+                color: '#ec4899', 
+                logo: null
+            },
+            'Yuzu': { 
+                color: '#facc15', 
+                logo: 'https://yuzu.finance/logo.svg'
+            },
+            'Midas': { 
+                color: '#06b6d4', 
+                logo: null
+            },
+            'Sky Money': { 
+                color: '#8b5cf6', 
+                logo: null
+            },
+            'Neutrl': { 
+                color: '#64748b', 
+                logo: null
+            },
+            'Strata': { 
+                color: '#14b8a6', 
+                logo: null
+            }
         };
 
         // Protocol-specific default time ranges
@@ -429,10 +464,9 @@
             'Superstate': '7d'
         };
         
+        // Ethena and Resolv now shown as separate protocols (not grouped under Basis Trading)
         const protocolCategories = {
-            'Ethena': 'Basis Trading',
-            'Strata': 'Basis Trading',
-            'Resolv': 'Basis Trading'
+            'Strata': 'Ethena'  // Strata tokens grouped under Ethena
         };
         
         let expandedSections = {};
@@ -534,13 +568,16 @@
             
             const protocolOrder = [
                 'Maple Finance',
-                'Basis Trading', 
+                'Ethena',
+                'Resolv',
                 'Cap Finance',
                 'Yuzu',
                 'Midas',
                 'Avant',
                 'Reservoir',
-                'Superstate'
+                'Superstate',
+                'Sky Money',
+                'Neutrl'
             ];
             const sortedProtocols = Object.keys(tokensByProtocol).sort((a, b) => {
                 const aIdx = protocolOrder.indexOf(a);
@@ -571,14 +608,18 @@
                 // Get protocol initials for logo
                 const initials = protocol.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
                 
+                const logoHtml = branding.logo 
+                    ? `<img src="${branding.logo}" alt="${protocol}" class="w-full h-full object-contain p-1.5" onerror="this.parentElement.innerHTML='${initials}'">`
+                    : initials;
+                
                 section.innerHTML = `
                     <div 
                         class="protocol-header px-5 py-4 cursor-pointer flex items-center justify-between"
                         onclick="toggleProtocolSection('${protocol}')"
                     >
                         <div class="flex items-center gap-4">
-                            <div class="protocol-logo" style="background: linear-gradient(135deg, ${branding.color} 0%, ${branding.color}dd 100%);">
-                                ${initials}
+                            <div class="protocol-logo" style="background: ${branding.logo ? 'white' : `linear-gradient(135deg, ${branding.color} 0%, ${branding.color}dd 100%)`}; ${branding.logo ? 'border: 1px solid #e5e7eb;' : ''}">
+                                ${logoHtml}
                             </div>
                             <div>
                                 <h2 class="protocol-name">${protocol}</h2>
