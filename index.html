@@ -149,6 +149,14 @@
             color: white;
             box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.15);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            overflow: hidden;
+        }
+
+        .protocol-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
         }
 
         .protocol-header:hover .protocol-logo {
@@ -421,14 +429,14 @@
             },
             'Cap Finance': { 
                 color: '#22c55e', 
-                logo: 'https://icons.llamao.fi/icons/protocols/cap'
+                logo: null  // Use initials - DeFi Llama has wrong Cap
             },
             'Reservoir': { 
                 color: '#3b82f6', 
-                logo: 'https://icons.llamao.fi/icons/protocols/reservoir'
+                logo: 'https://icons.llamao.fi/icons/protocols/reservoir-protocol'
             },
             'Avant': { 
-                color: '#eab308', 
+                color: '#f59e0b', 
                 logo: 'https://icons.llamao.fi/icons/protocols/avant-protocol'
             },
             'Superstate': { 
@@ -437,7 +445,7 @@
             },
             'Yuzu': { 
                 color: '#facc15', 
-                logo: 'https://icons.llamao.fi/icons/protocols/yuzu-finance'
+                logo: null  // Use initials - Ramen's protocol, not on DeFi Llama
             },
             'Midas': { 
                 color: '#06b6d4', 
@@ -609,7 +617,7 @@
                 const initials = protocol.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
                 
                 const logoHtml = branding.logo 
-                    ? `<img src="${branding.logo}" alt="${protocol}" class="w-full h-full object-contain p-1.5" onerror="this.parentElement.innerHTML='${initials}'">`
+                    ? `<img src="${branding.logo}" alt="${protocol}" onerror="this.parentElement.innerHTML='${initials}'">`
                     : initials;
                 
                 section.innerHTML = `
