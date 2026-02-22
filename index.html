@@ -29,6 +29,41 @@
             --negative-bg: rgba(239, 68, 68, 0.1);
         }
 
+        /* Light mode - soft pastel theme */
+        [data-theme="light"] {
+            --bg-primary: #faf8f5;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f5f3f0;
+            --bg-elevated: #ffffff;
+            --border-subtle: rgba(0, 0, 0, 0.06);
+            --border-default: rgba(0, 0, 0, 0.1);
+            --text-primary: #1a1a1a;
+            --text-secondary: #525252;
+            --text-tertiary: #737373;
+            --accent-gold: #b8860b;
+            --accent-gold-muted: rgba(184, 134, 11, 0.12);
+            --positive: #16a34a;
+            --positive-bg: rgba(22, 163, 74, 0.1);
+            --negative: #dc2626;
+            --negative-bg: rgba(220, 38, 38, 0.1);
+        }
+
+        [data-theme="light"] .card {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        [data-theme="light"] .protocol-header {
+            background: linear-gradient(180deg, #f5f3f0 0%, #ffffff 100%);
+        }
+
+        [data-theme="light"] .data-cell {
+            background: #f8f6f3;
+        }
+
+        [data-theme="light"] .heatmap-section {
+            background: linear-gradient(180deg, #f5f3f0 0%, #faf8f5 100%);
+        }
+
         * {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -436,6 +471,45 @@
             .btn-collapse {
                 padding: 8px 12px;
                 font-size: 13px;
+            }
+        }
+
+        /* Theme toggle button */
+        .btn-theme {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .btn-theme:hover {
+            background: var(--bg-elevated);
+            border-color: var(--border-default);
+            color: var(--accent-gold);
+        }
+
+        .btn-theme .icon-sun,
+        .btn-theme .icon-moon {
+            width: 18px;
+            height: 18px;
+        }
+
+        [data-theme="light"] .btn-theme .icon-sun { display: none; }
+        [data-theme="light"] .btn-theme .icon-moon { display: block; }
+        :root:not([data-theme="light"]) .btn-theme .icon-sun { display: block; }
+        :root:not([data-theme="light"]) .btn-theme .icon-moon { display: none; }
+
+        @media (max-width: 640px) {
+            .btn-theme {
+                padding: 8px;
             }
         }
 
@@ -853,6 +927,14 @@
                         </button>
                     </div>
                     <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-6">
+                    <button class="btn-theme" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle light/dark mode">
+                        <svg class="icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <svg class="icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </button>
                     <button class="btn-collapse" id="collapse-all-btn" onclick="toggleAllSections()">
                         <svg class="w-4 h-4" id="collapse-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
@@ -1660,6 +1742,45 @@
                 toast.classList.remove('show');
             }, 1500);
         }
+
+        // Theme toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isLight = html.getAttribute('data-theme') === 'light';
+            if (isLight) {
+                html.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+            // Update chart colors if charts exist
+            updateChartTheme();
+        }
+
+        function updateChartTheme() {
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const gridColor = isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.06)';
+            const textColor = isLight ? '#737373' : '#71717a';
+            
+            Object.values(charts).forEach(chart => {
+                if (chart && chart.options) {
+                    chart.options.scales.x.grid.color = gridColor;
+                    chart.options.scales.y.grid.color = gridColor;
+                    chart.options.scales.x.ticks.color = textColor;
+                    chart.options.scales.y.ticks.color = textColor;
+                    chart.update('none');
+                }
+            });
+        }
+
+        // Initialize theme from localStorage
+        (function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
 
         // Toggle all sections
         function toggleAllSections() {
