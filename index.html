@@ -3,299 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yield Analytics | Institutional Dashboard</title>
+    <title>Yield Token Tracker - Real vs Advertised APY</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0a0a0b;
-            --bg-secondary: #111113;
-            --bg-tertiary: #18181b;
-            --bg-elevated: #1f1f23;
-            --border-subtle: rgba(255, 255, 255, 0.06);
-            --border-default: rgba(255, 255, 255, 0.1);
-            --text-primary: #fafafa;
-            --text-secondary: #a1a1aa;
-            --text-tertiary: #71717a;
-            --accent-gold: #d4af37;
-            --accent-gold-muted: rgba(212, 175, 55, 0.15);
-            --positive: #22c55e;
-            --positive-bg: rgba(34, 197, 94, 0.1);
-            --negative: #ef4444;
-            --negative-bg: rgba(239, 68, 68, 0.1);
-        }
-
-        /* Light mode - clean white theme */
-        [data-theme="light"] {
-            --bg-primary: #f8fafc;
-            --bg-secondary: #ffffff;
-            --bg-tertiary: #f1f5f9;
-            --bg-elevated: #ffffff;
-            --border-subtle: rgba(0, 0, 0, 0.08);
-            --border-default: rgba(0, 0, 0, 0.12);
-            --text-primary: #111827;
-            --text-secondary: #4b5563;
-            --text-tertiary: #6b7280;
-            --accent-gold: #d97706;
-            --accent-gold-muted: rgba(217, 119, 6, 0.12);
-            --positive: #059669;
-            --positive-bg: rgba(5, 150, 105, 0.1);
-            --negative: #dc2626;
-            --negative-bg: rgba(220, 38, 38, 0.1);
-        }
-
-        [data-theme="light"] .card {
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-            border-color: #e5e7eb;
-        }
-
-        [data-theme="light"] .protocol-header {
-            background: linear-gradient(180deg, #f9fafb 0%, #ffffff 100%);
-        }
-
-        [data-theme="light"] .data-cell {
-            background: #f9fafb;
-            border-color: #e5e7eb;
-        }
-
-        [data-theme="light"] .heatmap-section {
-            background: linear-gradient(180deg, #f1f5f9 0%, #f8fafc 100%);
-        }
-
-        [data-theme="light"] .time-btn {
-            background: #ffffff;
-            border-color: #e5e7eb;
-            color: #4b5563;
-        }
-
-        [data-theme="light"] .time-btn.active {
-            background: #fbbf24;
-            border-color: #f59e0b;
-            color: #1f2937;
-        }
-
-        [data-theme="light"] .token-card {
-            background: #ffffff;
-            border-color: #e5e7eb;
-        }
-
-        * {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
-        body {
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-        }
-
-        .font-mono {
+        .font-mono, .tabular-nums {
             font-family: 'Space Mono', monospace;
-            font-feature-settings: 'tnum';
-            letter-spacing: -0.02em;
-        }
-
-        /* Premium card styling */
-        .card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card:hover {
-            border-color: var(--border-default);
-            box-shadow: 0 0 0 1px var(--border-subtle), 0 8px 40px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .card-elevated {
-            background: var(--bg-elevated);
-        }
-
-        /* Protocol header with premium gradient */
-        .protocol-header {
-            background: linear-gradient(180deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
-            border-bottom: 1px solid var(--border-subtle);
-        }
-
-        /* Gold accent elements */
-        .accent-line {
-            width: 3px;
-            background: linear-gradient(180deg, var(--accent-gold) 0%, rgba(212, 175, 55, 0.3) 100%);
-            border-radius: 2px;
-        }
-
-        /* Data cells */
-        .data-cell {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 16px;
-        }
-
-        @media (max-width: 640px) {
-            .data-cell {
-                padding: 12px;
-                border-radius: 10px;
-            }
-        }
-
-        .data-label {
-            font-size: 11px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-tertiary);
-            margin-bottom: 6px;
-        }
-
-        @media (max-width: 640px) {
-            .data-label {
-                font-size: 10px;
-                margin-bottom: 4px;
-            }
-        }
-
-        .data-value {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--text-primary);
-            line-height: 1.2;
-        }
-        
-        @media (max-width: 640px) {
-            .data-value {
-                font-size: 18px;
-            }
-        }
-
-        .data-value.positive { color: var(--positive); }
-        .data-value.negative { color: var(--negative); }
-
-        /* Delta badges */
-        .delta-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .delta-badge.positive {
-            background: var(--positive-bg);
-            color: var(--positive);
-            border: 1px solid rgba(34, 197, 94, 0.2);
-        }
-
-        .delta-badge.negative {
-            background: var(--negative-bg);
-            color: var(--negative);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .delta-badge.neutral {
-            background: rgba(161, 161, 170, 0.1);
-            color: var(--text-secondary);
-            border: 1px solid var(--border-subtle);
-        }
-
-        /* Time range selector */
-        .time-selector {
-            display: flex;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-subtle);
-            border-radius: 10px;
-            padding: 4px;
-            gap: 2px;
-        }
-
-        .time-btn {
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-tertiary);
-            transition: all 0.2s;
-            cursor: pointer;
-            border: none;
-            background: transparent;
-            min-height: 44px;
-            min-width: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        @media (max-width: 640px) {
-            .time-btn {
-                padding: 6px 10px;
-                font-size: 11px;
-            }
-            .time-selector {
-                padding: 3px;
-                gap: 1px;
-            }
-        }
-
-        .time-btn:hover {
-            color: var(--text-secondary);
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .time-btn.active {
-            background: var(--accent-gold);
-            color: var(--bg-primary);
-            font-weight: 600;
-        }
-
-        /* Chart container */
-        .chart-container {
-            position: relative;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 20px;
-            touch-action: pan-y pinch-zoom;
-        }
-        
-        @media (max-width: 640px) {
-            .chart-container {
-                padding: 12px;
-                border-radius: 10px;
-            }
-        }
-
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-default);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-tertiary);
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+            font-variant-numeric: tabular-nums;
         }
 
         @keyframes shimmer {
@@ -303,778 +27,202 @@
             100% { background-position: 1000px 0; }
         }
 
-        .animate-in {
-            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out;
         }
 
         .loading-skeleton {
-            background: linear-gradient(90deg, var(--bg-tertiary) 0%, var(--bg-elevated) 50%, var(--bg-tertiary) 100%);
+            background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
             background-size: 1000px 100%;
             animation: shimmer 2s infinite;
         }
 
-        /* Header branding */
-        .brand-text {
-            background: linear-gradient(135deg, var(--accent-gold) 0%, #f5d76e 50%, var(--accent-gold) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Protocol sections */
-        .protocol-section {
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 16px;
-        }
-        
-        @media (max-width: 640px) {
-            .protocol-section {
-                border-radius: 12px;
-                margin-bottom: 12px;
-            }
-        }
-
-        .protocol-toggle {
-            cursor: pointer;
-            transition: background 0.2s;
-            min-height: 72px;
-        }
-
-        .protocol-toggle:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-        
-        @media (max-width: 640px) {
-            .protocol-toggle {
-                min-height: 64px;
-            }
-        }
-
-        /* Token grid */
-        .token-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-subtle);
-            border-radius: 14px;
-            overflow: hidden;
-            transition: all 0.3s;
-        }
-        
-        @media (max-width: 640px) {
-            .token-card {
-                border-radius: 12px;
-            }
-        }
-
-        .token-card:hover {
-            border-color: var(--border-default);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.4);
-        }
-        
-        @media (max-width: 640px) {
-            .token-card:hover {
-                transform: none;
-            }
-        }
-
-        /* Export button */
-        .btn-export {
-            background: linear-gradient(135deg, var(--accent-gold) 0%, #c9a227 100%);
-            color: var(--bg-primary);
-            font-weight: 600;
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-height: 44px;
-        }
-
-        .btn-export:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
-        }
-        
-        @media (max-width: 640px) {
-            .btn-export {
-                padding: 8px 14px;
-                font-size: 13px;
-            }
-            .btn-export svg {
-                width: 14px;
-                height: 14px;
-            }
-        }
-
-        /* Copy APR button */
-        .copy-apr-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-            background: transparent;
-            border: 1px solid var(--border-subtle);
-            color: var(--text-tertiary);
-            cursor: pointer;
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
             transition: all 0.2s ease;
-            margin-left: 8px;
-            vertical-align: middle;
         }
 
-        .copy-apr-btn:hover {
-            background: var(--bg-elevated);
-            border-color: var(--border-default);
-            color: var(--text-secondary);
+        .card:hover {
+            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
         }
 
-        .copy-apr-btn:active {
-            transform: scale(0.95);
+        .delta-positive {
+            color: #059669;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
         }
 
-        /* Copy toast notification */
-        .copy-toast {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-default);
-            color: var(--text-primary);
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 500;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            opacity: 0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-            pointer-events: none;
+        .delta-negative {
+            color: #dc2626;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
         }
 
-        .copy-toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
+        .delta-neutral {
+            color: #6b7280;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
         }
 
-        /* Collapse All button */
-        .btn-collapse {
-            background: var(--bg-tertiary);
-            color: var(--text-secondary);
-            font-weight: 500;
-            padding: 10px 16px;
-            border-radius: 10px;
-            border: 1px solid var(--border-subtle);
+        .time-range-button {
+            transition: all 0.15s;
             cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-height: 44px;
-            font-size: 14px;
+            background: transparent;
+            color: #6b7280;
+            font-weight: 500;
         }
 
-        .btn-collapse:hover {
-            background: var(--bg-elevated);
-            border-color: var(--border-default);
-            color: var(--text-primary);
+        .time-range-button:hover {
+            background: #f3f4f6;
+            color: #374151;
         }
 
-        @media (max-width: 640px) {
-            .btn-collapse {
-                padding: 8px 12px;
-                font-size: 13px;
-            }
+        .time-range-button.active {
+            background: #64748b;
+            color: white;
         }
 
-        /* Theme toggle button */
-        .btn-theme {
-            background: var(--bg-tertiary);
-            color: var(--text-secondary);
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid var(--border-subtle);
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 44px;
-            min-width: 44px;
+        /* Clean scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
         }
 
-        .btn-theme:hover {
-            background: var(--bg-elevated);
-            border-color: var(--border-default);
-            color: var(--accent-gold);
+        ::-webkit-scrollbar-track {
+            background: transparent;
         }
 
-        .btn-theme .icon-sun,
-        .btn-theme .icon-moon {
-            width: 18px;
-            height: 18px;
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
         }
 
-        [data-theme="light"] .btn-theme .icon-sun { display: none; }
-        [data-theme="light"] .btn-theme .icon-moon { display: block; }
-        :root:not([data-theme="light"]) .btn-theme .icon-sun { display: block; }
-        :root:not([data-theme="light"]) .btn-theme .icon-moon { display: none; }
-
-        @media (max-width: 640px) {
-            .btn-theme {
-                padding: 8px;
-            }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
         }
 
-        /* Status indicator */
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--positive);
-            box-shadow: 0 0 8px var(--positive);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Table styling */
-        .data-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-
-        .data-table th {
-            text-align: left;
-            padding: 12px 16px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-tertiary);
-            border-bottom: 1px solid var(--border-subtle);
-            background: var(--bg-tertiary);
-        }
-
-        .data-table td {
-            padding: 16px;
-            border-bottom: 1px solid var(--border-subtle);
-            font-size: 14px;
-        }
-
-        .data-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .data-table tr:hover td {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        /* APR display */
-        .apr-display {
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-        }
-        
-        @media (max-width: 640px) {
-            .apr-display {
-                font-size: 22px;
-            }
-        }
-        
-        /* Mobile-specific overrides */
-        @media (max-width: 640px) {
-            .time-selector {
-                width: 100%;
-            }
-        }
-
-        /* Subtle divider */
-        .divider {
-            height: 1px;
-            background: var(--border-subtle);
+        /* Number inputs */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
             margin: 0;
         }
 
-        /* Search bar */
-        .search-container {
-            position: relative;
-            width: 100%;
-            max-width: 280px;
+        input[type="number"] {
+            -moz-appearance: textfield;
         }
 
-        @media (max-width: 640px) {
-            .search-container {
-                max-width: none;
-            }
-        }
-
-        .search-input {
-            width: 100%;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-subtle);
-            border-radius: 10px;
-            padding: 10px 40px 10px 40px;
-            font-size: 14px;
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            transition: all 0.2s ease;
-            min-height: 44px;
-        }
-
-        .search-input::placeholder {
-            color: var(--text-tertiary);
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--accent-gold);
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
-            background: var(--bg-elevated);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-tertiary);
-            pointer-events: none;
-        }
-
-        .search-clear {
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            background: transparent;
-            border: none;
-            color: var(--text-tertiary);
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .search-clear:hover {
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-        }
-
-        .search-clear.visible {
-            display: flex;
-        }
-
-        .search-shortcut {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-subtle);
-            font-size: 11px;
-            font-family: 'Space Mono', monospace;
-            color: var(--text-tertiary);
-            pointer-events: none;
-        }
-
-        .search-shortcut.hidden {
-            display: none;
-        }
-
-        /* Hidden state for filtered elements */
-        .protocol-section.search-hidden,
-        .token-card.search-hidden {
-            display: none !important;
-        }
-
-        /* Contract link button */
-        .contract-link {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-tertiary);
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-        }
-
-        .contract-link:hover {
-            background: var(--bg-elevated);
-            border-color: var(--border-default);
-            color: var(--text-secondary);
-            transform: translateY(-1px);
-        }
-
-        .contract-link:active {
-            transform: translateY(0);
-        }
-
-        /* Yield Heatmap */
-        .heatmap-section {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 24px;
-        }
-
-        .heatmap-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--border-subtle);
-            background: linear-gradient(180deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
-        }
-
-        .heatmap-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 8px;
-            padding: 16px;
-        }
-
-        @media (min-width: 768px) {
-            .heatmap-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-                gap: 10px;
-                padding: 20px;
-            }
-        }
-
-        .heatmap-cell {
-            position: relative;
-            padding: 14px 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid transparent;
-            overflow: hidden;
-        }
-
-        .heatmap-cell::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            opacity: 0.12;
-            background: inherit;
-            border-radius: inherit;
-        }
-
-        .heatmap-cell:hover {
-            transform: translateY(-2px) scale(1.02);
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.5);
-        }
-
-        .heatmap-cell:active {
-            transform: translateY(0) scale(0.98);
-        }
-
-        .heatmap-symbol {
-            font-size: 13px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.95);
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .heatmap-apr {
-            font-size: 18px;
-            font-weight: 700;
-            color: rgba(255, 255, 255, 0.98);
-            letter-spacing: -0.02em;
-        }
-
-        .heatmap-trend {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-left: 4px;
-        }
-
-        .trend-up { color: #4ade80; }
-        .trend-down { color: #f87171; }
-        .trend-neutral { color: #a1a1aa; }
-
-        /* Heatmap color classes */
-        .heat-negative-3 { background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%); }
-        .heat-negative-2 { background: linear-gradient(135deg, #991b1b 0%, #b91c1c 100%); }
-        .heat-negative-1 { background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%); }
-        .heat-low-1 { background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); }
-        .heat-low-2 { background: linear-gradient(135deg, #ea580c 0%, #f97316 100%); }
-        .heat-mid-1 { background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%); }
-        .heat-mid-2 { background: linear-gradient(135deg, #ca8a04 0%, #eab308 100%); }
-        .heat-high-1 { background: linear-gradient(135deg, #65a30d 0%, #84cc16 100%); }
-        .heat-high-2 { background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%); }
-        .heat-high-3 { background: linear-gradient(135deg, #059669 0%, #10b981 100%); }
-
-        .heatmap-legend {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 20px;
-            border-top: 1px solid var(--border-subtle);
-            background: var(--bg-tertiary);
-        }
-
-        .legend-gradient {
-            flex: 1;
-            height: 6px;
-            border-radius: 3px;
-            background: linear-gradient(90deg, #7f1d1d 0%, #dc2626 20%, #f59e0b 40%, #eab308 50%, #84cc16 70%, #22c55e 85%, #10b981 100%);
-        }
-
-        .legend-label {
-            font-size: 10px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-tertiary);
-            white-space: nowrap;
-        }
-
-        /* Trend Alert Badges */
-        .trend-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            padding: 2px 6px;
-            border-radius: 6px;
-            cursor: help;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-
-        .trend-badge.rising {
-            background: rgba(34, 197, 94, 0.15);
-            border: 1px solid rgba(34, 197, 94, 0.25);
-        }
-
-        .trend-badge.declining {
-            background: rgba(96, 165, 250, 0.15);
-            border: 1px solid rgba(96, 165, 250, 0.25);
-        }
-
-        .trend-badge:hover {
-            transform: scale(1.1);
-        }
-
-        .trend-badge:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: calc(100% + 6px);
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-            font-size: 11px;
-            padding: 6px 10px;
-            border-radius: 6px;
-            white-space: nowrap;
-            border: 1px solid var(--border-default);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 100;
-        }
-
-        .trend-badge:hover::before {
-            content: '';
-            position: absolute;
-            bottom: calc(100% + 2px);
-            left: 50%;
-            transform: translateX(-50%);
-            border: 4px solid transparent;
-            border-top-color: var(--border-default);
-            z-index: 100;
+        /* Protocol accent bar */
+        .protocol-accent {
+            width: 3px;
+            border-radius: 2px;
         }
     </style>
 </head>
-<body class="min-h-screen">
-    <div class="max-w-[1920px] mx-auto px-3 py-4 sm:px-4 sm:py-6 md:px-6 md:py-8">
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-[1800px]">
         <!-- Header -->
-        <header class="mb-6 sm:mb-8 md:mb-10 animate-in">
-            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6">
+        <header class="mb-8 animate-fade-in">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                    <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 flex items-center justify-center border border-amber-500/20">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                            </svg>
-                        </div>
-                        <span class="text-xs sm:text-sm font-medium text-zinc-500 uppercase tracking-wider">Yield Analytics</span>
-                    </div>
-                    <h1 class="text-2xl sm:text-3xl md:text-4xl font-semibold text-white tracking-tight mb-1 sm:mb-2">
-                        Institutional <span class="brand-text">Yield Monitor</span>
+                    <h1 class="text-3xl font-semibold text-gray-900 mb-1">
+                        Yield Token Tracker
                     </h1>
-                    <p class="text-zinc-500 text-sm sm:text-base max-w-xl hidden sm:block">
-                        Real-time APY tracking from on-chain price data. Verified yields, institutional precision.
-                    </p>
+                    <p class="text-gray-500 text-sm">Real APY calculated from on-chain price snapshots vs advertised rates</p>
                 </div>
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-                    <!-- Search Bar -->
-                    <div class="search-container">
-                        <svg class="search-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        <input type="text" id="search-input" class="search-input" placeholder="Search tokens..." autocomplete="off">
-                        <span id="search-shortcut" class="search-shortcut">/</span>
-                        <button id="search-clear" class="search-clear" onclick="clearSearch()">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-6">
-                    <button class="btn-theme" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle light/dark mode">
-                        <svg class="icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                        <svg class="icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                    </button>
-                    <button class="btn-collapse" id="collapse-all-btn" onclick="toggleAllSections()">
-                        <svg class="w-4 h-4" id="collapse-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                        </svg>
-                        <span id="collapse-text">Collapse All</span>
-                    </button>
-                    <button class="btn-export" onclick="exportAllToCSV()">
+                <div class="flex items-center gap-4">
+                    <button
+                        id="export-all-btn"
+                        class="px-4 py-2 bg-slate-600 hover:bg-slate-700 rounded-lg text-sm font-medium text-white transition-colors flex items-center gap-2 shadow-sm"
+                        onclick="exportAllToCSV()"
+                    >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <span class="hidden sm:inline">Export Data</span>
-                        <span class="sm:hidden">Export</span>
+                        Export All Data
                     </button>
                     <div class="text-right">
-                        <div class="flex items-center justify-end gap-2 mb-1">
-                            <div class="status-dot"></div>
-                            <span class="text-xs font-medium text-zinc-400">LIVE</span>
-                        </div>
-                        <div class="text-xs sm:text-sm text-zinc-500 font-mono" id="last-update">Loading...</div>
-                    </div>
+                        <div class="text-xs text-gray-500" id="last-update">Loading...</div>
+                        <div class="text-xs text-gray-400 mt-1">Updates every 10 min</div>
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- Yield Heatmap -->
-        <section id="heatmap-section" class="heatmap-section hidden animate-in">
-            <div class="heatmap-header">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500/20 to-amber-500/20 flex items-center justify-center border border-white/5">
-                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h2 class="text-base font-semibold text-white">Yield Heatmap</h2>
-                            <p class="text-xs text-zinc-500">7-day APR overview • sorted by yield</p>
-                        </div>
-                    </div>
-                    <div class="text-xs text-zinc-500 font-mono" id="heatmap-count"></div>
+        <!-- Error Boundary -->
+        <div id="error-container" class="hidden mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+                <div class="flex-1">
+                    <h3 class="text-sm font-medium text-red-800 mb-1">Error Loading Data</h3>
+                    <p class="text-sm text-red-600" id="error-message"></p>
                 </div>
-            </div>
-            <div class="heatmap-grid" id="heatmap-grid">
-                <!-- Heatmap cells rendered by JS -->
-            </div>
-            <div class="heatmap-legend">
-                <span class="legend-label">Low/Negative</span>
-                <div class="legend-gradient"></div>
-                <span class="legend-label">High APR</span>
-            </div>
-        </section>
-
-        <!-- Error State -->
-        <div id="error-container" class="hidden mb-4 sm:mb-6 md:mb-8 p-3 sm:p-4 md:p-5 bg-red-500/10 border border-red-500/20 rounded-lg sm:rounded-xl animate-in">
-            <div class="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
-                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <h3 class="text-sm font-semibold text-red-400 mb-1">Connection Error</h3>
-                    <p class="text-xs sm:text-sm text-red-400/80 break-words" id="error-message"></p>
-                </div>
-                <button onclick="retryLoad()" class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-red-400 hover:text-red-300 border border-red-500/30 rounded-lg hover:bg-red-500/10 transition-colors min-h-[44px]">
-                    Retry
-                </button>
+                <button onclick="retryLoad()" class="text-xs text-red-600 hover:text-red-800 underline font-medium">Retry</button>
             </div>
         </div>
 
         <!-- Loading State -->
-        <div id="loading" class="space-y-4 sm:space-y-6">
-            <div class="protocol-section animate-in">
-                <div class="protocol-header p-3 sm:p-4 md:p-5">
-                    <div class="flex items-center gap-3 sm:gap-4">
-                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl loading-skeleton"></div>
-                        <div>
-                            <div class="h-4 sm:h-5 w-32 sm:w-40 loading-skeleton rounded mb-2"></div>
-                            <div class="h-3 sm:h-4 w-20 sm:w-24 loading-skeleton rounded"></div>
+        <div id="loading" class="space-y-6">
+            <div class="card overflow-hidden animate-fade-in">
+                <div class="p-4 border-b border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-lg loading-skeleton"></div>
+                            <div>
+                                <div class="h-5 w-32 loading-skeleton rounded mb-2"></div>
+                                <div class="h-4 w-24 loading-skeleton rounded"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="p-3 sm:p-4 md:p-5">
-                    <div class="h-60 sm:h-72 md:h-80 loading-skeleton rounded-lg sm:rounded-xl"></div>
+                <div class="p-6">
+                    <div class="h-64 loading-skeleton rounded-lg"></div>
                 </div>
             </div>
         </div>
 
         <!-- Empty State -->
-        <div id="empty-state" class="hidden py-16 sm:py-24 md:py-32 animate-in">
-            <div class="text-center max-w-md mx-auto px-4">
-                <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 rounded-xl sm:rounded-2xl bg-zinc-800/50 flex items-center justify-center">
-                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                    </svg>
-                </div>
-                <h3 class="text-lg sm:text-xl font-semibold text-zinc-300 mb-2">Awaiting Data</h3>
-                <p class="text-sm sm:text-base text-zinc-500">Snapshot collection in progress. Data will appear shortly.</p>
+        <div id="empty-state" class="hidden py-32">
+            <div class="text-center max-w-md mx-auto">
+                <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">No Data Available</h3>
+                <p class="text-gray-500">Waiting for snapshot data to be collected. Check back soon.</p>
             </div>
         </div>
 
         <!-- Main Content -->
-        <div id="content" class="hidden space-y-3 sm:space-y-4 md:space-y-5">
-            <!-- Protocol sections will be inserted here -->
+        <div id="content" class="hidden space-y-4">
+            <!-- Token sections will be inserted here -->
         </div>
-
-        <!-- Footer -->
-        <footer class="mt-8 sm:mt-12 md:mt-16 pt-6 sm:pt-8 border-t border-zinc-800/50">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4">
-                <div class="text-zinc-600 text-xs sm:text-sm text-center sm:text-left">
-                    Data sourced directly from on-chain smart contracts
-                </div>
-                <div class="text-zinc-600 text-xs sm:text-sm font-mono">
-                    Refresh interval: 10 minutes
-                </div>
-            </div>
-        </footer>
     </div>
 
     <script>
+        // Error Boundary
+        class ErrorBoundary {
+            static showError(error, context = '') {
+                console.error(`Error in ${context}:`, error);
+                const errorContainer = document.getElementById('error-container');
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = `${context ? context + ': ' : ''}${error.message || error}`;
+                errorContainer.classList.remove('hidden');
+            }
+
+            static hideError() {
+                document.getElementById('error-container').classList.add('hidden');
+            }
+        }
+
         // Global state
         let allData = null;
         let charts = {};
@@ -1083,82 +231,47 @@
         let aprTimeframes = {};
         let showAsAPY = {};
         let hiddenDatasets = {};
-        let expandedSections = {};
-        let advertisedAPY = {};
+        
+        function aprToApy(apr, periodHours = 24) {
+            if (apr === null || apr === undefined) return null;
+            const periodsPerYear = (365 * 24) / periodHours;
+            const ratePerPeriod = apr / 100 / periodsPerYear;
+            const apy = (Math.pow(1 + ratePerPeriod, periodsPerYear) - 1) * 100;
+            return apy;
+        }
 
-        // Protocol branding - sophisticated muted palette
+        // Protocol branding - muted pastel colors
         const protocolBranding = {
-            'Maple Finance': { color: '#8b5cf6', gradient: 'from-violet-500/20 to-violet-600/5' },
-            'Ethena': { color: '#3b82f6', gradient: 'from-blue-500/20 to-blue-600/5' },
-            'Strata': { color: '#14b8a6', gradient: 'from-teal-500/20 to-teal-600/5' },
-            'Neutrl': { color: '#f97316', gradient: 'from-orange-500/20 to-orange-600/5' },
-            'Cap Finance': { color: '#22c55e', gradient: 'from-green-500/20 to-green-600/5' },
-            'Reservoir': { color: '#6366f1', gradient: 'from-indigo-500/20 to-indigo-600/5' },
-            'Resolv': { color: '#a855f7', gradient: 'from-purple-500/20 to-purple-600/5' },
-            'Avant': { color: '#eab308', gradient: 'from-yellow-500/20 to-yellow-600/5' },
-            'Superstate': { color: '#ec4899', gradient: 'from-pink-500/20 to-pink-600/5' },
-            'Yuzu': { color: '#fbbf24', gradient: 'from-amber-500/20 to-amber-600/5' },
-            'Midas': { color: '#06b6d4', gradient: 'from-cyan-500/20 to-cyan-600/5' },
-            'Sky Money': { color: '#0ea5e9', gradient: 'from-sky-500/20 to-sky-600/5' },
-            'Basis Trading': { color: '#64748b', gradient: 'from-slate-500/20 to-slate-600/5' }
+            'Maple Finance': { color: '#64748b' },
+            'Radiant Capital': { color: '#f9a8d4' },
+            'Ethena': { color: '#7dd3fc' },
+            'Tangible': { color: '#fbcfe8' },
+            'Strata': { color: '#0d9488' },
+            'Cap Finance': { color: '#86efac' },
+            'Reservoir': { color: '#93c5fd' },
+            'Resolv': { color: '#a5b4fc' },
+            'Avant': { color: '#fcd34d' },
+            'Superstate': { color: '#f9a8d4' },
+            'Yuzu': { color: '#fde047' },
+            'Midas': { color: '#67e8f9' },
+            'Basis Trading': { color: '#64748b' }
         };
 
+        // Protocol-specific default time ranges
         const protocolDefaults = {
             'Midas': '7d',
             'Avant': '3d',
             'Superstate': '7d'
         };
-
-        const blockExplorers = {
-            'ethereum': 'https://etherscan.io/address/',
-            'avalanche': 'https://snowtrace.io/address/',
-            'plasma': 'https://plasma-explorer.com/address/',
-            'arbitrum': 'https://arbiscan.io/address/',
-            'optimism': 'https://optimistic.etherscan.io/address/',
-            'polygon': 'https://polygonscan.com/address/',
-            'base': 'https://basescan.org/address/'
-        };
-
-        function getExplorerUrl(chain, address) {
-            if (!address) return null;
-            const chainLower = (chain || 'ethereum').toLowerCase();
-            const baseUrl = blockExplorers[chainLower] || blockExplorers['ethereum'];
-            return baseUrl + address;
-        }
-
+        
         const protocolCategories = {
             'Ethena': 'Basis Trading',
             'Strata': 'Basis Trading',
             'Resolv': 'Basis Trading'
         };
-
-        function aprToApy(apr, periodHours = 24) {
-            if (apr === null || apr === undefined) return null;
-            const periodsPerYear = (365 * 24) / periodHours;
-            const ratePerPeriod = apr / 100 / periodsPerYear;
-            return (Math.pow(1 + ratePerPeriod, periodsPerYear) - 1) * 100;
-        }
-
-        function formatNumber(num, decimals = 2) {
-            if (num === null || num === undefined || isNaN(num)) return '—';
-            return num.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-        }
-
-        function formatPercent(num, decimals = 2) {
-            if (num === null || num === undefined || isNaN(num)) return '—';
-            return formatNumber(num, decimals) + '%';
-        }
-
-        class ErrorBoundary {
-            static showError(error, context = '') {
-                console.error(`Error in ${context}:`, error);
-                document.getElementById('error-message').textContent = `${context ? context + ': ' : ''}${error.message || error}`;
-                document.getElementById('error-container').classList.remove('hidden');
-            }
-            static hideError() {
-                document.getElementById('error-container').classList.add('hidden');
-            }
-        }
+        
+        let expandedSections = {};
+        let advertisedAPY = {};
 
         async function loadAdvertisedAPY() {
             try {
@@ -1169,8 +282,14 @@
                     return acc;
                 }, {});
             } catch (error) {
-                console.warn('Could not load advertised APY:', error);
-                advertisedAPY = {};
+                console.warn('Could not load advertised APY data:', error);
+                advertisedAPY = {
+                    'syrupUSDC': 10.5,
+                    'syrupUSDT': 9.8,
+                    'sUSDe': 12.0,
+                    'RLP': 15.5,
+                    'wstUSDR': 8.2
+                };
             }
         }
 
@@ -1178,24 +297,33 @@
             await loadAdvertisedAPY();
             try {
                 ErrorBoundary.hideError();
-                const response = await fetch('https://axjvwtztf5syd3si.public.blob.vercel-storage.com/snapshots.json?t=' + Date.now());
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                
+                const cacheBuster = `?t=${Date.now()}`;
+                const response = await fetch('https://axjvwtztf5syd3si.public.blob.vercel-storage.com/snapshots.json' + cacheBuster);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
                 allData = await response.json();
-                if (!allData || !allData.tokens) throw new Error('Invalid data format');
+
+                if (!allData || !allData.tokens) {
+                    throw new Error('Invalid data format');
+                }
 
                 if (allData.lastUpdate) {
                     const date = new Date(allData.lastUpdate);
-                    document.getElementById('last-update').textContent = date.toLocaleString('en-US', {
-                        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
-                    });
+                    document.getElementById('last-update').textContent =
+                        `Last update: ${date.toLocaleString('en-US', {
+                            month: 'short', day: 'numeric',
+                            hour: '2-digit', minute: '2-digit'
+                        })}`;
                 }
 
-                const hasData = Object.values(allData.tokens).some(t => t.snapshots?.length > 0);
+                const hasData = Object.values(allData.tokens).some(t => t.snapshots && t.snapshots.length > 0);
+
                 if (!hasData) {
                     showEmptyState();
                 } else {
-                    renderHeatmap();
                     renderTokens();
                     document.getElementById('loading').classList.add('hidden');
                     document.getElementById('content').classList.remove('hidden');
@@ -1209,7 +337,6 @@
         function showEmptyState() {
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('empty-state').classList.remove('hidden');
-            document.getElementById('heatmap-section').classList.add('hidden');
         }
 
         function retryLoad() {
@@ -1217,225 +344,37 @@
             document.getElementById('loading').classList.remove('hidden');
             document.getElementById('content').classList.add('hidden');
             document.getElementById('empty-state').classList.add('hidden');
-            document.getElementById('heatmap-section').classList.add('hidden');
             loadData();
-        }
-
-        function getHeatClass(apr) {
-            if (apr === null || apr === undefined || isNaN(apr)) return 'heat-mid-1';
-            if (apr < -5) return 'heat-negative-3';
-            if (apr < -2) return 'heat-negative-2';
-            if (apr < 0) return 'heat-negative-1';
-            if (apr < 2) return 'heat-low-1';
-            if (apr < 4) return 'heat-low-2';
-            if (apr < 6) return 'heat-mid-1';
-            if (apr < 8) return 'heat-mid-2';
-            if (apr < 12) return 'heat-high-1';
-            if (apr < 18) return 'heat-high-2';
-            return 'heat-high-3';
-        }
-
-        function getTrendIndicator(snapshots) {
-            if (!snapshots || snapshots.length < 2) return { symbol: '→', class: 'trend-neutral' };
-            
-            const latest = snapshots[snapshots.length - 1];
-            const previous = snapshots[snapshots.length - 2];
-            
-            if (!latest.apr_7d || !previous.apr_7d) return { symbol: '→', class: 'trend-neutral' };
-            
-            const diff = latest.apr_7d - previous.apr_7d;
-            const threshold = 0.1; // 0.1% change threshold
-            
-            if (diff > threshold) return { symbol: '↑', class: 'trend-up' };
-            if (diff < -threshold) return { symbol: '↓', class: 'trend-down' };
-            return { symbol: '→', class: 'trend-neutral' };
-        }
-
-        function getTrendBadge(apr24h, apr7d) {
-            // Returns trend badge HTML if trend is significant
-            // Rising: 24h APR > 7d APR (recent yields higher than average)
-            // Declining: 24h APR < 7d APR (recent yields lower than average)
-            
-            if (apr24h === null || apr24h === undefined || apr7d === null || apr7d === undefined) {
-                return '';
-            }
-            
-            const absDiff = apr24h - apr7d;
-            const relDiff = apr7d !== 0 ? ((apr24h - apr7d) / Math.abs(apr7d)) * 100 : 0;
-            
-            // Significant if: >10% relative change OR >1% absolute difference
-            const isSignificant = Math.abs(relDiff) > 10 || Math.abs(absDiff) > 1;
-            
-            if (!isSignificant) return '';
-            
-            if (absDiff > 0) {
-                // Rising: 24h APR higher than 7d average
-                return `<span class="trend-badge rising" data-tooltip="Yield trending up (+${formatNumber(absDiff, 2)}% vs 7d avg)">🔥</span>`;
-            } else {
-                // Declining: 24h APR lower than 7d average
-                return `<span class="trend-badge declining" data-tooltip="Yield trending down (${formatNumber(absDiff, 2)}% vs 7d avg)">❄️</span>`;
-            }
-        }
-
-        function scrollToToken(tokenId) {
-            const card = document.getElementById(`token-card-${tokenId}`);
-            if (card) {
-                // Find protocol section and expand if collapsed
-                const section = card.closest('.protocol-section');
-                if (section) {
-                    const content = section.querySelector('[id^="section-"]');
-                    if (content && content.classList.contains('hidden')) {
-                        const chevron = section.querySelector('[id^="chevron-"]');
-                        content.classList.remove('hidden');
-                        if (chevron) chevron.classList.add('rotate-180');
-                        // Update expandedSections state
-                        const protocol = section.querySelector('.protocol-toggle h2')?.textContent;
-                        if (protocol) expandedSections[protocol] = true;
-                    }
-                }
-                
-                // Small delay to let section expand
-                setTimeout(() => {
-                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    card.style.boxShadow = '0 0 0 2px var(--accent-gold), 0 12px 40px -12px rgba(0, 0, 0, 0.4)';
-                    setTimeout(() => {
-                        card.style.boxShadow = '';
-                    }, 2000);
-                }, 100);
-            }
-        }
-
-        function renderHeatmap() {
-            const grid = document.getElementById('heatmap-grid');
-            const section = document.getElementById('heatmap-section');
-            const countEl = document.getElementById('heatmap-count');
-            
-            if (!allData?.tokens) {
-                section.classList.add('hidden');
-                return;
-            }
-
-            // Collect all tokens with their 7D APR
-            const tokenList = [];
-            for (const [tokenId, tokenData] of Object.entries(allData.tokens)) {
-                if (!tokenData.snapshots?.length) continue;
-                const latest = tokenData.snapshots[tokenData.snapshots.length - 1];
-                if (latest.apr_7d === null || latest.apr_7d === undefined) continue;
-                
-                tokenList.push({
-                    tokenId,
-                    symbol: tokenData.symbol,
-                    apr: latest.apr_7d,
-                    snapshots: tokenData.snapshots
-                });
-            }
-
-            if (tokenList.length === 0) {
-                section.classList.add('hidden');
-                return;
-            }
-
-            // Sort by APR descending
-            tokenList.sort((a, b) => (b.apr || 0) - (a.apr || 0));
-
-            // Update count
-            countEl.textContent = `${tokenList.length} tokens`;
-
-            // Render cells
-            grid.innerHTML = tokenList.map(token => {
-                const heatClass = getHeatClass(token.apr);
-                const trend = getTrendIndicator(token.snapshots);
-                const aprDisplay = formatPercent(token.apr, 1);
-                
-                return `
-                    <div class="heatmap-cell ${heatClass}" onclick="scrollToToken('${token.tokenId}')" title="${token.symbol}: ${aprDisplay} 7D APR">
-                        <div class="heatmap-symbol">
-                            <span>${token.symbol}</span>
-                            <span class="heatmap-trend ${trend.class}">${trend.symbol}</span>
-                        </div>
-                        <div class="heatmap-apr font-mono">${aprDisplay}</div>
-                    </div>
-                `;
-            }).join('');
-
-            section.classList.remove('hidden');
-        }
-
-        function getHeatmapColor(apr) {
-            if (apr === null || apr === undefined || isNaN(apr)) return '#9ca3af';
-            if (apr < 0) return '#ef4444';
-            if (apr < 3) return '#f97316';
-            if (apr < 6) return '#eab308';
-            if (apr < 10) return '#84cc16';
-            if (apr < 15) return '#22c55e';
-            return '#10b981';
-        }
-
-        function renderHeatmap() {
-            const grid = document.getElementById('heatmap-grid');
-            const section = document.getElementById('heatmap-section');
-            if (!grid || !allData?.tokens) return;
-
-            const tokens = Object.entries(allData.tokens)
-                .filter(([id, data]) => data.snapshots?.length > 0)
-                .map(([id, data]) => {
-                    const latest = data.snapshots[data.snapshots.length - 1];
-                    const prev = data.snapshots.length > 6 ? data.snapshots[data.snapshots.length - 7] : null;
-                    const apr7d = latest.apr_7d;
-                    const trend = prev && prev.apr_7d != null && apr7d != null ? 
-                        (apr7d > prev.apr_7d ? '↑' : apr7d < prev.apr_7d ? '↓' : '→') : '→';
-                    return { id, symbol: data.symbol, apr7d, trend, protocol: data.protocol };
-                })
-                .sort((a, b) => (b.apr7d || 0) - (a.apr7d || 0));
-
-            grid.innerHTML = tokens.map(t => `
-                <div class="p-2 rounded-lg cursor-pointer transition-all hover:scale-105 hover:shadow-md text-center"
-                     style="background: ${getHeatmapColor(t.apr7d)}15; border: 1px solid ${getHeatmapColor(t.apr7d)}30;"
-                     onclick="scrollToToken('${t.id}', '${t.protocol}')"
-                     title="${t.symbol}: ${t.apr7d?.toFixed(2) || '—'}% APR">
-                    <div class="font-medium text-xs text-gray-700 truncate">${t.symbol}</div>
-                    <div class="font-mono text-sm font-bold" style="color: ${getHeatmapColor(t.apr7d)}">
-                        ${t.apr7d != null ? t.apr7d.toFixed(1) + '%' : '—'}
-                    </div>
-                    <div class="text-xs text-gray-400">${t.trend}</div>
-                </div>
-            `).join('');
-
-            section.classList.remove('hidden');
-        }
-
-        function scrollToToken(tokenId, protocol) {
-            const sectionId = 'section-' + protocol.replace(/\s+/g, '-');
-            const section = document.getElementById(sectionId);
-            if (section && section.classList.contains('hidden')) {
-                toggleProtocolSection(protocol);
-            }
-            setTimeout(() => {
-                const card = document.getElementById('token-card-' + tokenId);
-                if (card) {
-                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    card.style.boxShadow = '0 0 0 3px #fbbf24';
-                    setTimeout(() => card.style.boxShadow = '', 2000);
-                }
-            }, 150);
         }
 
         function renderTokens() {
             const container = document.getElementById('content');
             container.innerHTML = '';
-            
-            renderHeatmap();
+            container.className = 'space-y-4';
 
             const tokensByProtocol = {};
             for (const [tokenId, tokenData] of Object.entries(allData.tokens)) {
-                if (!tokenData.snapshots?.length) continue;
+                if (tokenData.snapshots.length === 0) continue;
                 const protocol = tokenData.protocol || 'Other';
                 const category = protocolCategories[protocol] || protocol;
-                if (!tokensByProtocol[category]) tokensByProtocol[category] = [];
+                if (!tokensByProtocol[category]) {
+                    tokensByProtocol[category] = [];
+                }
                 tokensByProtocol[category].push({ tokenId, tokenData });
             }
 
-            const protocolOrder = ['Maple Finance', 'Basis Trading', 'Neutrl', 'Cap Finance', 'Yuzu', 'Sky Money', 'Midas', 'Avant', 'Reservoir', 'Superstate'];
+            let hasRendered = false;
+            
+            const protocolOrder = [
+                'Maple Finance',
+                'Basis Trading', 
+                'Cap Finance',
+                'Yuzu',
+                'Midas',
+                'Avant',
+                'Reservoir',
+                'Superstate'
+            ];
             const sortedProtocols = Object.keys(tokensByProtocol).sort((a, b) => {
                 const aIdx = protocolOrder.indexOf(a);
                 const bIdx = protocolOrder.indexOf(b);
@@ -1444,44 +383,57 @@
                 if (bIdx !== -1) return 1;
                 return a.localeCompare(b);
             });
-
+            
             for (const protocol of sortedProtocols) {
                 const tokens = tokensByProtocol[protocol];
-                const branding = protocolBranding[protocol] || { color: '#64748b', gradient: 'from-slate-500/20 to-slate-600/5' };
+                const branding = protocolBranding[protocol] || { color: '#6b7280' };
                 
-                if (expandedSections[protocol] === undefined) expandedSections[protocol] = true;
+                if (expandedSections[protocol] === undefined) {
+                    expandedSections[protocol] = false;
+                }
                 const isExpanded = expandedSections[protocol];
-
+                
                 const section = document.createElement('div');
-                section.className = 'protocol-section bg-zinc-900/50 animate-in';
+                section.className = 'card overflow-hidden';
+                
+                const latestPrices = tokens.map(t => {
+                    const latest = t.tokenData.snapshots[t.tokenData.snapshots.length - 1];
+                    return { symbol: t.tokenData.symbol, price: latest.price, apr7d: latest.apr_7d };
+                });
                 
                 section.innerHTML = `
-                    <div class="protocol-toggle p-3 sm:p-4 md:p-5 flex items-center justify-between" onclick="toggleSection('${protocol}')">
-                        <div class="flex items-center gap-3 sm:gap-4">
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br ${branding.gradient} flex items-center justify-center border border-white/5 flex-shrink-0">
-                                <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full" style="background: ${branding.color}; box-shadow: 0 0 12px ${branding.color}40;"></div>
-                            </div>
-                            <div class="min-w-0">
-                                <h2 class="text-base sm:text-lg font-semibold text-white truncate">${protocol}</h2>
-                                <p class="text-xs sm:text-sm text-zinc-500">${tokens.length} instrument${tokens.length > 1 ? 's' : ''}</p>
+                    <div 
+                        class="p-4 cursor-pointer hover:bg-gray-50 transition-colors flex items-center justify-between"
+                        onclick="toggleProtocolSection('${protocol}')"
+                    >
+                        <div class="flex items-center gap-3">
+                            <div class="protocol-accent h-10" style="background: ${branding.color}"></div>
+                            <div>
+                                <h2 class="text-lg font-semibold text-gray-900">${protocol}</h2>
+                                <p class="text-xs text-gray-400">${tokens.length} token${tokens.length > 1 ? 's' : ''}</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-3 sm:gap-6">
-                            <div class="hidden lg:flex items-center gap-3">
-                                ${tokens.slice(0, 4).map(t => `
-                                    <span class="px-3 py-1 rounded-lg bg-zinc-800/50 border border-zinc-700/50 text-xs font-mono text-zinc-400">${t.tokenData.symbol}</span>
-                                `).join('')}
-                                ${tokens.length > 4 ? `<span class="text-xs text-zinc-500">+${tokens.length - 4} more</span>` : ''}
+                        <div class="flex items-center gap-4">
+                            <div class="text-right hidden sm:block">
+                                <div class="text-xs text-gray-400">Tokens</div>
+                                <div class="text-sm font-mono text-gray-600">${latestPrices.map(p => p.symbol).join(', ')}</div>
                             </div>
-                            <svg class="w-5 h-5 text-zinc-500 transition-transform duration-300 flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}" id="chevron-${protocol.replace(/\s+/g, '-')}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg 
+                                class="w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}" 
+                                id="chevron-${protocol.replace(/\s+/g, '-')}"
+                                fill="none" 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24"
+                            >
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </div>
                     </div>
-                    <div class="${isExpanded ? '' : 'hidden'}" id="section-${protocol.replace(/\s+/g, '-')}">
-                        <div class="divider"></div>
-                        <div class="p-3 sm:p-4 md:p-5">
-                            <div class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-3 sm:gap-4" id="tokens-${protocol.replace(/\s+/g, '-')}"></div>
+                    <div 
+                        class="border-t border-gray-100 ${isExpanded ? '' : 'hidden'}" 
+                        id="section-${protocol.replace(/\s+/g, '-')}"
+                    >
+                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 p-4 bg-gray-50/50" id="tokens-${protocol.replace(/\s+/g, '-')}">
                         </div>
                     </div>
                 `;
@@ -1491,17 +443,25 @@
                 const tokensGrid = document.getElementById(`tokens-${protocol.replace(/\s+/g, '-')}`);
                 for (const { tokenId, tokenData } of tokens) {
                     try {
-                        tokensGrid.appendChild(createTokenCard(tokenId, tokenData, branding));
+                        const tokenSection = createTokenSection(tokenId, tokenData);
+                        tokensGrid.appendChild(tokenSection);
+                        hasRendered = true;
                     } catch (error) {
-                        console.error(`Error rendering ${tokenId}:`, error);
+                        ErrorBoundary.showError(error, `Rendering ${tokenId}`);
                     }
                 }
             }
-        }
 
-        function toggleSection(protocol) {
-            const section = document.getElementById(`section-${protocol.replace(/\s+/g, '-')}`);
-            const chevron = document.getElementById(`chevron-${protocol.replace(/\s+/g, '-')}`);
+            if (!hasRendered) {
+                showEmptyState();
+            }
+        }
+        
+        function toggleProtocolSection(protocol) {
+            const sectionId = `section-${protocol.replace(/\s+/g, '-')}`;
+            const chevronId = `chevron-${protocol.replace(/\s+/g, '-')}`;
+            const section = document.getElementById(sectionId);
+            const chevron = document.getElementById(chevronId);
             
             if (section.classList.contains('hidden')) {
                 section.classList.remove('hidden');
@@ -1514,196 +474,242 @@
             }
         }
 
-        function createTokenCard(tokenId, tokenData, branding) {
-            const card = document.createElement('div');
-            card.className = 'token-card';
-            card.id = `token-card-${tokenId}`;
-            card.setAttribute('data-token-id', tokenId);
+        function createTokenSection(tokenId, tokenData) {
+            const section = document.createElement('div');
+            section.className = 'bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm animate-fade-in';
 
             const latest = tokenData.snapshots[tokenData.snapshots.length - 1];
-            const apr7d = latest.apr_7d;
-            const apr24h = latest.apr_24h;
-            const apr1h = latest.apr_1h;
-            
+            const previous = tokenData.snapshots.length > 1 ? tokenData.snapshots[tokenData.snapshots.length - 2] : null;
+
+            const priceChange = previous ? ((latest.price - previous.price) / previous.price * 100) : 0;
+            const priceChangeClass = priceChange > 0 ? 'text-emerald-600' : priceChange < 0 ? 'text-red-500' : 'text-gray-400';
+            const priceChangeIcon = priceChange > 0 ? '↑' : priceChange < 0 ? '↓' : '→';
+
+            const branding = protocolBranding[tokenData.protocol] || { color: '#6b7280' };
+
             const advertised = advertisedAPY[tokenData.symbol];
+            const realized = latest.apr_30d || latest.apr_7d || latest.apr_24h;
             let deltaHTML = '';
-            if (advertised && apr7d != null) {
-                const delta = apr7d - advertised;
-                const deltaClass = delta > 0 ? 'positive' : delta < 0 ? 'negative' : 'neutral';
-                deltaHTML = `<span class="delta-badge ${deltaClass} font-mono">${delta > 0 ? '+' : ''}${formatNumber(delta, 2)}%</span>`;
+
+            if (advertised && realized !== null && realized !== undefined) {
+                const delta = realized - advertised;
+                const deltaClass = delta > 0 ? 'delta-positive' : delta < 0 ? 'delta-negative' : 'delta-neutral';
+                const deltaSign = delta > 0 ? '+' : '';
+                deltaHTML = `
+                    <div class="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-gray-500">Advertised APY</span>
+                            <span class="font-mono text-sm text-slate-600">${advertised.toFixed(2)}%</span>
+                        </div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-gray-500">Realized APR (30d)</span>
+                            <span class="font-mono text-sm text-gray-700">${realized.toFixed(2)}%</span>
+                        </div>
+                        <div class="pt-2 border-t border-gray-200 flex items-center justify-between">
+                            <span class="text-xs font-medium text-gray-500">Difference</span>
+                            <span class="px-2 py-1 rounded text-xs font-mono font-semibold ${deltaClass}">
+                                ${deltaSign}${delta.toFixed(2)}%
+                            </span>
+                        </div>
+                    </div>
+                `;
             }
 
-            // Trend badge
-            const trendBadgeHTML = getTrendBadge(apr24h, apr7d);
+            const timeframes = [
+                { key: 'apr_1h', label: '1H' },
+                { key: 'apr_3h', label: '3H' },
+                { key: 'apr_6h', label: '6H' },
+                { key: 'apr_12h', label: '12H' },
+                { key: 'apr_24h', label: '1D' },
+                { key: 'apr_3d', label: '3D' },
+                { key: 'apr_7d', label: '7D' },
+                { key: 'apr_14d', label: '14D' },
+                { key: 'apr_21d', label: '21D' },
+                { key: 'apr_30d', label: '30D' }
+            ];
+            const aprPanels = timeframes.map(t => {
+                const val = latest[t.key];
+                const display = val != null ? val.toFixed(2) + '%' : '—';
+                const extrapolated = latest[t.key + '_extrapolated'];
+                return `<div class="bg-white rounded-lg px-3 py-2.5 border border-gray-200 shadow-sm flex justify-between items-center${extrapolated ? ' opacity-50' : ''}">
+                    <span class="text-[10px] text-gray-500 font-semibold tracking-wide">${t.label}</span>
+                    <span class="text-sm font-mono text-gray-800 font-semibold">${display}</span>
+                </div>`;
+            }).join('');
 
-            // Contract link button
-            const explorerUrl = getExplorerUrl(tokenData.chain, tokenData.address);
-            const contractLinkHTML = explorerUrl ? `
-                <a href="${explorerUrl}" target="_blank" rel="noopener noreferrer" 
-                   class="contract-link" title="View contract on ${(tokenData.chain || 'Ethereum').charAt(0).toUpperCase() + (tokenData.chain || 'ethereum').slice(1)}">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                </a>
-            ` : '';
-
-            const aprClass = apr7d > 0 ? 'positive' : apr7d < 0 ? 'negative' : '';
-
-            // Initialize state for this token
-            const defaultRange = protocolDefaults[tokenData.protocol] || '7d';
-            if (!timeRanges[tokenId]) timeRanges[tokenId] = defaultRange;
-            if (!chartModes[tokenId]) chartModes[tokenId] = 'dual';
-            if (!aprTimeframes[tokenId]) aprTimeframes[tokenId] = '1h';
-            if (!showAsAPY[tokenId]) showAsAPY[tokenId] = false;
-            if (!hiddenDatasets[tokenId]) hiddenDatasets[tokenId] = {};
-
-            card.innerHTML = `
-                <div class="p-3 sm:p-4 md:p-5">
-                    <div class="flex items-start justify-between mb-3 sm:mb-4 md:mb-5">
-                        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-                            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-base sm:text-lg font-bold flex-shrink-0" style="background: ${branding.color}20; color: ${branding.color};">
-                                ${tokenData.symbol.charAt(0)}
-                            </div>
-                            <div class="min-w-0">
-                                <div class="flex items-center gap-2">
-                                    <h3 class="font-semibold text-white text-sm sm:text-base truncate">${tokenData.symbol}</h3>
-                                    ${trendBadgeHTML}
-                                </div>
-                                <p class="text-xs text-zinc-500 truncate">${tokenData.name}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            ${deltaHTML}
-                            ${contractLinkHTML}
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-5">
-                        <div class="data-cell">
-                            <div class="data-label">7D APR</div>
-                            <div class="flex items-center">
-                                <span class="data-value ${aprClass} font-mono text-base sm:text-lg md:text-xl">${formatPercent(apr7d)}</span>
-                                <button class="copy-apr-btn" onclick="copyAPR('${formatPercent(apr7d)}', event)" title="Copy APR">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="data-cell">
-                            <div class="data-label">24H APR</div>
-                            <div class="data-value font-mono text-base sm:text-lg md:text-xl">${formatPercent(apr24h)}</div>
-                        </div>
-                        <div class="data-cell col-span-2 sm:col-span-1">
-                            <div class="data-label">Price</div>
-                            <div class="data-value font-mono text-base sm:text-lg md:text-xl">${formatNumber(latest.price, latest.price > 10 ? 2 : 6)}</div>
-                        </div>
-                    </div>
-
-                    <!-- Chart + APR Panel Grid -->
-                    <div class="grid grid-cols-1 xl:grid-cols-[1fr_200px] gap-3 sm:gap-4">
-                        <!-- Left: Chart Section -->
+            section.innerHTML = `
+                <div class="p-4 border-b border-gray-100">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <!-- Chart Controls -->
-                            <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4 p-2 sm:p-3 rounded-lg" style="background: var(--bg-tertiary); border: 1px solid var(--border-subtle);">
-                                <!-- Time Range Selector -->
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] uppercase tracking-wide font-medium hidden sm:inline" style="color: var(--text-tertiary);">Range</span>
-                                    <div class="time-selector" id="time-selector-${tokenId}">
-                                        ${['3h', '6h', '12h', '24h', '7d', '30d', 'all'].map(range => `
-                                            <button class="time-btn ${timeRanges[tokenId] === range ? 'active' : ''}" 
-                                                    onclick="changeTimeRange('${tokenId}', '${range}')"
-                                                    data-token="${tokenId}" data-range="${range}">${range}</button>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                                
-                                <!-- APR Timeframe Selector -->
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] uppercase tracking-wide font-medium hidden sm:inline" style="color: var(--text-tertiary);">APR</span>
-                                    <div class="time-selector" id="apr-selector-${tokenId}">
-                                        ${['1h', '3h', '6h', '24h', '7d'].map(tf => `
-                                            <button class="time-btn ${aprTimeframes[tokenId] === tf ? 'active' : ''}" 
-                                                    onclick="changeAprTimeframe('${tokenId}', '${tf}')"
-                                                    data-token="${tokenId}" data-apr="${tf}">${tf}</button>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                                
-                                <!-- APR/APY Toggle -->
-                                <button class="time-btn ${showAsAPY[tokenId] ? '' : 'active'}" 
-                                        onclick="toggleApyMode('${tokenId}')"
-                                        id="apy-toggle-${tokenId}"
-                                        style="min-width: 44px;">
-                                    ${showAsAPY[tokenId] ? 'APY' : 'APR'}
-                                </button>
-                                
-                                <!-- Dual Axis Toggle -->
-                                <button class="time-btn ${chartModes[tokenId] === 'dual' ? 'active' : ''}" 
-                                        onclick="toggleChartMode('${tokenId}')"
-                                        id="chart-mode-btn-${tokenId}"
-                                        title="Toggle APR overlay">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                                    </svg>
-                                </button>
-                                
-                                <!-- Export Button -->
-                                <button class="time-btn" 
-                                        onclick="exportTokenToCSV('${tokenId}')"
-                                        title="Export CSV">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                                    </svg>
-                                </button>
+                            <h2 class="text-xl font-semibold text-gray-900">${tokenData.symbol}</h2>
+                            <p class="text-sm text-gray-500">${tokenData.name}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-medium" style="color: ${branding.color}">${tokenData.protocol}</div>
+                            <div class="text-xs text-gray-400">${tokenData.chain}</div>
+                            <div class="text-xs ${priceChangeClass} font-mono mt-1 font-medium">
+                                ${priceChangeIcon} ${Math.abs(priceChange).toFixed(3)}%
                             </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <div class="chart-container" style="height: 500px;">
-                                <canvas id="chart-${tokenId}"></canvas>
+                <div class="grid grid-cols-1 lg:grid-cols-[1fr_160px] gap-4 p-4">
+                    <!-- Chart -->
+                    <div>
+                        <!-- Header row -->
+                        <div class="flex items-center justify-between mb-2">
+                            <div>
+                                <h3 class="text-sm font-semibold text-gray-900">Price History</h3>
+                                <div class="text-xs text-gray-500">
+                                    <span class="font-mono text-emerald-600 font-medium">${latest.price.toFixed(6)}</span>
+                                    <span class="text-gray-400 ml-1">(${tokenData.snapshots.length} pts)</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button
+                                    class="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition text-gray-400 hover:text-gray-700"
+                                    onclick="toggleChartMode('${tokenId}')"
+                                    id="chart-mode-${tokenId}"
+                                    title="Toggle APR overlay"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                </button>
+                                <button
+                                    class="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition text-gray-400 hover:text-gray-700"
+                                    onclick="exportTokenToCSV('${tokenId}')"
+                                    title="Export CSV"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                </button>
                             </div>
                         </div>
                         
-                        <!-- Right: Realized APR Panel -->
-                        <div class="flex flex-col" style="background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px;">
-                            <div class="flex items-center justify-between mb-3 pb-2" style="border-bottom: 1px solid var(--border-subtle);">
-                                <h4 class="text-xs font-semibold uppercase tracking-wide" style="color: var(--text-secondary);">Realized APR</h4>
-                                ${latest.data_hours ? `<span class="text-[10px] font-mono" style="color: var(--text-tertiary);">${Math.round(latest.data_hours)}h data</span>` : ''}
+                        <!-- Controls row -->
+                        <div class="flex flex-wrap items-center gap-3 mb-3 p-2 bg-gray-50 rounded-lg border border-gray-100">
+                            <!-- Range selector -->
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] text-gray-400 uppercase tracking-wide font-medium">Range</span>
+                                <div class="flex rounded-lg overflow-hidden border border-gray-200 bg-white">
+                                    ${['3h', '6h', '12h', '24h', '7d', '30d', 'all'].map(range => {
+                                        const defaultRange = protocolDefaults[tokenData.protocol] || '24h';
+                                        return `<button
+                                            class="time-range-button px-2.5 py-1.5 text-[11px] border-r border-gray-200 last:border-r-0 ${range === defaultRange ? 'active' : ''}"
+                                            onclick="changeTimeRange('${tokenId}', '${range}')"
+                                            data-token="${tokenId}"
+                                            data-range="${range}"
+                                        >${range}</button>`;
+                                    }).join('')}
+                                </div>
                             </div>
-                            <div class="flex flex-col gap-1.5 flex-1 overflow-y-auto">
-                                ${[
-                                    { key: 'apr_1h', label: '1H' },
-                                    { key: 'apr_3h', label: '3H' },
-                                    { key: 'apr_6h', label: '6H' },
-                                    { key: 'apr_12h', label: '12H' },
-                                    { key: 'apr_24h', label: '1D' },
-                                    { key: 'apr_3d', label: '3D' },
-                                    { key: 'apr_7d', label: '7D' },
-                                    { key: 'apr_14d', label: '14D' },
-                                    { key: 'apr_21d', label: '21D' },
-                                    { key: 'apr_30d', label: '30D' }
-                                ].map(t => {
-                                    const val = latest[t.key];
-                                    const display = val != null ? formatNumber(val, 2) + '%' : '—';
-                                    const extrapolated = latest[t.key + '_extrapolated'];
-                                    const valClass = val != null ? (val > 0 ? 'positive' : val < 0 ? 'negative' : '') : '';
-                                    return `<div class="flex justify-between items-center px-2 py-1.5 rounded-lg ${extrapolated ? 'opacity-50' : ''}" style="background: var(--bg-secondary); border: 1px solid var(--border-subtle);">
-                                        <span class="text-[10px] font-semibold tracking-wide" style="color: var(--text-tertiary);">${t.label}</span>
-                                        <span class="text-sm font-mono font-semibold ${valClass}" style="color: ${valClass === 'positive' ? 'var(--positive)' : valClass === 'negative' ? 'var(--negative)' : 'var(--text-primary)'};">${display}</span>
-                                    </div>`;
-                                }).join('')}
+                            
+                            <!-- APR timeframe selector -->
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] text-gray-400 uppercase tracking-wide font-medium">APR</span>
+                                <div class="flex rounded-lg overflow-hidden border border-gray-200 bg-white">
+                                    ${['1h', '3h', '6h', '24h', '7d'].map(tf => `
+                                        <button
+                                            class="time-range-button px-2.5 py-1.5 text-[11px] border-r border-gray-200 last:border-r-0 ${tf === '1h' ? 'active' : ''}"
+                                            onclick="changeAprTimeframe('${tokenId}', '${tf}')"
+                                            data-token="${tokenId}"
+                                            data-apr="${tf}"
+                                        >${tf}</button>
+                                    `).join('')}
+                                </div>
                             </div>
+                            
+                            <!-- APR/APY toggle -->
+                            <button
+                                class="time-range-button px-3 py-1.5 text-[11px] rounded-lg border border-gray-200 bg-white active"
+                                onclick="toggleApyMode('${tokenId}')"
+                                data-token="${tokenId}"
+                                data-apy-toggle="true"
+                            >APR</button>
+                        </div>
+
+                        <div class="bg-white rounded-xl p-4 border border-gray-100" style="height: 400px;" id="chart-loading-${tokenId}">
+                            <canvas id="chart-${tokenId}"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- APR Metrics - Single Column Panels -->
+                    <div class="flex flex-col h-full">
+                        <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-100">
+                            <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Realized APR</h3>
+                            ${latest.data_hours ? `<span class="text-[10px] text-gray-400 font-mono">${latest.data_hours.toFixed(0)}h data</span>` : ''}
+                        </div>
+                        <div class="flex flex-col gap-1.5 flex-1">
+                            ${aprPanels}
                         </div>
                     </div>
                 </div>
             `;
 
-            setTimeout(() => createChart(tokenId, tokenData), 100);
-            return card;
+            timeRanges[tokenId] = protocolDefaults[tokenData.protocol] || '24h';
+            chartModes[tokenId] = 'dual';
+            hiddenDatasets[tokenId] = { 1: true };
+            aprTimeframes[tokenId] = '1h';
+
+            setTimeout(() => {
+                try {
+                    createChart(tokenId, tokenData);
+                } catch (error) {
+                    ErrorBoundary.showError(error, `Creating chart for ${tokenId}`);
+                }
+            }, 0);
+
+            return section;
+        }
+
+        function changeTimeRange(tokenId, range) {
+            timeRanges[tokenId] = range;
+
+            const buttons = document.querySelectorAll(`[data-token="${tokenId}"][data-range]`);
+            buttons.forEach(btn => {
+                if (btn.dataset.range === range) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            createChart(tokenId, allData.tokens[tokenId]);
+        }
+
+        function changeAprTimeframe(tokenId, timeframe) {
+            aprTimeframes[tokenId] = timeframe;
+
+            const buttons = document.querySelectorAll(`[data-token="${tokenId}"][data-apr]`);
+            buttons.forEach(btn => {
+                if (btn.dataset.apr === timeframe) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            createChart(tokenId, allData.tokens[tokenId]);
+        }
+
+        function toggleApyMode(tokenId) {
+            showAsAPY[tokenId] = !showAsAPY[tokenId];
+            
+            const btn = document.querySelector(`[data-token="${tokenId}"][data-apy-toggle]`);
+            if (btn) {
+                btn.textContent = showAsAPY[tokenId] ? 'APY' : 'APR';
+            }
+            
+            createChart(tokenId, allData.tokens[tokenId]);
+        }
+
+        function toggleChartMode(tokenId) {
+            chartModes[tokenId] = chartModes[tokenId] === 'single' ? 'dual' : 'single';
+            createChart(tokenId, allData.tokens[tokenId]);
         }
 
         function filterSnapshotsByTimeRange(snapshots, range) {
             if (range === 'all') return snapshots;
-            
+
             const now = Date.now();
             const ranges = {
                 '3h': 3 * 60 * 60 * 1000,
@@ -1711,63 +717,11 @@
                 '12h': 12 * 60 * 60 * 1000,
                 '24h': 24 * 60 * 60 * 1000,
                 '7d': 7 * 24 * 60 * 60 * 1000,
-                '14d': 14 * 24 * 60 * 60 * 1000,
                 '30d': 30 * 24 * 60 * 60 * 1000
             };
-            
-            const cutoff = now - (ranges[range] || ranges['7d']);
+
+            const cutoff = now - ranges[range];
             return snapshots.filter(s => s.timestamp >= cutoff);
-        }
-
-        function changeTimeRange(tokenId, range) {
-            timeRanges[tokenId] = range;
-            
-            // Update button states
-            const selector = document.getElementById(`time-selector-${tokenId}`);
-            if (selector) {
-                selector.querySelectorAll('.time-btn').forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.range === range);
-                });
-            }
-            
-            createChart(tokenId, allData.tokens[tokenId]);
-        }
-
-        function changeAprTimeframe(tokenId, timeframe) {
-            aprTimeframes[tokenId] = timeframe;
-            
-            // Update button states
-            const selector = document.getElementById(`apr-selector-${tokenId}`);
-            if (selector) {
-                selector.querySelectorAll('.time-btn').forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.apr === timeframe);
-                });
-            }
-            
-            createChart(tokenId, allData.tokens[tokenId]);
-        }
-
-        function toggleApyMode(tokenId) {
-            showAsAPY[tokenId] = !showAsAPY[tokenId];
-            
-            const btn = document.getElementById(`apy-toggle-${tokenId}`);
-            if (btn) {
-                btn.textContent = showAsAPY[tokenId] ? 'APY' : 'APR';
-                btn.classList.toggle('active', !showAsAPY[tokenId]);
-            }
-            
-            createChart(tokenId, allData.tokens[tokenId]);
-        }
-
-        function toggleChartMode(tokenId) {
-            chartModes[tokenId] = chartModes[tokenId] === 'dual' ? 'single' : 'dual';
-            
-            const btn = document.getElementById(`chart-mode-btn-${tokenId}`);
-            if (btn) {
-                btn.classList.toggle('active', chartModes[tokenId] === 'dual');
-            }
-            
-            createChart(tokenId, allData.tokens[tokenId]);
         }
 
         function createChart(tokenId, tokenData) {
@@ -1776,18 +730,17 @@
 
             const ctx = canvas.getContext('2d');
 
-            // Destroy existing chart
             if (charts[tokenId]) {
                 charts[tokenId].destroy();
             }
 
-            const range = timeRanges[tokenId] || '7d';
-            const mode = chartModes[tokenId] || 'dual';
+            const range = timeRanges[tokenId] || 'all';
+            const mode = chartModes[tokenId] || 'single';
             const filteredSnapshots = filterSnapshotsByTimeRange(tokenData.snapshots, range);
 
             if (filteredSnapshots.length === 0) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = 'var(--text-tertiary)';
+                ctx.fillStyle = '#9ca3af';
                 ctx.font = '14px Inter, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.fillText('No data for selected time range', canvas.width / 2, canvas.height / 2);
@@ -1796,32 +749,15 @@
 
             const labels = filteredSnapshots.map(s => new Date(s.timestamp));
             const prices = filteredSnapshots.map(s => s.price);
-            
-            // APR data based on selected timeframe
             const selectedAprTf = aprTimeframes[tokenId] || '1h';
             const aprKey = `apr_${selectedAprTf}`;
             const useAPY = showAsAPY[tokenId] || false;
             const tfHours = { '1h': 1, '3h': 3, '6h': 6, '12h': 12, '24h': 24, '3d': 72, '7d': 168 };
-            const rawAprData = filteredSnapshots.map(s => {
+            const aprData = filteredSnapshots.map(s => {
                 const apr = s[aprKey];
                 return useAPY ? aprToApy(apr, tfHours[selectedAprTf] || 24) : apr;
             });
-            
-            // Smooth APR data with moving average (window size based on data length)
-            const smoothWindow = Math.max(3, Math.min(12, Math.floor(rawAprData.length / 20)));
-            const aprData = rawAprData.map((val, idx, arr) => {
-                if (val === null || val === undefined) return val;
-                const start = Math.max(0, idx - Math.floor(smoothWindow / 2));
-                const end = Math.min(arr.length, idx + Math.ceil(smoothWindow / 2));
-                const window = arr.slice(start, end).filter(v => v !== null && v !== undefined);
-                return window.length > 0 ? window.reduce((a, b) => a + b, 0) / window.length : val;
-            });
             const rateLabel = useAPY ? 'APY' : 'APR';
-
-            const branding = protocolBranding[tokenData.protocol] || { color: '#64748b' };
-            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-            const gridColor = isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.06)';
-            const textColor = isLight ? '#737373' : '#71717a';
 
             // Use percentile-based scaling to exclude outliers
             const sortedPrices = [...prices].sort((a, b) => a - b);
@@ -1832,21 +768,17 @@
             const priceRange = maxPrice - minPrice;
             const padding = priceRange * 0.15 || 0.0001;
 
-            // Blue for price line (consistent across all tokens)
-            const priceColor = '#3b82f6';
-            
             const datasets = [{
                 label: 'Share Price',
                 data: prices,
-                borderColor: priceColor,
-                backgroundColor: priceColor + '15',
+                borderColor: '#64748b',
+                backgroundColor: 'rgba(99, 102, 241, 0.08)',
                 borderWidth: 2,
                 tension: 0.4,
                 fill: true,
                 pointRadius: 0,
                 pointHoverRadius: 4,
-                yAxisID: 'y',
-                order: 3
+                yAxisID: 'y'
             }];
 
             const scales = {
@@ -1856,11 +788,11 @@
                     min: minPrice - padding,
                     max: maxPrice + padding,
                     grid: {
-                        color: gridColor,
+                        color: 'rgba(229, 231, 235, 0.8)',
                         drawBorder: false
                     },
                     ticks: {
-                        color: textColor,
+                        color: '#6b7280',
                         font: { family: 'Space Mono', size: 10 },
                         maxTicksLimit: 6,
                         callback: function(value) {
@@ -1870,10 +802,9 @@
                     title: {
                         display: mode === 'dual',
                         text: 'Price',
-                        color: textColor,
+                        color: '#6b7280',
                         font: { family: 'Inter', size: 11 }
-                    },
-                    border: { display: false }
+                    }
                 },
                 x: {
                     type: 'time',
@@ -1886,22 +817,19 @@
                         }
                     },
                     grid: {
-                        color: gridColor,
+                        color: 'rgba(229, 231, 235, 0.5)',
                         drawBorder: false
                     },
                     ticks: {
-                        color: textColor,
-                        font: { family: 'Space Mono', size: 10 },
+                        color: '#9ca3af',
+                        font: { family: 'Inter', size: 10 },
                         maxTicksLimit: 6
-                    },
-                    border: { display: false }
+                    }
                 }
             };
 
-            // Add APR dataset and axis if in dual mode
             if (mode === 'dual' && aprData.some(v => v !== null && v !== undefined)) {
                 const validAPRs = aprData.filter(v => v !== null && v !== undefined);
-                
                 // Use percentile-based scaling for APR too
                 const sortedAPRs = [...validAPRs].sort((a, b) => a - b);
                 const aprP5 = Math.floor(sortedAPRs.length * 0.02);
@@ -1912,24 +840,21 @@
                 const minRange = 0.5;
                 const aprPadding = aprRange < minRange ? (minRange - aprRange) / 2 + 0.05 : aprRange * 0.15;
 
-                // APR line - smooth with cubic interpolation
                 datasets.push({
                     label: `${selectedAprTf} ${rateLabel}`,
                     data: aprData,
-                    borderColor: '#14b8a6',
-                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                    borderColor: '#0d9488',
+                    backgroundColor: 'rgba(20, 184, 166, 0.08)',
                     borderWidth: 2,
-                    tension: 0.35,
-                    fill: true,
+                    tension: 0.4,
+                    fill: false,
                     pointRadius: 0,
                     pointHoverRadius: 4,
                     yAxisID: 'y1',
                     spanGaps: true,
-                    order: 2,
-                    cubicInterpolationMode: 'monotone'
+                    order: 2
                 });
 
-                // Average APR line (dashed)
                 const avgAPR = validAPRs.reduce((a, b) => a + b, 0) / validAPRs.length;
                 const avgLineData = aprData.map(() => avgAPR);
                 datasets.push({
@@ -1967,12 +892,10 @@
                         text: rateLabel + ' (%)',
                         color: '#0d9488',
                         font: { family: 'Inter', size: 11, weight: '500' }
-                    },
-                    border: { display: false }
+                    }
                 };
             }
 
-            // Apply hidden dataset state
             const tokenHidden = hiddenDatasets[tokenId] || {};
             datasets.forEach((ds, i) => {
                 if (tokenHidden[i]) ds.hidden = true;
@@ -1980,12 +903,18 @@
 
             charts[tokenId] = new Chart(ctx, {
                 type: 'line',
-                data: { labels, datasets },
+                data: {
+                    labels,
+                    datasets
+                },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     layout: {
-                        padding: { left: 5, right: 5 }
+                        padding: {
+                            left: 5,
+                            right: 5
+                        }
                     },
                     interaction: {
                         intersect: false,
@@ -1997,26 +926,27 @@
                             position: 'top',
                             align: 'end',
                             labels: {
-                                color: textColor,
+                                color: '#374151',
                                 usePointStyle: true,
                                 pointStyle: 'circle',
-                                padding: 15,
-                                font: { family: 'Inter', size: 11, weight: '500' },
-                                boxWidth: 8,
-                                boxHeight: 8,
+                                padding: 20,
+                                font: { family: 'Inter', size: 12, weight: '500' },
+                                boxWidth: 10,
+                                boxHeight: 10,
                                 generateLabels: function(chart) {
                                     const datasets = chart.data.datasets;
                                     return datasets.map((dataset, i) => {
                                         const isVisible = chart.isDatasetVisible(i);
                                         const baseColor = dataset.borderColor;
+                                        // Use greyed out instead of strikethrough for hidden
                                         return {
                                             text: dataset.label,
                                             fillStyle: isVisible ? baseColor : 'rgba(156, 163, 175, 0.4)',
                                             strokeStyle: isVisible ? baseColor : 'rgba(156, 163, 175, 0.4)',
                                             lineWidth: 2,
-                                            hidden: false,
+                                            hidden: false,  // Never set hidden=true (avoids strikethrough)
                                             index: i,
-                                            fontColor: isVisible ? textColor : 'rgba(156, 163, 175, 0.5)',
+                                            fontColor: isVisible ? '#374151' : 'rgba(156, 163, 175, 0.5)',
                                             pointStyle: 'circle',
                                             datasetIndex: i
                                         };
@@ -2034,43 +964,41 @@
                             }
                         },
                         tooltip: {
-                            backgroundColor: isLight ? '#ffffff' : '#18181b',
-                            titleColor: isLight ? '#374151' : '#fafafa',
-                            bodyColor: isLight ? '#6b7280' : '#a1a1aa',
-                            borderColor: isLight ? '#e5e7eb' : '#27272a',
+                            backgroundColor: 'white',
+                            titleColor: '#6b7280',
+                            bodyColor: '#111827',
+                            borderColor: '#e5e7eb',
                             borderWidth: 1,
                             padding: 12,
                             displayColors: true,
-                            titleFont: { family: 'Inter', weight: '600' },
                             bodyFont: { family: 'Space Mono' },
                             callbacks: {
                                 title: function(items) {
                                     return new Date(items[0].parsed.x).toLocaleString('en-US', {
-                                        month: 'short', day: 'numeric',
-                                        hour: '2-digit', minute: '2-digit'
+                                        month: 'short',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
                                     });
                                 },
                                 label: function(context) {
                                     if (context.dataset.label === 'Share Price') {
                                         return `Price: ${context.parsed.y.toFixed(8)}`;
-                                    } else if (context.dataset.label.includes('APR') || context.dataset.label.includes('APY') || context.dataset.label.includes('Avg')) {
+                                    } else if (context.dataset.label.includes('APR') || context.dataset.label.includes('APY')) {
                                         return context.parsed.y !== null ? `${context.dataset.label}: ${context.parsed.y.toFixed(2)}%` : null;
                                     }
-                                    return null;
                                 },
                                 afterLabel: function(context) {
-                                    if (context.dataset.label !== 'Share Price') return [];
                                     const snap = filteredSnapshots[context.dataIndex];
-                                    if (!snap) return [];
                                     const lines = [];
-                                    const ranges = ['1h', '3h', '6h', '24h', '7d', '30d'];
+                                    const ranges = ['6h', '12h', '24h', '3d', '7d', '14d', '30d'];
                                     ranges.forEach(r => {
                                         const key = `apr_${r}`;
                                         if (snap[key] != null) {
                                             lines.push(`${r} APR: ${snap[key].toFixed(2)}%`);
                                         }
                                     });
-                                    return lines.length > 0 ? ['', ...lines] : [];
+                                    return lines.length > 0 && context.dataset.label === 'Share Price' ? ['\n', ...lines] : [];
                                 }
                             }
                         }
@@ -2084,348 +1012,60 @@
             const tokenData = allData.tokens[tokenId];
             if (!tokenData) return;
 
-            let csv = 'Timestamp,Price,1h APR,3h APR,6h APR,12h APR,24h APR,3d APR,7d APR,14d APR,21d APR,30d APR\n';
+            let csv = 'Timestamp,Price,6h APR,12h APR,24h APR,3d APR,7d APR,14d APR,30d APR\n';
 
             tokenData.snapshots.forEach(snap => {
                 const timestamp = new Date(snap.timestamp).toISOString();
                 csv += `${timestamp},${snap.price},`;
-                csv += `${snap.apr_1h || ''},${snap.apr_3h || ''},${snap.apr_6h || ''},${snap.apr_12h || ''},`;
-                csv += `${snap.apr_24h || ''},${snap.apr_3d || ''},${snap.apr_7d || ''},${snap.apr_14d || ''},`;
-                csv += `${snap.apr_21d || ''},${snap.apr_30d || ''}\n`;
+                csv += `${snap.apr_6h || ''},${snap.apr_12h || ''},${snap.apr_24h || ''},`;
+                csv += `${snap.apr_3d || ''},${snap.apr_7d || ''},${snap.apr_14d || ''},${snap.apr_30d || ''}\n`;
             });
 
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${tokenData.symbol}-yield-data.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
+            downloadCSV(csv, `${tokenData.symbol}-yield-data.csv`);
         }
 
         function exportAllToCSV() {
-            if (!allData?.tokens) return;
-            
-            let csv = 'Token,Symbol,Protocol,Price,APR_1h,APR_24h,APR_7d,APR_30d,Timestamp\n';
-            
+            if (!allData) return;
+
+            let csv = 'Token,Symbol,Protocol,Chain,Timestamp,Price,6h APR,12h APR,24h APR,3d APR,7d APR,14d APR,30d APR,Advertised APY,Delta\n';
+
             for (const [tokenId, tokenData] of Object.entries(allData.tokens)) {
-                const latest = tokenData.snapshots[tokenData.snapshots.length - 1];
-                if (!latest) continue;
-                csv += `"${tokenData.name}","${tokenData.symbol}","${tokenData.protocol}",${latest.price},${latest.apr_1h || ''},${latest.apr_24h || ''},${latest.apr_7d || ''},${latest.apr_30d || ''},${new Date(latest.timestamp).toISOString()}\n`;
+                const advertised = advertisedAPY[tokenData.symbol] || '';
+                tokenData.snapshots.forEach(snap => {
+                    const timestamp = new Date(snap.timestamp).toISOString();
+                    const delta = advertised && snap.apr_30d !== null ? (snap.apr_30d - advertised).toFixed(2) : '';
+                    csv += `${tokenData.name},${tokenData.symbol},${tokenData.protocol},${tokenData.chain},${timestamp},${snap.price},`;
+                    csv += `${snap.apr_6h || ''},${snap.apr_12h || ''},${snap.apr_24h || ''},`;
+                    csv += `${snap.apr_3d || ''},${snap.apr_7d || ''},${snap.apr_14d || ''},${snap.apr_30d || ''},`;
+                    csv += `${advertised},${delta}\n`;
+                });
             }
 
+            downloadCSV(csv, `all-yield-data-${Date.now()}.csv`);
+        }
+
+        function downloadCSV(csv, filename) {
             const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
+            const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `yield-data-${new Date().toISOString().split('T')[0]}.csv`;
+            a.download = filename;
+            document.body.appendChild(a);
             a.click();
-            URL.revokeObjectURL(url);
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
         }
 
-        // Copy APR to clipboard
-        function copyAPR(value, event) {
-            event.stopPropagation();
-            if (value === '—') return;
-            
-            navigator.clipboard.writeText(value).then(() => {
-                showCopyToast('Copied!');
-            }).catch(err => {
-                console.error('Copy failed:', err);
-            });
-        }
-
-        function showCopyToast(message) {
-            let toast = document.getElementById('copy-toast');
-            if (!toast) {
-                toast = document.createElement('div');
-                toast.id = 'copy-toast';
-                toast.className = 'copy-toast';
-                document.body.appendChild(toast);
-            }
-            
-            toast.textContent = message;
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 1500);
-        }
-
-        // Theme toggle
-        function toggleTheme() {
-            const html = document.documentElement;
-            const isLight = html.getAttribute('data-theme') === 'light';
-            if (isLight) {
-                html.removeAttribute('data-theme');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                html.setAttribute('data-theme', 'light');
-                localStorage.setItem('theme', 'light');
-            }
-            // Update chart colors if charts exist
-            updateChartTheme();
-        }
-
-        function updateChartTheme() {
-            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-            const gridColor = isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.06)';
-            const textColor = isLight ? '#737373' : '#71717a';
-            const tooltipBg = isLight ? '#ffffff' : '#18181b';
-            const tooltipTitle = isLight ? '#374151' : '#fafafa';
-            const tooltipBody = isLight ? '#6b7280' : '#a1a1aa';
-            const tooltipBorder = isLight ? '#e5e7eb' : '#27272a';
-            
-            Object.values(charts).forEach(chart => {
-                if (chart && chart.options) {
-                    // Update scale colors
-                    chart.options.scales.x.grid.color = gridColor;
-                    chart.options.scales.y.grid.color = gridColor;
-                    chart.options.scales.x.ticks.color = textColor;
-                    chart.options.scales.y.ticks.color = textColor;
-                    if (chart.options.scales.y.title) {
-                        chart.options.scales.y.title.color = textColor;
-                    }
-                    
-                    // Update y1 axis if it exists (APR axis)
-                    if (chart.options.scales.y1) {
-                        chart.options.scales.y1.ticks.color = '#0d9488';
-                        chart.options.scales.y1.title.color = '#0d9488';
-                    }
-                    
-                    // Update tooltip colors
-                    if (chart.options.plugins.tooltip) {
-                        chart.options.plugins.tooltip.backgroundColor = tooltipBg;
-                        chart.options.plugins.tooltip.titleColor = tooltipTitle;
-                        chart.options.plugins.tooltip.bodyColor = tooltipBody;
-                        chart.options.plugins.tooltip.borderColor = tooltipBorder;
-                    }
-                    
-                    // Update legend colors
-                    if (chart.options.plugins.legend && chart.options.plugins.legend.labels) {
-                        chart.options.plugins.legend.labels.color = textColor;
-                    }
-                    
-                    chart.update('none');
-                }
-            });
-        }
-
-        // Initialize theme from localStorage
-        (function initTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            // Default to light mode unless explicitly set to dark
-            if (savedTheme !== 'dark') {
-                document.documentElement.setAttribute('data-theme', 'light');
-            }
-        })();
-
-        // Toggle all sections
-        function toggleAllSections() {
-            const sections = document.querySelectorAll('[id^="section-"]');
-            const chevrons = document.querySelectorAll('[id^="chevron-"]');
-            const btn = document.getElementById('collapse-all-btn');
-            const text = document.getElementById('collapse-text');
-            const icon = document.getElementById('collapse-icon');
-            
-            // Determine if we should expand or collapse (based on majority state)
-            const expandedCount = Object.values(expandedSections).filter(v => v).length;
-            const totalCount = Object.keys(expandedSections).length;
-            const shouldCollapse = expandedCount > totalCount / 2;
-            
-            sections.forEach(section => {
-                const protocol = section.id.replace('section-', '').replace(/-/g, ' ');
-                // Find the exact protocol name in expandedSections
-                const protocolKey = Object.keys(expandedSections).find(p => 
-                    p.replace(/\s+/g, '-').toLowerCase() === section.id.replace('section-', '').toLowerCase()
-                );
-                
-                if (shouldCollapse) {
-                    section.classList.add('hidden');
-                    if (protocolKey) expandedSections[protocolKey] = false;
-                } else {
-                    section.classList.remove('hidden');
-                    if (protocolKey) expandedSections[protocolKey] = true;
-                }
-            });
-            
-            chevrons.forEach(chevron => {
-                if (shouldCollapse) {
-                    chevron.classList.remove('rotate-180');
-                } else {
-                    chevron.classList.add('rotate-180');
-                }
-            });
-            
-            // Update button text and icon
-            if (shouldCollapse) {
-                text.textContent = 'Expand All';
-                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />';
-            } else {
-                text.textContent = 'Collapse All';
-                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />';
-            }
-        }
-
-        // Search functionality
-        let searchDebounceTimer = null;
-        const searchInput = document.getElementById('search-input');
-        const searchClear = document.getElementById('search-clear');
-        const searchShortcut = document.getElementById('search-shortcut');
-
-        function debounce(fn, delay) {
-            return function(...args) {
-                clearTimeout(searchDebounceTimer);
-                searchDebounceTimer = setTimeout(() => fn.apply(this, args), delay);
-            };
-        }
-
-        function filterTokens(query) {
-            const normalizedQuery = query.toLowerCase().trim();
-            const content = document.getElementById('content');
-            if (!content || !allData?.tokens) return;
-
-            const protocolSections = content.querySelectorAll('.protocol-section');
-
-            protocolSections.forEach(section => {
-                const tokenCards = section.querySelectorAll('.token-card');
-                let visibleCount = 0;
-
-                tokenCards.forEach(card => {
-                    const tokenId = card.id.replace('token-card-', '');
-                    const tokenData = allData.tokens[tokenId];
-                    
-                    if (!tokenData) {
-                        card.classList.add('search-hidden');
-                        return;
-                    }
-
-                    const symbol = (tokenData.symbol || '').toLowerCase();
-                    const name = (tokenData.name || '').toLowerCase();
-                    
-                    if (!normalizedQuery || symbol.includes(normalizedQuery) || name.includes(normalizedQuery)) {
-                        card.classList.remove('search-hidden');
-                        visibleCount++;
-                    } else {
-                        card.classList.add('search-hidden');
-                    }
-                });
-
-                // Hide protocol section if no visible tokens
-                if (visibleCount === 0 && normalizedQuery) {
-                    section.classList.add('search-hidden');
-                } else {
-                    section.classList.remove('search-hidden');
-                }
-            });
-
-            // Also filter heatmap if query is active
-            filterHeatmap(normalizedQuery);
-        }
-
-        function filterHeatmap(query) {
-            const heatmapSection = document.getElementById('heatmap-section');
-            if (!heatmapSection || !allData?.tokens) return;
-
-            const cells = heatmapSection.querySelectorAll('.heatmap-cell');
-            let visibleCount = 0;
-
-            cells.forEach(cell => {
-                const symbolEl = cell.querySelector('.heatmap-symbol span');
-                const symbol = symbolEl ? symbolEl.textContent.toLowerCase() : '';
-                
-                // Find matching token for name search
-                let matchesName = false;
-                for (const tokenData of Object.values(allData.tokens)) {
-                    if (tokenData.symbol.toLowerCase() === symbol) {
-                        matchesName = (tokenData.name || '').toLowerCase().includes(query);
-                        break;
-                    }
-                }
-
-                if (!query || symbol.includes(query) || matchesName) {
-                    cell.style.display = '';
-                    visibleCount++;
-                } else {
-                    cell.style.display = 'none';
-                }
-            });
-
-            // Update heatmap count
-            const countEl = document.getElementById('heatmap-count');
-            if (countEl) {
-                const total = cells.length;
-                if (query && visibleCount < total) {
-                    countEl.textContent = `${visibleCount}/${total} tokens`;
-                } else {
-                    countEl.textContent = `${total} tokens`;
-                }
-            }
-        }
-
-        const debouncedFilter = debounce(filterTokens, 150);
-
-        function handleSearchInput(e) {
-            const query = e.target.value;
-            
-            // Show/hide clear button and shortcut hint
-            if (query.length > 0) {
-                searchClear.classList.add('visible');
-                searchShortcut.classList.add('hidden');
-            } else {
-                searchClear.classList.remove('visible');
-                searchShortcut.classList.remove('hidden');
-            }
-
-            debouncedFilter(query);
-        }
-
-        function clearSearch() {
-            searchInput.value = '';
-            searchClear.classList.remove('visible');
-            searchShortcut.classList.remove('hidden');
-            filterTokens('');
-            searchInput.blur();
-        }
-
-        function focusSearch() {
-            searchInput.focus();
-            searchShortcut.classList.add('hidden');
-        }
-
-        // Event listeners
-        searchInput.addEventListener('input', handleSearchInput);
-
-        searchInput.addEventListener('focus', () => {
-            searchShortcut.classList.add('hidden');
-        });
-
-        searchInput.addEventListener('blur', () => {
-            if (!searchInput.value) {
-                searchShortcut.classList.remove('hidden');
-            }
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            // "/" to focus search (when not in an input)
-            if (e.key === '/' && document.activeElement !== searchInput && 
-                !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
-                e.preventDefault();
-                focusSearch();
-            }
-            
-            // Escape to clear and blur
-            if (e.key === 'Escape' && document.activeElement === searchInput) {
-                e.preventDefault();
-                clearSearch();
-            }
-        });
-
-        // Initialize
         loadData();
-        setInterval(loadData, 600000);
+        setInterval(loadData, 5 * 60 * 1000);
+
+        window.addEventListener('error', (event) => {
+            ErrorBoundary.showError(event.error || event.message, 'Global error');
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            ErrorBoundary.showError(event.reason, 'Unhandled promise rejection');
+        });
     </script>
 </body>
 </html>
-<!-- deployed 2026-02-22T03:42:12Z -->
