@@ -411,6 +411,19 @@
             font-weight: 700;
             letter-spacing: -0.02em;
         }
+        
+        @media (max-width: 640px) {
+            .apr-display {
+                font-size: 22px;
+            }
+        }
+        
+        /* Mobile-specific overrides */
+        @media (max-width: 640px) {
+            .time-selector {
+                width: 100%;
+            }
+        }
 
         /* Subtle divider */
         .divider {
@@ -612,66 +625,66 @@
         </section>
 
         <!-- Error State -->
-        <div id="error-container" class="hidden mb-8 p-5 bg-red-500/10 border border-red-500/20 rounded-xl animate-in">
-            <div class="flex items-start gap-4">
-                <div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div id="error-container" class="hidden mb-4 sm:mb-6 md:mb-8 p-3 sm:p-4 md:p-5 bg-red-500/10 border border-red-500/20 rounded-lg sm:rounded-xl animate-in">
+            <div class="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                 </div>
-                <div class="flex-1">
+                <div class="flex-1 min-w-0">
                     <h3 class="text-sm font-semibold text-red-400 mb-1">Connection Error</h3>
-                    <p class="text-sm text-red-400/80" id="error-message"></p>
+                    <p class="text-xs sm:text-sm text-red-400/80 break-words" id="error-message"></p>
                 </div>
-                <button onclick="retryLoad()" class="px-4 py-2 text-sm font-medium text-red-400 hover:text-red-300 border border-red-500/30 rounded-lg hover:bg-red-500/10 transition-colors">
+                <button onclick="retryLoad()" class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-red-400 hover:text-red-300 border border-red-500/30 rounded-lg hover:bg-red-500/10 transition-colors min-h-[44px]">
                     Retry
                 </button>
             </div>
         </div>
 
         <!-- Loading State -->
-        <div id="loading" class="space-y-6">
+        <div id="loading" class="space-y-4 sm:space-y-6">
             <div class="protocol-section animate-in">
-                <div class="protocol-header p-5">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl loading-skeleton"></div>
+                <div class="protocol-header p-3 sm:p-4 md:p-5">
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl loading-skeleton"></div>
                         <div>
-                            <div class="h-5 w-40 loading-skeleton rounded mb-2"></div>
-                            <div class="h-4 w-24 loading-skeleton rounded"></div>
+                            <div class="h-4 sm:h-5 w-32 sm:w-40 loading-skeleton rounded mb-2"></div>
+                            <div class="h-3 sm:h-4 w-20 sm:w-24 loading-skeleton rounded"></div>
                         </div>
                     </div>
                 </div>
-                <div class="p-5">
-                    <div class="h-80 loading-skeleton rounded-xl"></div>
+                <div class="p-3 sm:p-4 md:p-5">
+                    <div class="h-60 sm:h-72 md:h-80 loading-skeleton rounded-lg sm:rounded-xl"></div>
                 </div>
             </div>
         </div>
 
         <!-- Empty State -->
-        <div id="empty-state" class="hidden py-32 animate-in">
-            <div class="text-center max-w-md mx-auto">
-                <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-zinc-800/50 flex items-center justify-center">
-                    <svg class="w-10 h-10 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div id="empty-state" class="hidden py-16 sm:py-24 md:py-32 animate-in">
+            <div class="text-center max-w-md mx-auto px-4">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 rounded-xl sm:rounded-2xl bg-zinc-800/50 flex items-center justify-center">
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                     </svg>
                 </div>
-                <h3 class="text-xl font-semibold text-zinc-300 mb-2">Awaiting Data</h3>
-                <p class="text-zinc-500">Snapshot collection in progress. Data will appear shortly.</p>
+                <h3 class="text-lg sm:text-xl font-semibold text-zinc-300 mb-2">Awaiting Data</h3>
+                <p class="text-sm sm:text-base text-zinc-500">Snapshot collection in progress. Data will appear shortly.</p>
             </div>
         </div>
 
         <!-- Main Content -->
-        <div id="content" class="hidden space-y-5">
+        <div id="content" class="hidden space-y-3 sm:space-y-4 md:space-y-5">
             <!-- Protocol sections will be inserted here -->
         </div>
 
         <!-- Footer -->
-        <footer class="mt-16 pt-8 border-t border-zinc-800/50">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="text-zinc-600 text-sm">
+        <footer class="mt-8 sm:mt-12 md:mt-16 pt-6 sm:pt-8 border-t border-zinc-800/50">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4">
+                <div class="text-zinc-600 text-xs sm:text-sm text-center sm:text-left">
                     Data sourced directly from on-chain smart contracts
                 </div>
-                <div class="text-zinc-600 text-sm font-mono">
+                <div class="text-zinc-600 text-xs sm:text-sm font-mono">
                     Refresh interval: 10 minutes
                 </div>
             </div>
@@ -1035,45 +1048,45 @@
             const aprClass = apr7d > 0 ? 'positive' : apr7d < 0 ? 'negative' : '';
 
             card.innerHTML = `
-                <div class="p-5">
-                    <div class="flex items-start justify-between mb-5">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold" style="background: ${branding.color}20; color: ${branding.color};">
+                <div class="p-3 sm:p-4 md:p-5">
+                    <div class="flex items-start justify-between mb-3 sm:mb-4 md:mb-5">
+                        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-base sm:text-lg font-bold flex-shrink-0" style="background: ${branding.color}20; color: ${branding.color};">
                                 ${tokenData.symbol.charAt(0)}
                             </div>
-                            <div>
-                                <h3 class="font-semibold text-white">${tokenData.symbol}</h3>
-                                <p class="text-xs text-zinc-500">${tokenData.name}</p>
+                            <div class="min-w-0">
+                                <h3 class="font-semibold text-white text-sm sm:text-base truncate">${tokenData.symbol}</h3>
+                                <p class="text-xs text-zinc-500 truncate">${tokenData.name}</p>
                             </div>
                         </div>
                         ${deltaHTML}
                     </div>
                     
-                    <div class="grid grid-cols-3 gap-3 mb-5">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-5">
                         <div class="data-cell">
                             <div class="data-label">7D APR</div>
-                            <div class="data-value ${aprClass} font-mono text-xl">${formatPercent(apr7d)}</div>
+                            <div class="data-value ${aprClass} font-mono text-base sm:text-lg md:text-xl">${formatPercent(apr7d)}</div>
                         </div>
                         <div class="data-cell">
                             <div class="data-label">24H APR</div>
-                            <div class="data-value font-mono text-xl">${formatPercent(apr24h)}</div>
+                            <div class="data-value font-mono text-base sm:text-lg md:text-xl">${formatPercent(apr24h)}</div>
                         </div>
-                        <div class="data-cell">
+                        <div class="data-cell col-span-2 sm:col-span-1">
                             <div class="data-label">Price</div>
-                            <div class="data-value font-mono text-xl">${formatNumber(latest.price, latest.price > 10 ? 2 : 6)}</div>
+                            <div class="data-value font-mono text-base sm:text-lg md:text-xl">${formatNumber(latest.price, latest.price > 10 ? 2 : 6)}</div>
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="time-selector" id="time-selector-${tokenId}">
-                            <button class="time-btn ${timeRanges[tokenId] === '24h' ? 'active' : ''}" onclick="setTimeRange('${tokenId}', '24h')">24H</button>
-                            <button class="time-btn ${timeRanges[tokenId] === '7d' || !timeRanges[tokenId] ? 'active' : ''}" onclick="setTimeRange('${tokenId}', '7d')">7D</button>
-                            <button class="time-btn ${timeRanges[tokenId] === '14d' ? 'active' : ''}" onclick="setTimeRange('${tokenId}', '14d')">14D</button>
-                            <button class="time-btn ${timeRanges[tokenId] === '30d' ? 'active' : ''}" onclick="setTimeRange('${tokenId}', '30d')">30D</button>
+                    <div class="flex items-center justify-between mb-3 sm:mb-4">
+                        <div class="time-selector flex-1 sm:flex-none" id="time-selector-${tokenId}">
+                            <button class="time-btn flex-1 sm:flex-none ${timeRanges[tokenId] === '24h' ? 'active' : ''}" onclick="setTimeRange('${tokenId}', '24h')">24H</button>
+                            <button class="time-btn flex-1 sm:flex-none ${timeRanges[tokenId] === '7d' || !timeRanges[tokenId] ? 'active' : ''}" onclick="setTimeRange('${tokenId}', '7d')">7D</button>
+                            <button class="time-btn flex-1 sm:flex-none ${timeRanges[tokenId] === '14d' ? 'active' : ''}" onclick="setTimeRange('${tokenId}', '14d')">14D</button>
+                            <button class="time-btn flex-1 sm:flex-none ${timeRanges[tokenId] === '30d' ? 'active' : ''}" onclick="setTimeRange('${tokenId}', '30d')">30D</button>
                         </div>
                     </div>
 
-                    <div class="chart-container" style="height: 200px;">
+                    <div class="chart-container" style="height: 160px;">
                         <canvas id="chart-${tokenId}"></canvas>
                     </div>
                 </div>
