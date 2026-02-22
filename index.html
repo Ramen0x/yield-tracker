@@ -432,6 +432,32 @@
             margin: 0;
         }
 
+        /* Contract link button */
+        .contract-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-tertiary);
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .contract-link:hover {
+            background: var(--bg-elevated);
+            border-color: var(--border-default);
+            color: var(--text-secondary);
+            transform: translateY(-1px);
+        }
+
+        .contract-link:active {
+            transform: translateY(0);
+        }
+
         /* Yield Heatmap */
         .heatmap-section {
             background: var(--bg-secondary);
@@ -725,6 +751,23 @@
             'Avant': '3d',
             'Superstate': '7d'
         };
+
+        const blockExplorers = {
+            'ethereum': 'https://etherscan.io/address/',
+            'avalanche': 'https://snowtrace.io/address/',
+            'plasma': 'https://plasma-explorer.com/address/',
+            'arbitrum': 'https://arbiscan.io/address/',
+            'optimism': 'https://optimistic.etherscan.io/address/',
+            'polygon': 'https://polygonscan.com/address/',
+            'base': 'https://basescan.org/address/'
+        };
+
+        function getExplorerUrl(chain, address) {
+            if (!address) return null;
+            const chainLower = (chain || 'ethereum').toLowerCase();
+            const baseUrl = blockExplorers[chainLower] || blockExplorers['ethereum'];
+            return baseUrl + address;
+        }
 
         const protocolCategories = {
             'Ethena': 'Basis Trading',
@@ -1045,6 +1088,17 @@
                 deltaHTML = `<span class="delta-badge ${deltaClass} font-mono">${delta > 0 ? '+' : ''}${formatNumber(delta, 2)}%</span>`;
             }
 
+            // Contract link button
+            const explorerUrl = getExplorerUrl(tokenData.chain, tokenData.address);
+            const contractLinkHTML = explorerUrl ? `
+                <a href="${explorerUrl}" target="_blank" rel="noopener noreferrer" 
+                   class="contract-link" title="View contract on ${(tokenData.chain || 'Ethereum').charAt(0).toUpperCase() + (tokenData.chain || 'ethereum').slice(1)}">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+            ` : '';
+
             const aprClass = apr7d > 0 ? 'positive' : apr7d < 0 ? 'negative' : '';
 
             card.innerHTML = `
@@ -1059,7 +1113,10 @@
                                 <p class="text-xs text-zinc-500 truncate">${tokenData.name}</p>
                             </div>
                         </div>
-                        ${deltaHTML}
+                        <div class="flex items-center gap-2">
+                            ${deltaHTML}
+                            ${contractLinkHTML}
+                        </div>
                     </div>
                     
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-5">
