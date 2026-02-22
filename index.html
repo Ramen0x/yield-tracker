@@ -779,28 +779,36 @@
                     : null;
                 
                 // Fallback cascade: try longer timeframes from latest snapshot
+                // Skip zero/near-zero values for slow-updating tokens (RWA, etc)
+                const isValidApr = (apr) => apr != null && Math.abs(apr) > 0.01;
+                
                 let currentApr = avg1hAprLast24h;
                 let timeframe = '1h avg';
                 
-                if (currentApr == null && latest.apr_24h != null) {
+                if (!isValidApr(currentApr) && isValidApr(latest.apr_24h)) {
                     currentApr = latest.apr_24h;
                     timeframe = '24h';
                 }
-                if (currentApr == null && latest.apr_3d != null) {
+                if (!isValidApr(currentApr) && isValidApr(latest.apr_3d)) {
                     currentApr = latest.apr_3d;
                     timeframe = '3d';
                 }
-                if (currentApr == null && latest.apr_7d != null) {
+                if (!isValidApr(currentApr) && isValidApr(latest.apr_7d)) {
                     currentApr = latest.apr_7d;
                     timeframe = '7d';
                 }
-                if (currentApr == null && latest.apr_14d != null) {
+                if (!isValidApr(currentApr) && isValidApr(latest.apr_14d)) {
                     currentApr = latest.apr_14d;
                     timeframe = '14d';
                 }
-                if (currentApr == null && latest.apr_30d != null) {
+                if (!isValidApr(currentApr) && isValidApr(latest.apr_30d)) {
                     currentApr = latest.apr_30d;
                     timeframe = '30d';
+                }
+                // If still no valid APR, use whatever we have (even 0)
+                if (currentApr == null) {
+                    currentApr = latest.apr_30d ?? latest.apr_7d ?? latest.apr_24h ?? 0;
+                    timeframe = '—';
                 }
                 
                 // Only calculate change if we have the primary 1h avg method
