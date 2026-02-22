@@ -684,6 +684,17 @@
             }
         }
 
+        // Heatmap color function for APR values
+        function getHeatmapColor(apr) {
+            if (apr === null || apr === undefined || isNaN(apr)) return { bg: '#f3f4f6', text: '#6b7280' };
+            if (apr < 0) return { bg: '#fef2f2', border: '#fecaca', text: '#dc2626' };
+            if (apr < 2) return { bg: '#fff7ed', border: '#fed7aa', text: '#c2410c' };
+            if (apr < 4) return { bg: '#fefce8', border: '#fef08a', text: '#a16207' };
+            if (apr < 6) return { bg: '#f0fdf4', border: '#bbf7d0', text: '#15803d' };
+            if (apr < 10) return { bg: '#ecfdf5', border: '#6ee7b7', text: '#059669' };
+            return { bg: '#d1fae5', border: '#34d399', text: '#047857' };
+        }
+
         function renderComparisonSection() {
             const grid = document.getElementById('comparison-grid');
             const section = document.getElementById('comparison-section');
@@ -699,19 +710,21 @@
                 const prevApr = snapshot24hAgo.apr_24h;
                 const change = currentApr != null && prevApr != null ? currentApr - prevApr : null;
                 return { symbol: data.symbol, currentApr, prevApr, change };
-            }).filter(Boolean).sort((a, b) => (b.change || 0) - (a.change || 0));
+            }).filter(Boolean).sort((a, b) => (b.currentApr || 0) - (a.currentApr || 0));
             
             grid.innerHTML = comparisons.map(c => {
-                const changeClass = c.change > 0 ? 'text-emerald-600' : c.change < 0 ? 'text-red-500' : 'text-gray-400';
+                const colors = getHeatmapColor(c.currentApr);
                 const changeIcon = c.change > 0 ? '↑' : c.change < 0 ? '↓' : '→';
+                const changeColor = c.change > 0 ? '#059669' : c.change < 0 ? '#dc2626' : '#6b7280';
                 return `
-                    <div class="bg-gray-50 rounded-lg p-3 border border-gray-100">
-                        <div class="font-semibold text-gray-900 text-sm font-mono">${c.symbol}</div>
-                        <div class="flex items-baseline gap-2 mt-1">
-                            <span class="text-lg font-mono font-bold text-gray-800">${c.currentApr?.toFixed(2) || '—'}%</span>
-                            <span class="text-xs ${changeClass} font-medium">${changeIcon} ${c.change != null ? Math.abs(c.change).toFixed(2) : '—'}%</span>
+                    <div class="rounded-lg p-3 transition-all hover:scale-[1.02] cursor-default" 
+                         style="background: ${colors.bg}; border: 1px solid ${colors.border || '#e5e7eb'};">
+                        <div class="font-semibold text-sm font-mono" style="color: ${colors.text}">${c.symbol}</div>
+                        <div class="text-2xl font-mono font-bold mt-1" style="color: ${colors.text}">${c.currentApr?.toFixed(2) || '—'}%</div>
+                        <div class="flex items-center gap-1 mt-1">
+                            <span class="text-xs font-medium" style="color: ${changeColor}">${changeIcon} ${c.change != null ? Math.abs(c.change).toFixed(2) : '—'}%</span>
+                            <span class="text-xs text-gray-400">vs 24h ago</span>
                         </div>
-                        <div class="text-xs text-gray-400 mt-1">was ${c.prevApr?.toFixed(2) || '—'}%</div>
                     </div>
                 `;
             }).join('');
