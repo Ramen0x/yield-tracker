@@ -15,6 +15,39 @@
             font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            --bg-primary: #f9fafb;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f3f4f6;
+            --bg-hover: #f3f4f6;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --border-primary: #e5e7eb;
+            --border-secondary: #d1d5db;
+            --card-bg: #ffffff;
+            --card-border: #e5e7eb;
+            --skeleton-from: #f3f4f6;
+            --skeleton-via: #e5e7eb;
+            --chart-grid: rgba(229, 231, 235, 0.8);
+            --chart-grid-light: rgba(229, 231, 235, 0.5);
+        }
+
+        .dark {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --bg-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --border-primary: #334155;
+            --border-secondary: #475569;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --skeleton-from: #334155;
+            --skeleton-via: #475569;
+            --chart-grid: rgba(71, 85, 105, 0.5);
+            --chart-grid-light: rgba(71, 85, 105, 0.3);
         }
 
         .font-mono, .tabular-nums {
@@ -26,6 +59,125 @@
             0% { background-position: -1000px 0; }
             100% { background-position: 1000px 0; }
         }
+
+        /* Dark mode overrides */
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .dark .card {
+            background: var(--card-bg);
+            border-color: var(--card-border);
+        }
+
+        .dark .protocol-header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-bottom-color: var(--border-primary);
+        }
+
+        .dark .protocol-header:hover {
+            background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+        }
+
+        .dark .protocol-name {
+            color: var(--text-primary);
+        }
+
+        .dark .protocol-badge {
+            background: var(--bg-tertiary);
+            border-color: var(--border-primary);
+            color: var(--text-secondary);
+        }
+
+        .dark .token-pill {
+            background: var(--bg-tertiary);
+            border-color: var(--border-primary);
+            color: var(--text-primary);
+        }
+
+        .dark .expand-indicator {
+            background: var(--bg-tertiary);
+            border-color: var(--border-primary);
+        }
+
+        .dark .time-range-button {
+            color: var(--text-secondary);
+        }
+
+        .dark .time-range-button:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .dark .loading-skeleton {
+            background: linear-gradient(90deg, var(--skeleton-from) 0%, var(--skeleton-via) 50%, var(--skeleton-from) 100%);
+        }
+
+        .dark .bg-white {
+            background-color: var(--card-bg) !important;
+        }
+
+        .dark .bg-gray-50 {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        .dark .border-gray-100,
+        .dark .border-gray-200 {
+            border-color: var(--border-primary) !important;
+        }
+
+        .dark .text-gray-900 {
+            color: var(--text-primary) !important;
+        }
+
+        .dark .text-gray-700,
+        .dark .text-gray-600 {
+            color: var(--text-secondary) !important;
+        }
+
+        .dark .text-gray-500,
+        .dark .text-gray-400 {
+            color: var(--text-tertiary) !important;
+        }
+
+        .dark #methodology-section .card {
+            background: var(--card-bg);
+        }
+
+        .dark .font-mono.bg-gray-50 {
+            background: var(--bg-tertiary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        /* Dark mode toggle button */
+        .theme-toggle {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .theme-toggle svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: var(--text-secondary);
+        }
+
+        .dark .theme-toggle .sun-icon { display: block; }
+        .dark .theme-toggle .moon-icon { display: none; }
+        .theme-toggle .sun-icon { display: none; }
+        .theme-toggle .moon-icon { display: block; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -238,7 +390,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 min-h-screen">
+<body class="min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-[1800px]">
         <!-- Header -->
         <header class="mb-8 animate-fade-in">
@@ -250,6 +402,19 @@
                     <p class="text-gray-500 text-sm">Real APY calculated from on-chain price snapshots vs advertised rates</p>
                 </div>
                 <div class="flex items-center gap-3">
+                    <button
+                        id="theme-toggle"
+                        class="theme-toggle"
+                        onclick="toggleTheme()"
+                        title="Toggle dark mode"
+                    >
+                        <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <svg class="moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </button>
                     <button
                         id="collapse-all-btn"
                         class="px-4 py-2 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors flex items-center gap-2 shadow-sm"
@@ -381,6 +546,33 @@
     </div>
 
     <script>
+        // Dark mode handling
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        }
+        
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            
+            // Update charts if they exist (rerender with new colors)
+            if (allData && allData.tokens) {
+                Object.keys(charts).forEach(tokenId => {
+                    if (allData.tokens[tokenId]) {
+                        createChart(tokenId, allData.tokens[tokenId]);
+                    }
+                });
+            }
+        }
+        
+        // Initialize theme immediately
+        initTheme();
+
         // Error Boundary
         class ErrorBoundary {
             static showError(error, context = '') {
@@ -1244,6 +1436,12 @@
                 yAxisID: 'y'
             }];
 
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            const gridColor = isDarkMode ? 'rgba(71, 85, 105, 0.5)' : 'rgba(229, 231, 235, 0.8)';
+            const gridColorLight = isDarkMode ? 'rgba(71, 85, 105, 0.3)' : 'rgba(229, 231, 235, 0.5)';
+            const tickColor = isDarkMode ? '#94a3b8' : '#6b7280';
+            const tickColorLight = isDarkMode ? '#64748b' : '#9ca3af';
+
             const scales = {
                 y: {
                     type: 'linear',
@@ -1251,11 +1449,11 @@
                     min: minPrice - padding,
                     max: maxPrice + padding,
                     grid: {
-                        color: 'rgba(229, 231, 235, 0.8)',
+                        color: gridColor,
                         drawBorder: false
                     },
                     ticks: {
-                        color: '#6b7280',
+                        color: tickColor,
                         font: { family: 'Space Mono', size: 10 },
                         maxTicksLimit: 6,
                         callback: function(value) {
@@ -1265,7 +1463,7 @@
                     title: {
                         display: mode === 'dual',
                         text: 'Price',
-                        color: '#6b7280',
+                        color: tickColor,
                         font: { family: 'Inter', size: 11 }
                     }
                 },
@@ -1280,11 +1478,11 @@
                         }
                     },
                     grid: {
-                        color: 'rgba(229, 231, 235, 0.5)',
+                        color: gridColorLight,
                         drawBorder: false
                     },
                     ticks: {
-                        color: '#9ca3af',
+                        color: tickColorLight,
                         font: { family: 'Inter', size: 10 },
                         maxTicksLimit: 6
                     }
@@ -1389,7 +1587,7 @@
                             position: 'top',
                             align: 'end',
                             labels: {
-                                color: '#374151',
+                                color: isDarkMode ? '#e2e8f0' : '#374151',
                                 usePointStyle: true,
                                 pointStyle: 'circle',
                                 padding: 20,
@@ -1398,6 +1596,7 @@
                                 boxHeight: 10,
                                 generateLabels: function(chart) {
                                     const datasets = chart.data.datasets;
+                                    const isDark = document.documentElement.classList.contains('dark');
                                     return datasets.map((dataset, i) => {
                                         const isVisible = chart.isDatasetVisible(i);
                                         const baseColor = dataset.borderColor;
@@ -1409,7 +1608,7 @@
                                             lineWidth: 2,
                                             hidden: false,  // Never set hidden=true (avoids strikethrough)
                                             index: i,
-                                            fontColor: isVisible ? '#374151' : 'rgba(156, 163, 175, 0.5)',
+                                            fontColor: isVisible ? (isDark ? '#e2e8f0' : '#374151') : 'rgba(156, 163, 175, 0.5)',
                                             pointStyle: 'circle',
                                             datasetIndex: i
                                         };
@@ -1427,10 +1626,10 @@
                             }
                         },
                         tooltip: {
-                            backgroundColor: 'white',
-                            titleColor: '#6b7280',
-                            bodyColor: '#111827',
-                            borderColor: '#e5e7eb',
+                            backgroundColor: isDarkMode ? '#1e293b' : 'white',
+                            titleColor: isDarkMode ? '#94a3b8' : '#6b7280',
+                            bodyColor: isDarkMode ? '#f1f5f9' : '#111827',
+                            borderColor: isDarkMode ? '#334155' : '#e5e7eb',
                             borderWidth: 1,
                             padding: 12,
                             displayColors: true,
