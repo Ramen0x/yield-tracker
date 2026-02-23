@@ -370,6 +370,15 @@
             border-color: #2a4035 !important;
         }
 
+        /* Chart canvas background in dark mode */
+        .dark canvas {
+            background-color: transparent !important;
+        }
+
+        .dark [id^="chart-loading-"] {
+            background-color: #111916 !important;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -1755,6 +1764,13 @@
             datasets.forEach((ds, i) => {
                 if (tokenHidden[i]) ds.hidden = true;
             });
+
+            // Set canvas background for dark mode
+            if (isDarkMode) {
+                ctx.canvas.style.backgroundColor = '#111916';
+            } else {
+                ctx.canvas.style.backgroundColor = 'white';
+            }
 
             charts[tokenId] = new Chart(ctx, {
                 type: 'line',
