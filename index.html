@@ -767,7 +767,7 @@
                     <h2 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">APR Comparison</h2>
                     <span class="text-[10px] text-gray-400">Best APR · timeframe per token</span>
                 </div>
-                <div id="comparison-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
+                <div id="comparison-grid" class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 2xl:grid-cols-14 gap-1.5">
                     <!-- Populated by JS -->
                 </div>
             </div>
@@ -1381,19 +1381,19 @@
                 const changeColor = c.change > 0 ? '#059669' : c.change < 0 ? '#dc2626' : '#6b7280';
                 const showChange = c.change != null;
                 return `
-                    <div class="rounded-md p-2 transition-all hover:scale-[1.02] cursor-default" 
+                    <div class="rounded p-1.5 transition-all hover:scale-[1.02] cursor-default" 
                          style="background: ${colors.bg}; border: 1px solid ${colors.border || '#e5e7eb'};">
-                        <div class="flex items-center justify-between gap-1">
-                            <span class="font-semibold text-xs font-mono truncate" style="color: ${colors.text}">${c.symbol}</span>
-                            <span class="text-[8px] px-1 py-0.5 rounded bg-white/60 text-gray-500 font-medium shrink-0">${c.timeframe}</span>
+                        <div class="flex items-center justify-between gap-0.5">
+                            <span class="font-semibold text-[10px] font-mono truncate" style="color: ${colors.text}">${c.symbol}</span>
+                            <span class="text-[7px] px-0.5 rounded bg-white/60 text-gray-500 font-medium shrink-0">${c.timeframe}</span>
                         </div>
-                        <div class="text-lg font-mono font-bold leading-tight" style="color: ${colors.text}">${c.currentApr?.toFixed(2) || '—'}%</div>
+                        <div class="text-base font-mono font-bold leading-tight" style="color: ${colors.text}">${c.currentApr?.toFixed(2) || '—'}%</div>
                         ${showChange ? `
-                        <div class="flex items-center gap-0.5 mt-0.5">
-                            <span class="text-[10px] font-medium" style="color: ${changeColor}">${changeIcon}${Math.abs(c.change).toFixed(2)}%</span>
-                            <span class="text-[9px] text-gray-400">24h</span>
+                        <div class="flex items-center gap-0.5">
+                            <span class="text-[9px] font-medium" style="color: ${changeColor}">${changeIcon}${Math.abs(c.change).toFixed(2)}%</span>
+                            <span class="text-[8px] text-gray-400">24h</span>
                         </div>
-                        ` : `<div class="text-[9px] text-gray-400 mt-0.5">—</div>`}
+                        ` : `<div class="text-[8px] text-gray-400">—</div>`}
                     </div>
                 `;
             }).join('');
