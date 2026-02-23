@@ -1193,20 +1193,23 @@
             
             grid.innerHTML = comparisons.map(c => {
                 const colors = getHeatmapColor(c.currentApr);
-                const changeIcon = c.change > 0 ? '↑' : c.change < 0 ? '↓' : '';
+                const changeIcon = c.change > 0 ? '↑' : c.change < 0 ? '↓' : '→';
                 const changeColor = c.change > 0 ? '#059669' : c.change < 0 ? '#dc2626' : '#6b7280';
+                const showChange = c.change != null;
                 return `
                     <div class="rounded-md p-2 transition-all hover:scale-[1.02] cursor-default" 
-                         style="background: ${colors.bg}; border: 1px solid ${colors.border || '#e5e7eb'};"
-                         title="${c.symbol} - ${c.timeframe} APR: ${c.currentApr?.toFixed(2)}%${c.change != null ? ` (${c.change > 0 ? '+' : ''}${c.change.toFixed(2)}% vs 24h)` : ''}">
+                         style="background: ${colors.bg}; border: 1px solid ${colors.border || '#e5e7eb'};">
                         <div class="flex items-center justify-between gap-1">
                             <span class="font-semibold text-xs font-mono truncate" style="color: ${colors.text}">${c.symbol}</span>
                             <span class="text-[8px] px-1 py-0.5 rounded bg-white/60 text-gray-500 font-medium shrink-0">${c.timeframe}</span>
                         </div>
-                        <div class="text-lg font-mono font-bold" style="color: ${colors.text}">
-                            ${c.currentApr?.toFixed(1) || '—'}%
-                            ${changeIcon ? `<span class="text-[10px]" style="color: ${changeColor}">${changeIcon}</span>` : ''}
+                        <div class="text-lg font-mono font-bold leading-tight" style="color: ${colors.text}">${c.currentApr?.toFixed(2) || '—'}%</div>
+                        ${showChange ? `
+                        <div class="flex items-center gap-0.5 mt-0.5">
+                            <span class="text-[10px] font-medium" style="color: ${changeColor}">${changeIcon}${Math.abs(c.change).toFixed(2)}%</span>
+                            <span class="text-[9px] text-gray-400">24h</span>
                         </div>
+                        ` : `<div class="text-[9px] text-gray-400 mt-0.5">—</div>`}
                     </div>
                 `;
             }).join('');
