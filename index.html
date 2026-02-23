@@ -33,21 +33,24 @@
         }
 
         .dark {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-tertiary: #334155;
-            --bg-hover: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-tertiary: #64748b;
-            --border-primary: #334155;
-            --border-secondary: #475569;
-            --card-bg: #1e293b;
-            --card-border: #334155;
-            --skeleton-from: #334155;
-            --skeleton-via: #475569;
-            --chart-grid: rgba(71, 85, 105, 0.5);
-            --chart-grid-light: rgba(71, 85, 105, 0.3);
+            --bg-primary: #0a0f0d;
+            --bg-secondary: #111916;
+            --bg-tertiary: #1a2420;
+            --bg-hover: #1f2d27;
+            --text-primary: #e8fff0;
+            --text-secondary: #a3e4b8;
+            --text-tertiary: #5a9c6e;
+            --border-primary: #2a4035;
+            --border-secondary: #3d5c4a;
+            --card-bg: #111916;
+            --card-border: #2a4035;
+            --skeleton-from: #1a2420;
+            --skeleton-via: #2a4035;
+            --chart-grid: rgba(74, 222, 128, 0.15);
+            --chart-grid-light: rgba(74, 222, 128, 0.08);
+            --accent-primary: #4ade80;
+            --accent-secondary: #facc15;
+            --accent-glow: rgba(74, 222, 128, 0.3);
         }
 
         .font-mono, .tabular-nums {
@@ -178,6 +181,136 @@
         .dark .theme-toggle .moon-icon { display: none; }
         .theme-toggle .sun-icon { display: none; }
         .theme-toggle .moon-icon { display: block; }
+
+        /* Yuzu dark mode neon accents */
+        .dark .theme-toggle {
+            border-color: #4ade80;
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.2);
+        }
+
+        .dark .theme-toggle:hover {
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.4);
+        }
+
+        .dark .theme-toggle svg {
+            color: #4ade80;
+        }
+
+        .dark h1 {
+            background: linear-gradient(135deg, #4ade80 0%, #facc15 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .dark .time-range-button.active {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: #0a0f0d;
+            box-shadow: 0 0 12px rgba(74, 222, 128, 0.4);
+        }
+
+        .dark .card {
+            box-shadow: 0 0 20px rgba(74, 222, 128, 0.05);
+        }
+
+        .dark .card:hover {
+            box-shadow: 0 0 25px rgba(74, 222, 128, 0.1);
+        }
+
+        .dark .protocol-header {
+            background: linear-gradient(135deg, #111916 0%, #0a0f0d 100%);
+            border-bottom: 1px solid #2a4035;
+        }
+
+        .dark .protocol-header:hover {
+            background: linear-gradient(135deg, #1a2420 0%, #111916 100%);
+            border-bottom-color: #4ade80;
+        }
+
+        .dark .protocol-name {
+            color: #e8fff0;
+        }
+
+        .dark .protocol-header:hover .protocol-name {
+            color: #4ade80;
+        }
+
+        .dark .expand-indicator {
+            border-color: #2a4035;
+        }
+
+        .dark .protocol-header:hover .expand-indicator {
+            border-color: #4ade80;
+            box-shadow: 0 0 8px rgba(74, 222, 128, 0.3);
+        }
+
+        .dark .expand-indicator svg {
+            color: #4ade80;
+        }
+
+        .dark .delta-positive {
+            color: #4ade80;
+            background: rgba(74, 222, 128, 0.15);
+            border: 1px solid rgba(74, 222, 128, 0.4);
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+
+        .dark .delta-negative {
+            color: #f87171;
+            background: rgba(248, 113, 113, 0.15);
+            border: 1px solid rgba(248, 113, 113, 0.4);
+        }
+
+        .dark #export-all-btn {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: #0a0f0d;
+            box-shadow: 0 0 12px rgba(74, 222, 128, 0.3);
+        }
+
+        .dark #export-all-btn:hover {
+            box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+        }
+
+        .dark #collapse-all-btn {
+            border-color: #2a4035;
+            color: #a3e4b8;
+        }
+
+        .dark #collapse-all-btn:hover {
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.2);
+        }
+
+        .dark .font-mono.text-emerald-600 {
+            color: #4ade80 !important;
+            text-shadow: 0 0 8px rgba(74, 222, 128, 0.5);
+        }
+
+        /* Yuzu yellow accents for special elements */
+        .dark .protocol-badge-dot {
+            box-shadow: 0 0 6px currentColor;
+        }
+
+        .dark .token-pill {
+            border-color: #2a4035;
+            color: #a3e4b8;
+        }
+
+        .dark .token-pill:hover {
+            border-color: #facc15;
+            color: #facc15;
+            box-shadow: 0 0 8px rgba(250, 204, 21, 0.3);
+        }
+
+        /* Scrollbar in dark mode */
+        .dark ::-webkit-scrollbar-thumb {
+            background: #3d5c4a;
+        }
+
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #4ade80;
+        }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -546,12 +679,12 @@
     </div>
 
     <script>
-        // Dark mode handling
+        // Dark mode handling - default to light, remember user choice
         function initTheme() {
             const savedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             
-            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            // Only enable dark mode if user explicitly chose it
+            if (savedTheme === 'dark') {
                 document.documentElement.classList.add('dark');
             }
         }
@@ -1426,8 +1559,8 @@
             const datasets = [{
                 label: 'Share Price',
                 data: prices,
-                borderColor: '#64748b',
-                backgroundColor: 'rgba(99, 102, 241, 0.08)',
+                borderColor: priceLineColor,
+                backgroundColor: isDarkMode ? 'rgba(74, 222, 128, 0.1)' : 'rgba(99, 102, 241, 0.08)',
                 borderWidth: 2,
                 tension: 0.4,
                 fill: true,
@@ -1437,10 +1570,13 @@
             }];
 
             const isDarkMode = document.documentElement.classList.contains('dark');
-            const gridColor = isDarkMode ? 'rgba(71, 85, 105, 0.5)' : 'rgba(229, 231, 235, 0.8)';
-            const gridColorLight = isDarkMode ? 'rgba(71, 85, 105, 0.3)' : 'rgba(229, 231, 235, 0.5)';
-            const tickColor = isDarkMode ? '#94a3b8' : '#6b7280';
-            const tickColorLight = isDarkMode ? '#64748b' : '#9ca3af';
+            const gridColor = isDarkMode ? 'rgba(74, 222, 128, 0.15)' : 'rgba(229, 231, 235, 0.8)';
+            const gridColorLight = isDarkMode ? 'rgba(74, 222, 128, 0.08)' : 'rgba(229, 231, 235, 0.5)';
+            const tickColor = isDarkMode ? '#a3e4b8' : '#6b7280';
+            const tickColorLight = isDarkMode ? '#5a9c6e' : '#9ca3af';
+            const priceLineColor = isDarkMode ? '#4ade80' : '#64748b';
+            const aprLineColor = isDarkMode ? '#facc15' : '#0d9488';
+            const avgLineColor = isDarkMode ? '#f472b6' : '#d97706';
 
             const scales = {
                 y: {
@@ -1504,8 +1640,8 @@
                 datasets.push({
                     label: `${selectedAprTf} ${rateLabel}`,
                     data: aprData,
-                    borderColor: '#0d9488',
-                    backgroundColor: 'rgba(20, 184, 166, 0.08)',
+                    borderColor: aprLineColor,
+                    backgroundColor: isDarkMode ? 'rgba(250, 204, 21, 0.1)' : 'rgba(20, 184, 166, 0.08)',
                     borderWidth: 2,
                     tension: 0.4,
                     fill: false,
@@ -1521,7 +1657,7 @@
                 datasets.push({
                     label: `Avg: ${avgAPR.toFixed(2)}%`,
                     data: avgLineData,
-                    borderColor: '#d97706',
+                    borderColor: avgLineColor,
                     borderWidth: 2,
                     borderDash: [6, 4],
                     tension: 0,
@@ -1542,7 +1678,7 @@
                         drawOnChartArea: false
                     },
                     ticks: {
-                        color: '#0d9488',
+                        color: aprLineColor,
                         font: { family: 'Space Mono', size: 11 },
                         callback: function(value) {
                             return value.toFixed(2) + '%';
@@ -1551,7 +1687,7 @@
                     title: {
                         display: true,
                         text: rateLabel + ' (%)',
-                        color: '#0d9488',
+                        color: aprLineColor,
                         font: { family: 'Inter', size: 11, weight: '500' }
                     }
                 };
