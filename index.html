@@ -577,13 +577,13 @@
         </header>
 
         <!-- APR Comparison Section -->
-        <section id="comparison-section" class="mb-6 hidden animate-fade-in">
-            <div class="card p-4">
-                <div class="flex items-center justify-between mb-3">
-                    <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">APR Comparison</h2>
-                    <span class="text-xs text-gray-400">Best available APR · timeframe shown per token</span>
+        <section id="comparison-section" class="mb-4 hidden animate-fade-in">
+            <div class="card p-3">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">APR Comparison</h2>
+                    <span class="text-[10px] text-gray-400">Best APR · timeframe per token</span>
                 </div>
-                <div id="comparison-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                <div id="comparison-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
                     <!-- Populated by JS -->
                 </div>
             </div>
@@ -1193,23 +1193,20 @@
             
             grid.innerHTML = comparisons.map(c => {
                 const colors = getHeatmapColor(c.currentApr);
-                const changeIcon = c.change > 0 ? '↑' : c.change < 0 ? '↓' : '→';
+                const changeIcon = c.change > 0 ? '↑' : c.change < 0 ? '↓' : '';
                 const changeColor = c.change > 0 ? '#059669' : c.change < 0 ? '#dc2626' : '#6b7280';
-                const showChange = c.change != null;
                 return `
-                    <div class="rounded-lg p-3 transition-all hover:scale-[1.02] cursor-default" 
-                         style="background: ${colors.bg}; border: 1px solid ${colors.border || '#e5e7eb'};">
-                        <div class="flex items-center justify-between">
-                            <span class="font-semibold text-sm font-mono" style="color: ${colors.text}">${c.symbol}</span>
-                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/60 text-gray-500 font-medium">${c.timeframe}</span>
+                    <div class="rounded-md p-2 transition-all hover:scale-[1.02] cursor-default" 
+                         style="background: ${colors.bg}; border: 1px solid ${colors.border || '#e5e7eb'};"
+                         title="${c.symbol} - ${c.timeframe} APR: ${c.currentApr?.toFixed(2)}%${c.change != null ? ` (${c.change > 0 ? '+' : ''}${c.change.toFixed(2)}% vs 24h)` : ''}">
+                        <div class="flex items-center justify-between gap-1">
+                            <span class="font-semibold text-xs font-mono truncate" style="color: ${colors.text}">${c.symbol}</span>
+                            <span class="text-[8px] px-1 py-0.5 rounded bg-white/60 text-gray-500 font-medium shrink-0">${c.timeframe}</span>
                         </div>
-                        <div class="text-2xl font-mono font-bold mt-1" style="color: ${colors.text}">${c.currentApr?.toFixed(2) || '—'}%</div>
-                        ${showChange ? `
-                        <div class="flex items-center gap-1 mt-1">
-                            <span class="text-xs font-medium" style="color: ${changeColor}">${changeIcon} ${Math.abs(c.change).toFixed(2)}%</span>
-                            <span class="text-xs text-gray-400">vs 24h ago</span>
+                        <div class="text-lg font-mono font-bold" style="color: ${colors.text}">
+                            ${c.currentApr?.toFixed(1) || '—'}%
+                            ${changeIcon ? `<span class="text-[10px]" style="color: ${changeColor}">${changeIcon}</span>` : ''}
                         </div>
-                        ` : `<div class="text-[10px] text-gray-400 mt-1">no 24h comparison</div>`}
                     </div>
                 `;
             }).join('');
@@ -1556,6 +1553,15 @@
             const priceRange = maxPrice - minPrice;
             const padding = priceRange * 0.15 || 0.0001;
 
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            const gridColor = isDarkMode ? 'rgba(74, 222, 128, 0.15)' : 'rgba(229, 231, 235, 0.8)';
+            const gridColorLight = isDarkMode ? 'rgba(74, 222, 128, 0.08)' : 'rgba(229, 231, 235, 0.5)';
+            const tickColor = isDarkMode ? '#a3e4b8' : '#6b7280';
+            const tickColorLight = isDarkMode ? '#5a9c6e' : '#9ca3af';
+            const priceLineColor = isDarkMode ? '#4ade80' : '#64748b';
+            const aprLineColor = isDarkMode ? '#facc15' : '#0d9488';
+            const avgLineColor = isDarkMode ? '#f472b6' : '#d97706';
+
             const datasets = [{
                 label: 'Share Price',
                 data: prices,
@@ -1568,15 +1574,6 @@
                 pointHoverRadius: 4,
                 yAxisID: 'y'
             }];
-
-            const isDarkMode = document.documentElement.classList.contains('dark');
-            const gridColor = isDarkMode ? 'rgba(74, 222, 128, 0.15)' : 'rgba(229, 231, 235, 0.8)';
-            const gridColorLight = isDarkMode ? 'rgba(74, 222, 128, 0.08)' : 'rgba(229, 231, 235, 0.5)';
-            const tickColor = isDarkMode ? '#a3e4b8' : '#6b7280';
-            const tickColorLight = isDarkMode ? '#5a9c6e' : '#9ca3af';
-            const priceLineColor = isDarkMode ? '#4ade80' : '#64748b';
-            const aprLineColor = isDarkMode ? '#facc15' : '#0d9488';
-            const avgLineColor = isDarkMode ? '#f472b6' : '#d97706';
 
             const scales = {
                 y: {
