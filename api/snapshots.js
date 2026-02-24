@@ -52,7 +52,7 @@ export default async function handler(req, res) {
         } : null,
         history: snaps
           .filter(s => s.timestamp >= cutoff)
-          .map(s => ({ timestamp: s.timestamp, price: s.price })),
+          .map(s => ({ timestamp: s.timestamp, price: s.price, apr_1h: s.apr_1h ?? null })),
       });
     }
 
