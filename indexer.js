@@ -10,8 +10,8 @@ const path = require('path');
 const { put } = require('@vercel/blob');
 
 // Config
-const RPC_ETHEREUM = process.env.ETH_RPC_URL || 'https://eth.llamarpc.com';
-const RPC_ARBITRUM = process.env.ARB_RPC_URL || 'https://arb1.arbitrum.io/rpc';
+const RPC_ETHEREUM = process.env.ETH_RPC_URL || 'https://eth-mainnet.g.alchemy.com/v2/_20mocA-3zrSOZqI2jMO2';
+const RPC_ARBITRUM = process.env.ARB_RPC_URL || 'https://arb-mainnet.g.alchemy.com/v2/_20mocA-3zrSOZqI2jMO2';
 const RPC_AVALANCHE = process.env.AVAX_RPC_URL || 'https://api.avax.network/ext/bc/C/rpc';
 const RPC_PLASMA = process.env.PLASMA_RPC_URL || 'https://rpc.plasma.to';
 const DATA_DIR = path.join(__dirname, 'data');
