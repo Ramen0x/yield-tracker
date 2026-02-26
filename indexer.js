@@ -12,7 +12,7 @@ const { put } = require('@vercel/blob');
 // Config
 const RPC_ETHEREUM = process.env.ETH_RPC_URL || 'https://eth-mainnet.g.alchemy.com/v2/_20mocA-3zrSOZqI2jMO2';
 const RPC_ARBITRUM = process.env.ARB_RPC_URL || 'https://arb-mainnet.g.alchemy.com/v2/_20mocA-3zrSOZqI2jMO2';
-const RPC_AVALANCHE = process.env.AVAX_RPC_URL || 'https://api.avax.network/ext/bc/C/rpc';
+const RPC_AVALANCHE = process.env.AVAX_RPC_URL || 'https://avax-mainnet.g.alchemy.com/v2/_20mocA-3zrSOZqI2jMO2';
 const RPC_PLASMA = process.env.PLASMA_RPC_URL || 'https://rpc.plasma.to';
 const DATA_DIR = path.join(__dirname, 'data');
 const SNAPSHOTS_FILE = path.join(DATA_DIR, 'snapshots.json');
@@ -41,7 +41,11 @@ const providers = {
   ethereum: new ethers.JsonRpcProvider(RPC_ETHEREUM),
   arbitrum: new ethers.JsonRpcProvider(RPC_ARBITRUM),
   avalanche: new ethers.JsonRpcProvider(RPC_AVALANCHE),
-  plasma: new ethers.JsonRpcProvider(RPC_PLASMA)
+  plasma: new ethers.JsonRpcProvider(RPC_PLASMA),
+  base: new ethers.JsonRpcProvider(RPC_BASE),
+  optimism: new ethers.JsonRpcProvider(RPC_OPT),
+  polygon: new ethers.JsonRpcProvider(RPC_POLYGON),
+  mantle: new ethers.JsonRpcProvider(RPC_MANTLE)
 };
 
 function ensureDataDir() {
